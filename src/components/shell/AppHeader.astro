@@ -1,0 +1,22 @@
+---
+import ToolSearch from '../search/ToolSearch';
+import ThemeToggle from './ThemeToggle';
+---
+
+<header class="site-header">
+	<div class="site-header__inner">
+		<a class="brand" href="/" aria-label="Bytekit 首页">
+			<span class="brand__mark">B</span>
+			<span class="brand__body">
+				<span class="brand__text">Bytekit</span>
+				<span class="brand__caption">开发工具</span>
+			</span>
+		</a>
+		<div class="site-header__search">
+			<ToolSearch client:load variant="header" />
+		</div>
+		<div class="site-header__actions">
+			<ThemeToggle client:load />
+		</div>
+	</div>
+</header>

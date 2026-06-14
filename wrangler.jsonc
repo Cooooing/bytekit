@@ -7,6 +7,20 @@
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "bytekit_db",
+			// 替换为 Cloudflare 创建后的实际 database_id。
+			"database_id": "replace-with-cloudflare-d1-database-id"
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "BUCKET",
+			"bucket_name": "bytekit-files"
+		}
+	],
 	"observability": {
 		"enabled": true
 	}

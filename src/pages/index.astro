@@ -1,11 +1,50 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import {
+	Code2,
+	FileJson,
+	LockKeyhole,
+} from 'lucide-react';
+import HomeToolCatalog from '../components/home/HomeToolCatalog';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { toolCategories } from '../lib/toolRegistry';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const iconByName = {
+	code: Code2,
+	lock: LockKeyhole,
+	'file-json': FileJson,
+};
+
+export const prerender = true;
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout title="Bytekit" description="Bytekit 在线工具箱，无需安装，高效便捷。">
+	<div class="home-shell">
+		<aside class="home-sidebar" aria-label="工具分类">
+			<a class="home-brand" href="/" aria-label="Bytekit 首页">
+				<span class="home-brand__mark">B</span>
+				<span class="home-brand__text">Bytekit</span>
+			</a>
+			<nav class="home-category-nav">
+				{toolCategories.map((category) => {
+					const Icon = iconByName[category.icon];
+					const count = getToolsByCategory(category.id).length;
+
+					return (
+						<a class="home-category-nav__item" href={`#${category.id}`}>
+							<span class="home-category-nav__main">
+								<Icon size={16} strokeWidth={2} aria-hidden="true" />
+								{category.name}
+							</span>
+							<span class="home-category-nav__count">{count}</span>
+						</a>
+					);
+				})}
+			</nav>
+		</aside>
+
+		<section class="home-main">
+			<HomeToolCatalog client:load />
+		</section>
+	</div>
+</BaseLayout>
+
