@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import HomeToolCatalog from '../components/home/HomeToolCatalog';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { toolCategories } from '../lib/toolRegistry';
+import { getToolsByCategory, toolCategories } from '../lib/toolRegistry';
 
 const iconByName = {
 	code: Code2,

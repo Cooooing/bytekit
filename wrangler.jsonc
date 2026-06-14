@@ -11,14 +11,7 @@
 		{
 			"binding": "DB",
 			"database_name": "bytekit_db",
-			// 替换为 Cloudflare 创建后的实际 database_id。
-			"database_id": "replace-with-cloudflare-d1-database-id"
-		}
-	],
-	"r2_buckets": [
-		{
-			"binding": "BUCKET",
-			"bucket_name": "bytekit-files"
+			"database_id": "49d9e56c-3777-4df5-9d74-cf14e5065d2f"
 		}
 	],
 	"observability": {
