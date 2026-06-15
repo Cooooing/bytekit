@@ -1229,6 +1229,55 @@ textarea:focus-visible {
 	border: 0;
 }
 
+.theme-selector {
+	position: relative;
+}
+
+.theme-selector__dropdown {
+	position: absolute;
+	top: calc(100% + var(--space-2));
+	right: 0;
+	z-index: 30;
+	min-width: 14rem;
+	padding: var(--space-2);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	background: var(--surface);
+	box-shadow: 0 1rem 2.5rem rgba(20, 48, 92, 0.16);
+}
+
+.theme-selector__item {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	width: 100%;
+	padding: var(--space-2) var(--space-3);
+	border-radius: var(--radius-sm);
+	background: transparent;
+	text-align: left;
+	cursor: pointer;
+	transition: background-color 0.15s ease;
+}
+
+.theme-selector__item:hover {
+	background: var(--surface-muted);
+}
+
+.theme-selector__item--active {
+	background: var(--primary-soft);
+}
+
+.theme-selector__name {
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: var(--text);
+}
+
+.theme-selector__desc {
+	font-size: 0.75rem;
+	color: var(--muted);
+}
+
 .ref-panel {
 	max-width: 58rem;
 	border: 1px solid var(--border);
