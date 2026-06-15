@@ -542,6 +542,9 @@ textarea:focus-visible {
 
 .tool-app-content {
 	min-width: 0;
+	display: grid;
+	gap: var(--space-4);
+	align-content: start;
 }
 
 .tool-app-head {
@@ -549,7 +552,6 @@ textarea:focus-visible {
 	align-items: end;
 	justify-content: space-between;
 	gap: var(--space-4);
-	margin-bottom: var(--space-3);
 }
 
 .tool-sidebar {
@@ -1228,6 +1230,7 @@ textarea:focus-visible {
 }
 
 .ref-panel {
+	max-width: 58rem;
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
 	background: var(--surface);
