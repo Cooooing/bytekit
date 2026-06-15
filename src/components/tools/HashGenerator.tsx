@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import CopyRow from '../ui/CopyRow';
+import ReferencePanel from '../ui/ReferencePanel';
 import { useToolStorage } from '../../hooks/useToolStorage';
 import { computeHashes, type HashAlgorithm } from '../../lib/tools/hash';
+import { hashReference } from '../../lib/tools/references';
 import { GeneratorPanel } from './ToolLayouts';
 
 const algorithms: HashAlgorithm[] = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
@@ -50,5 +52,10 @@ export default function HashGenerator() {
 		</div>
 	);
 
-	return <GeneratorPanel ariaLabel="Hash 生成器" controls={controls} result={resultPanel} />;
+	return (
+		<>
+			<GeneratorPanel ariaLabel="Hash 生成器" controls={controls} result={resultPanel} />
+			<ReferencePanel title="Hash 算法参考" sections={hashReference} />
+		</>
+	);
 }

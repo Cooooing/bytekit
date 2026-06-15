@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
 import CodeEditor from '../editor/CodeEditor';
 import Button from '../ui/Button';
+import ReferencePanel from '../ui/ReferencePanel';
 import { useToolStorage } from '../../hooks/useToolStorage';
 import { decodeBase64, encodeBase64 } from '../../lib/tools/base64';
+import { base64Reference } from '../../lib/tools/references';
 import { IoWorkbench } from './ToolLayouts';
 
 const text = {
@@ -36,16 +38,19 @@ export default function Base64Codec() {
 	const encodeResult = useMemo(() => encodeBase64(input), [input]);
 
 	return (
-		<IoWorkbench
-			ariaLabel={text.tool}
-			actions={(
-				<>
-					<Button variant="primary" onClick={() => runAction('encode')}>{text.encode}</Button>
-					<Button variant="secondary" onClick={() => runAction('decode')}>{text.decode}</Button>
-				</>
-			)}
-			input={<CodeEditor title={text.input} value={input} onChange={setInput} language="text" />}
-			output={<CodeEditor title={text.output} value={output} language="text" status={encodeResult.ok ? 'success' : 'error'} statusText={encodeResult.ok ? text.success : text.fail} error={encodeResult.ok ? undefined : encodeResult.error} />}
-		/>
+		<>
+			<IoWorkbench
+				ariaLabel={text.tool}
+				actions={(
+					<>
+						<Button variant="primary" onClick={() => runAction('encode')}>{text.encode}</Button>
+						<Button variant="secondary" onClick={() => runAction('decode')}>{text.decode}</Button>
+					</>
+				)}
+				input={<CodeEditor title={text.input} value={input} onChange={setInput} language="text" />}
+				output={<CodeEditor title={text.output} value={output} language="text" status={encodeResult.ok ? 'success' : 'error'} statusText={encodeResult.ok ? text.success : text.fail} error={encodeResult.ok ? undefined : encodeResult.error} />}
+			/>
+			<ReferencePanel title="Base64 参考" sections={base64Reference} />
+		</>
 	);
 }

@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import Badge from '../ui/Badge';
+import Button from '../ui/Button';
 import CopyRow from '../ui/CopyRow';
+import ReferencePanel from '../ui/ReferencePanel';
 import { useToolStorage } from '../../hooks/useToolStorage';
 import { testRegex } from '../../lib/tools/regex';
 
@@ -13,6 +15,52 @@ const flagOptions = [
 	{ flag: 'y', label: 'Sticky', desc: '从 lastIndex 位置精确匹配' },
 ];
 
+const regexReference = [
+	{
+		title: '基础语法',
+		items: [
+			{ syntax: '.', desc: '任意字符' },
+			{ syntax: '\\d', desc: '数字 [0-9]' },
+			{ syntax: '\\w', desc: '单词字符 [a-zA-Z0-9_]' },
+			{ syntax: '\\s', desc: '空白字符' },
+			{ syntax: '[abc]', desc: '字符集，匹配 a 或 b 或 c' },
+			{ syntax: '[^abc]', desc: '否定字符集' },
+			{ syntax: '^', desc: '行首' },
+			{ syntax: '$', desc: '行尾' },
+		],
+	},
+	{
+		title: '量词',
+		items: [
+			{ syntax: '*', desc: '0 次或多次' },
+			{ syntax: '+', desc: '1 次或多次' },
+			{ syntax: '?', desc: '0 次或 1 次' },
+			{ syntax: '{n}', desc: '恰好 n 次' },
+			{ syntax: '{n,}', desc: '至少 n 次' },
+			{ syntax: '{n,m}', desc: 'n 到 m 次' },
+		],
+	},
+	{
+		title: '分组与引用',
+		items: [
+			{ syntax: '(abc)', desc: '捕获分组' },
+			{ syntax: '(?:abc)', desc: '非捕获分组' },
+			{ syntax: '(?<name>)', desc: '命名分组' },
+			{ syntax: '\\1', desc: '反向引用第 1 组' },
+			{ syntax: 'a|b', desc: '或运算' },
+		],
+	},
+	{
+		title: '前瞻与后顾',
+		items: [
+			{ syntax: '(?=...)', desc: '正向前瞻' },
+			{ syntax: '(?!...)', desc: '负向前瞻' },
+			{ syntax: '(?<=...)', desc: '正向后顾' },
+			{ syntax: '(?<!...)', desc: '负向后顾' },
+		],
+	},
+];
+
 export default function RegexTester() {
 	const [state, setState] = useToolStorage('bytekit:tool:regex:v1', {
 		input: 'Hello World 123\nfoo@bar.com\n2024-01-15',
@@ -23,6 +71,7 @@ export default function RegexTester() {
 	const setInput = (v: string) => setState((c) => ({ ...c, input: v }));
 	const setPattern = (v: string) => setState((c) => ({ ...c, pattern: v }));
 	const setFlags = (v: string) => setState((c) => ({ ...c, flags: v }));
+	const [copied, setCopied] = useState(false);
 
 	function toggleFlag(flag: string) {
 		setFlags(flags.includes(flag) ? flags.replace(flag, '') : flags + flag);
@@ -30,7 +79,6 @@ export default function RegexTester() {
 
 	const result = useMemo(() => testRegex(pattern, flags, input), [pattern, flags, input]);
 
-	// Build highlighted HTML for the input text
 	const highlightedHtml = useMemo(() => {
 		if (!result.ok || result.matches.length === 0) return escapeHtml(input);
 
@@ -45,10 +93,24 @@ export default function RegexTester() {
 		return parts.join('');
 	}, [input, result]);
 
+	async function copyRegex() {
+		const regex = `/${pattern}/${flags}`;
+		try {
+			await navigator.clipboard.writeText(regex);
+			setCopied(true);
+			setTimeout(() => setCopied(false), 1400);
+		} catch {
+			// ignore
+		}
+	}
+
 	return (
 		<div className="regex-tester">
 			<div className="regex-tester__pattern">
-				<h2 className="password-card__title">正则表达式</h2>
+				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+					<h2 className="password-card__title" style={{ margin: 0 }}>正则表达式</h2>
+					<Button variant="secondary" size="sm" onClick={copyRegex}>{copied ? '已复制' : '复制正则'}</Button>
+				</div>
 				<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
 					<span style={{ color: 'var(--muted)', fontFamily: 'monospace', fontSize: '1.1rem' }}>/</span>
 					<input
@@ -130,6 +192,8 @@ export default function RegexTester() {
 			{!result.ok && (
 				<div style={{ color: 'var(--semantic-danger)', fontSize: '0.875rem' }}>{result.error}</div>
 			)}
+
+			<ReferencePanel title="正则语法速查" sections={regexReference} />
 		</div>
 	);
 }

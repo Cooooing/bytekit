@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
 import CodeEditor from '../editor/CodeEditor';
 import Button from '../ui/Button';
+import ReferencePanel from '../ui/ReferencePanel';
 import { useToolStorage } from '../../hooks/useToolStorage';
 import { formatJson, minifyJson, unescapeJson, escapeJson } from '../../lib/tools/json';
+import { jsonReference } from '../../lib/tools/references';
 import { IoWorkbench } from './ToolLayouts';
 
 const text = {
@@ -44,18 +46,21 @@ export default function JsonFormatter() {
 	const formatResult = useMemo(() => formatJson(input, 2), [input]);
 
 	return (
-		<IoWorkbench
-			ariaLabel={text.tool}
-			actions={(
-				<>
-					<Button variant="primary" onClick={() => runAction('format')}>{text.format}</Button>
-					<Button variant="secondary" onClick={() => runAction('minify')}>{text.minify}</Button>
-					<Button variant="secondary" onClick={() => runAction('unescape')}>{text.unescape}</Button>
-					<Button variant="secondary" onClick={() => runAction('escape')}>{text.escape}</Button>
-				</>
-			)}
-			input={<CodeEditor title={text.input} value={input} onChange={setInput} language="json" />}
-			output={<CodeEditor title={text.output} value={output} language="json" status={formatResult.ok ? 'success' : 'error'} statusText={formatResult.ok ? text.valid : text.invalid} error={formatResult.ok ? undefined : formatResult.error} />}
-		/>
+		<>
+			<IoWorkbench
+				ariaLabel={text.tool}
+				actions={(
+					<>
+						<Button variant="primary" onClick={() => runAction('format')}>{text.format}</Button>
+						<Button variant="secondary" onClick={() => runAction('minify')}>{text.minify}</Button>
+						<Button variant="secondary" onClick={() => runAction('unescape')}>{text.unescape}</Button>
+						<Button variant="secondary" onClick={() => runAction('escape')}>{text.escape}</Button>
+					</>
+				)}
+				input={<CodeEditor title={text.input} value={input} onChange={setInput} language="json" />}
+				output={<CodeEditor title={text.output} value={output} language="json" status={formatResult.ok ? 'success' : 'error'} statusText={formatResult.ok ? text.valid : text.invalid} error={formatResult.ok ? undefined : formatResult.error} />}
+			/>
+			<ReferencePanel title="JSON 参考" sections={jsonReference} />
+		</>
 	);
 }

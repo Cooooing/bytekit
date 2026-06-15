@@ -1,8 +1,10 @@
 import { useMemo } from 'react';
 import CodeEditor from '../editor/CodeEditor';
 import Button from '../ui/Button';
+import ReferencePanel from '../ui/ReferencePanel';
 import { useToolStorage } from '../../hooks/useToolStorage';
 import { minifyCss, beautifyCss } from '../../lib/tools/css';
+import { cssReference } from '../../lib/tools/references';
 import { IoWorkbench } from './ToolLayouts';
 
 const text = {
@@ -35,16 +37,19 @@ export default function CssMinify() {
 	);
 
 	return (
-		<IoWorkbench
-			ariaLabel={text.tool}
-			actions={(
-				<>
-					<Button variant="primary" onClick={() => runAction('minify')}>{text.minify}</Button>
-					<Button variant="secondary" onClick={() => runAction('beautify')}>{text.beautify}</Button>
-				</>
-			)}
-			input={<CodeEditor title={text.input} value={input} onChange={setInput} language="css" />}
-			output={<CodeEditor title={text.output} value={output} language="css" status={currentResult.ok ? 'success' : 'error'} statusText={currentResult.ok ? text.success : text.fail} error={currentResult.ok ? undefined : currentResult.error} />}
-		/>
+		<>
+			<IoWorkbench
+				ariaLabel={text.tool}
+				actions={(
+					<>
+						<Button variant="primary" onClick={() => runAction('minify')}>{text.minify}</Button>
+						<Button variant="secondary" onClick={() => runAction('beautify')}>{text.beautify}</Button>
+					</>
+				)}
+				input={<CodeEditor title={text.input} value={input} onChange={setInput} language="css" />}
+				output={<CodeEditor title={text.output} value={output} language="css" status={currentResult.ok ? 'success' : 'error'} statusText={currentResult.ok ? text.success : text.fail} error={currentResult.ok ? undefined : currentResult.error} />}
+			/>
+			<ReferencePanel title="CSS 参考" sections={cssReference} />
+		</>
 	);
 }

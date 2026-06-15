@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
 import Button from '../ui/Button';
 import CopyRow from '../ui/CopyRow';
+import ReferencePanel from '../ui/ReferencePanel';
 import { parseTimestamp } from '../../lib/tools/timestamp';
+import { timestampReference } from '../../lib/tools/references';
 import { GeneratorPanel } from './ToolLayouts';
 
 export default function TimestampConverter() {
@@ -53,5 +55,10 @@ export default function TimestampConverter() {
 		</div>
 	);
 
-	return <GeneratorPanel ariaLabel="时间戳转换工具" controls={controls} result={resultPanel} />;
+	return (
+		<>
+			<GeneratorPanel ariaLabel="时间戳转换工具" controls={controls} result={resultPanel} />
+			<ReferencePanel title="时间格式参考" sections={timestampReference} />
+		</>
+	);
 }
