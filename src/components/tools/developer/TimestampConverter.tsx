@@ -56,9 +56,6 @@ export default function TimestampConverter() {
 	);
 
 	return (
-		<>
-			<GeneratorPanel ariaLabel="时间戳转换工具" controls={controls} result={resultPanel} />
-			<ReferencePanel title="时间格式参考" sections={timestampReference} />
-		</>
+		<GeneratorPanel ariaLabel="时间戳转换工具" controls={controls} result={resultPanel} reference={<ReferencePanel title="时间格式参考" sections={timestampReference} />} />
 	);
 }

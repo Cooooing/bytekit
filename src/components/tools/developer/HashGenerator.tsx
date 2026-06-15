@@ -53,9 +53,6 @@ export default function HashGenerator() {
 	);
 
 	return (
-		<>
-			<GeneratorPanel ariaLabel="Hash 生成器" controls={controls} result={resultPanel} />
-			<ReferencePanel title="Hash 算法参考" sections={hashReference} />
-		</>
+		<GeneratorPanel ariaLabel="Hash 生成器" controls={controls} result={resultPanel} reference={<ReferencePanel title="Hash 算法参考" sections={hashReference} />} />
 	);
 }

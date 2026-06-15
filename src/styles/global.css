@@ -715,8 +715,10 @@ textarea:focus-visible {
 }
 
 .generator-panel__controls,
-.generator-panel__result {
+.generator-panel__right {
 	min-width: 0;
+	display: grid;
+	gap: var(--space-3);
 }
 
 .generator-panel__result {
@@ -726,6 +728,10 @@ textarea:focus-visible {
 
 .generator-panel__actions {
 	display: grid;
+}
+
+.generator-panel__reference {
+	margin-top: var(--space-1);
 }
 
 .ui-button {
@@ -1172,6 +1178,24 @@ textarea:focus-visible {
 	padding: 1px 2px;
 }
 
+.regex-layout {
+	display: grid;
+	grid-template-columns: 1fr minmax(16rem, 20rem);
+	gap: var(--space-4);
+	align-items: start;
+}
+
+.regex-layout__main {
+	display: grid;
+	gap: var(--space-4);
+	min-width: 0;
+}
+
+.regex-layout__ref {
+	position: sticky;
+	top: calc(3.75rem + var(--layout-page-block) + var(--space-4));
+}
+
 .regex-flags {
 	display: flex;
 	flex-wrap: wrap;
@@ -1574,6 +1598,14 @@ textarea:focus-visible {
 }
 
 @media (max-width: 64rem) {
+	.regex-layout {
+		grid-template-columns: 1fr;
+	}
+
+	.regex-layout__ref {
+		position: static;
+	}
+
 	.tool-search--header {
 		width: 100%;
 	}

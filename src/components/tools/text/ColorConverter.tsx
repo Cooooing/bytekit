@@ -59,9 +59,6 @@ export default function ColorConverter() {
 	);
 
 	return (
-		<>
-			<GeneratorPanel ariaLabel="颜色转换工具" controls={controls} result={resultPanel} />
-			<ReferencePanel title="颜色格式参考" sections={colorReference} />
-		</>
+		<GeneratorPanel ariaLabel="颜色转换工具" controls={controls} result={resultPanel} reference={<ReferencePanel title="颜色格式参考" sections={colorReference} />} />
 	);
 }

@@ -77,9 +77,6 @@ export default function UrlCodec() {
 	);
 
 	return (
-		<>
-			<GeneratorPanel ariaLabel="URL 编解码工具" controls={controls} result={resultPanel} />
-			<ReferencePanel title="URL 编码参考" sections={urlReference} />
-		</>
+		<GeneratorPanel ariaLabel="URL 编解码工具" controls={controls} result={resultPanel} reference={<ReferencePanel title="URL 编码参考" sections={urlReference} />} />
 	);
 }
