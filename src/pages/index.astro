@@ -20,7 +20,7 @@ export const prerender = true;
 <BaseLayout title="Bytekit" description="Bytekit 在线工具箱，无需安装，高效便捷。">
 	<div class="home-shell">
 		<aside class="home-sidebar" aria-label="工具分类">
-			<a class="home-brand" href="/" aria-label="Bytekit 首页">
+			<a class="home-brand" href={import.meta.env.BASE_URL} aria-label="Bytekit 首页">
 				<span class="home-brand__mark">B</span>
 				<span class="home-brand__text">Bytekit</span>
 			</a>

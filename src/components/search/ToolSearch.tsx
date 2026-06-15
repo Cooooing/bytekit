@@ -2,7 +2,7 @@ import MiniSearch from 'minisearch';
 import { Search } from 'lucide-react';
 import { pinyin } from 'pinyin-pro';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getCategoryById, tools } from '../../lib/toolRegistry';
+import { getCategoryById, getToolHref, getToolIdFromPathname, isToolPath, tools } from '../../lib/toolRegistry';
 
 interface ToolSearchProps {
 	variant?: 'header' | 'hero' | 'sidebar';
@@ -87,16 +87,14 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 	}, [showResults, results.length]);
 
 	const selectTool = useCallback((href: string) => {
-		const match = href.match(/^\/tools\/([^/]+)/);
-		const toolId = match?.[1];
-		const currentToolPath = window.location.pathname.startsWith('/tools/');
+		const toolId = getToolIdFromPathname(href);
 
-		if (currentToolPath && toolId) {
+		if (isToolPath(window.location.pathname) && toolId) {
 			window.dispatchEvent(new CustomEvent('bytekit:select-tool', { detail: { toolId } }));
 			return;
 		}
 
-		window.location.href = href;
+		window.location.href = import.meta.env.BASE_URL + href;
 	}, []);
 
 	// Scroll active item into view

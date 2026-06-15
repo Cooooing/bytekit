@@ -43,7 +43,7 @@ export const toolCategories: ToolCategory[] = [
 export const tools: ToolDefinition[] = [
 	{
 		id: 'json',
-		href: '/tools/json',
+		href: 'tools/json',
 		name: 'JSON 格式化',
 		shortName: 'JSON',
 		description: '格式化、压缩和校验 JSON 文本。',
@@ -53,7 +53,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'jwt',
-		href: '/tools/jwt',
+		href: 'tools/jwt',
 		name: 'JWT 解析',
 		shortName: 'JWT',
 		description: '解析 header 和 payload，不执行签名校验。',
@@ -63,7 +63,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'base64',
-		href: '/tools/base64',
+		href: 'tools/base64',
 		name: 'Base64 编解码',
 		shortName: 'Base64',
 		description: '处理 UTF-8 文本的 Base64 编码和解码。',
@@ -73,7 +73,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'password',
-		href: '/tools/password',
+		href: 'tools/password',
 		name: '随机密码',
 		shortName: '密码',
 		description: '按长度和字符集生成随机密码。',
@@ -93,4 +93,22 @@ export function getCategoryById(id: ToolCategoryId) {
 
 export function getToolsByCategory(id: ToolCategoryId) {
 	return tools.filter((tool) => tool.category === id);
+}
+
+// Get the full href with base URL prefix (works across all platforms)
+export function getToolHref(tool: ToolDefinition): string {
+	return import.meta.env.BASE_URL + tool.href;
+}
+
+// Extract tool ID from a full URL pathname
+export function getToolIdFromPathname(pathname: string): string {
+	const base = import.meta.env.BASE_URL;
+	const relative = pathname.startsWith(base) ? pathname.slice(base.length) : pathname;
+	const match = relative.match(/^tools\/([^/]+)/);
+	return match?.[1] ?? '';
+}
+
+// Check if a pathname is under the tools section
+export function isToolPath(pathname: string): boolean {
+	return pathname.startsWith(import.meta.env.BASE_URL + 'tools/');
 }

@@ -1,16 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getToolById, tools } from '../../lib/toolRegistry';
+import { getToolById, getToolHref, getToolIdFromPathname, isToolPath, tools } from '../../lib/toolRegistry';
 import ToolSidebar from './ToolSidebar';
 import { toolComponents, type ToolComponentId } from './toolComponents';
 
 interface ToolAppProps {
 	initialToolId: string;
-}
-
-function getToolIdFromPath() {
-	if (typeof window === 'undefined') return '';
-	const match = window.location.pathname.match(/^\/tools\/([^/]+)/);
-	return match?.[1] ?? '';
 }
 
 export default function ToolApp({ initialToolId }: ToolAppProps) {
@@ -29,13 +23,13 @@ export default function ToolApp({ initialToolId }: ToolAppProps) {
 		if (!nextTool || toolId === activeToolIdRef.current) return;
 
 		setActiveToolId(toolId);
-		window.history.pushState({ toolId }, '', nextTool.href);
+		window.history.pushState({ toolId }, '', getToolHref(nextTool));
 		document.title = `${nextTool.name} - Bytekit`;
 	}, []);
 
 	useEffect(() => {
 		function handlePopState() {
-			const nextToolId = getToolIdFromPath();
+			const nextToolId = getToolIdFromPathname(window.location.pathname);
 			if (getToolById(nextToolId)) setActiveToolId(nextToolId);
 		}
 
