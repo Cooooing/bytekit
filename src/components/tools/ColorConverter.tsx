@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import CopyRow from '../ui/CopyRow';
 import { parseColor } from '../../lib/tools/color';
 import { GeneratorPanel } from './ToolLayouts';
 
@@ -23,7 +24,7 @@ export default function ColorConverter() {
 					type="color"
 					value={result.ok ? result.hex : '#000000'}
 					onChange={(e) => setInput(e.target.value)}
-					style={{ width: '100%', height: '3rem', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer' }}
+					style={{ width: '100%', height: '3rem', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', marginTop: '8px' }}
 				/>
 			</div>
 		</div>
@@ -43,10 +44,10 @@ export default function ColorConverter() {
 							border: '1px solid var(--border)',
 						}}
 					/>
-					<div style={{ display: 'grid', gap: '6px', fontSize: '0.875rem', fontFamily: 'monospace' }}>
-						<div><strong>HEX:</strong> {result.hex}</div>
-						<div><strong>RGB:</strong> {result.rgba}</div>
-						<div><strong>HSL:</strong> {result.hsla}</div>
+					<div style={{ display: 'grid', gap: '6px' }}>
+						<CopyRow label="HEX" value={result.hex} />
+						<CopyRow label="RGB" value={result.rgba} />
+						<CopyRow label="HSL" value={result.hsla} />
 					</div>
 				</div>
 			) : (
