@@ -1,1 +1,0 @@
-import{j as r}from"./createLucideIcon.BKUhuUaV.js";function a({variant:t="primary",size:o="md",className:n,children:u,...s}){const i=["ui-button",`ui-button--${t}`,`ui-button--${o}`,n].filter(Boolean).join(" ");return r.jsx("button",{className:i,type:"button",...s,children:u})}export{a as B};
