@@ -13,7 +13,7 @@ const adapter = isVercel
 // https://astro.build/config
 export default defineConfig({
 	output: 'static',
-	base: '/',
+	base: '/bytekit',
 	integrations: [react()],
 	adapter,
 	vite: isVercel ? {
