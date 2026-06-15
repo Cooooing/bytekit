@@ -1,0 +1,56 @@
+/* Animal Island theme — CSS variable overrides
+   Maps Bytekit's semantic tokens to the Animal Island warm-parchment palette.
+   All components using var(--xxx) automatically pick up these values. */
+
+html[data-theme-id="animal-island"] {
+	/* ─── Surfaces ─── */
+	--surface-page: #f8f8f0;
+	--surface-header: rgba(248, 248, 240, 0.92);
+	--surface-panel: #f0e8d8;
+	--surface-panel-muted: #ede4d1;
+	--surface-hover: #e8dfcf;
+	--surface-subtle: #f5f0e3;
+
+	/* ─── Borders ─── */
+	--border-subtle: #e8e2d6;
+	--border-strong: #aaa69d;
+
+	/* ─── Text ─── */
+	--text-primary: #794f27;
+	--text-secondary: #9f927d;
+	--text-tertiary: #b8a88e;
+	--text-inverse: #fff;
+
+	/* ─── Accent (teal) ─── */
+	--accent-primary: #19c8b9;
+	--accent-primary-hover: #3dd4c6;
+	--accent-primary-soft: #e6f9f6;
+
+	/* ─── Semantic ─── */
+	--semantic-danger: #e05a5a;
+	--semantic-danger-soft: #fde8e8;
+	--semantic-warning: #f5c31c;
+	--semantic-warning-soft: #fef6d8;
+	--semantic-info: #5ba3e0;
+	--semantic-info-soft: #e6f0fa;
+
+	/* ─── Code editor ─── */
+	--code-surface: #f5f0e3;
+	--code-gutter: #ede4d1;
+	--code-border: #e8e2d6;
+	--code-active-line: #ede4d1;
+	--code-selection: rgba(25, 200, 185, 0.15);
+	--code-selection-unfocused: rgba(25, 200, 185, 0.08);
+
+	/* ─── Shadows (warm-toned) ─── */
+	--shadow-panel: 0 3px 10px rgba(61, 52, 40, 0.1);
+	--shadow-header: 0 2px 8px rgba(61, 52, 40, 0.08);
+
+	/* ─── Typography ─── */
+	--font-sans: 'Nunito', 'Noto Sans SC', 'Zen Maru Gothic', 'HarmonyOS Sans SC', 'MiSans', -apple-system, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+
+	/* ─── Radii (more rounded) ─── */
+	--radius-sm: 16px;
+	--radius-md: 18px;
+	--radius-pill: 999rem;
+}

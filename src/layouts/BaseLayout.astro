@@ -19,6 +19,8 @@ const { title, description = 'Bytekit 开发工具站' } = Astro.props;
 					const stored = window.localStorage.getItem('bytekit-theme');
 					const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 					document.documentElement.dataset.theme = stored || (systemDark ? 'dark' : 'light');
+					const themeId = window.localStorage.getItem('bytekit-theme-id');
+					if (themeId) document.documentElement.dataset.themeId = themeId;
 				} catch {
 					document.documentElement.dataset.theme = 'light';
 				}
