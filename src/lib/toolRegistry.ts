@@ -1,4 +1,4 @@
-export type ToolCategoryId = 'encoding' | 'crypto' | 'json' | 'developer' | 'text';
+export type ToolCategoryId = 'encoding' | 'crypto' | 'json' | 'developer' | 'text' | 'format' | 'css';
 export type ToolLayout = 'io' | 'single';
 
 export interface ToolCategory {
@@ -47,7 +47,19 @@ export const toolCategories: ToolCategory[] = [
 	{
 		id: 'text',
 		name: '文本处理',
-		description: '颜色转换、文本对比等文本处理工具。',
+		description: '正则测试、大小写转换、Markdown 预览等。',
+		icon: 'file-text',
+	},
+	{
+		id: 'format',
+		name: '格式转换',
+		description: 'JSON ↔ CSV、JSON ↔ YAML 等格式互转。',
+		icon: 'braces',
+	},
+	{
+		id: 'css',
+		name: 'CSS 工具',
+		description: 'CSS 压缩、美化和格式化。',
 		icon: 'palette',
 	},
 ];
@@ -101,6 +113,76 @@ export const tools: ToolDefinition[] = [
 		description: 'URL 编码/解码及组件解析。',
 		category: 'encoding',
 		keywords: ['url', 'encode', 'decode', 'encodeuri', '编解码', '网址'],
+		layout: 'io',
+	},
+	{
+		id: 'regex',
+		href: 'tools/regex',
+		name: '正则表达式测试',
+		shortName: '正则',
+		description: '实时测试正则表达式，高亮匹配和分组。',
+		category: 'text',
+		keywords: ['regex', 'regexp', 'regular', 'expression', '正则', '匹配', 'pattern'],
+		layout: 'io',
+	},
+	{
+		id: 'diff',
+		href: 'tools/diff',
+		name: '文本差异对比',
+		shortName: '对比',
+		description: '逐行对比两段文本，高亮差异。',
+		category: 'text',
+		keywords: ['diff', 'compare', '对比', '差异', '比较'],
+		layout: 'io',
+	},
+	{
+		id: 'markdown',
+		href: 'tools/markdown',
+		name: 'Markdown 预览',
+		shortName: 'MD',
+		description: '实时 Markdown 渲染预览。',
+		category: 'text',
+		keywords: ['markdown', 'md', 'preview', '预览', '渲染'],
+		layout: 'io',
+	},
+	{
+		id: 'case',
+		href: 'tools/case',
+		name: '大小写转换',
+		shortName: '大小写',
+		description: 'camelCase/snake_case/kebab-case/PascalCase 互转。',
+		category: 'text',
+		keywords: ['case', 'camel', 'snake', 'kebab', 'pascal', '大小写', '命名', 'convert'],
+		layout: 'io',
+	},
+	{
+		id: 'csv',
+		href: 'tools/csv',
+		name: 'JSON ↔ CSV',
+		shortName: 'CSV',
+		description: 'JSON 数组与 CSV 表格互转。',
+		category: 'format',
+		keywords: ['json', 'csv', 'table', '表格', '转换', 'convert'],
+		layout: 'io',
+	},
+	{
+		id: 'yaml',
+		href: 'tools/yaml',
+		name: 'JSON ↔ YAML',
+		shortName: 'YAML',
+		description: 'JSON 和 YAML 格式互转。',
+		category: 'format',
+		keywords: ['json', 'yaml', 'yml', '转换', 'convert', '格式'],
+		layout: 'io',
+	},
+	{
+		id: 'css-minify',
+		href: 'tools/css-minify',
+		name: 'CSS 压缩/美化',
+		shortName: 'CSS',
+		description: 'CSS 代码格式化和压缩。',
+		category: 'css',
+		keywords: ['css', 'minify', 'beautify', 'format', '压缩', '美化', '格式化'],
 		layout: 'io',
 	},
 	{

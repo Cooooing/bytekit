@@ -1,7 +1,9 @@
 ---
 import {
+	Braces,
 	Code2,
 	FileJson,
+	FileText,
 	LockKeyhole,
 	Palette,
 	Settings,
@@ -11,9 +13,11 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { getToolsByCategory, toolCategories } from '../lib/toolRegistry';
 
 const iconByName = {
+	braces: Braces,
 	code: Code2,
-	lock: LockKeyhole,
 	'file-json': FileJson,
+	'file-text': FileText,
+	lock: LockKeyhole,
 	palette: Palette,
 	settings: Settings,
 };
