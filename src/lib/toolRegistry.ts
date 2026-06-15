@@ -67,7 +67,7 @@ export const toolCategories: ToolCategory[] = [
 export const tools: ToolDefinition[] = [
 	{
 		id: 'timestamp',
-		href: 'tools/timestamp',
+		href: 'tools/developer/timestamp',
 		name: '时间戳转换',
 		shortName: '时间戳',
 		description: 'Unix 时间戳与日期时间互转，支持多时区。',
@@ -77,7 +77,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'uuid',
-		href: 'tools/uuid',
+		href: 'tools/developer/uuid',
 		name: 'UUID 生成器',
 		shortName: 'UUID',
 		description: '一键生成 v4 随机 UUID。',
@@ -87,7 +87,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'hash',
-		href: 'tools/hash',
+		href: 'tools/developer/hash',
 		name: 'Hash 生成器',
 		shortName: 'Hash',
 		description: '计算 MD5、SHA-1、SHA-256、SHA-512 哈希值。',
@@ -97,7 +97,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'color',
-		href: 'tools/color',
+		href: 'tools/text/color',
 		name: '颜色转换',
 		shortName: '颜色',
 		description: 'HEX、RGB、HSL 颜色格式互转，实时预览。',
@@ -107,7 +107,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'url',
-		href: 'tools/url',
+		href: 'tools/encoding/url',
 		name: 'URL 编解码',
 		shortName: 'URL',
 		description: 'URL 编码/解码及组件解析。',
@@ -117,7 +117,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'regex',
-		href: 'tools/regex',
+		href: 'tools/text/regex',
 		name: '正则表达式测试',
 		shortName: '正则',
 		description: '实时测试正则表达式，高亮匹配和分组。',
@@ -127,7 +127,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'diff',
-		href: 'tools/diff',
+		href: 'tools/text/diff',
 		name: '文本差异对比',
 		shortName: '对比',
 		description: '逐行对比两段文本，高亮差异。',
@@ -137,7 +137,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'markdown',
-		href: 'tools/markdown',
+		href: 'tools/text/markdown',
 		name: 'Markdown 预览',
 		shortName: 'MD',
 		description: '实时 Markdown 渲染预览。',
@@ -147,7 +147,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'case',
-		href: 'tools/case',
+		href: 'tools/text/case',
 		name: '大小写转换',
 		shortName: '大小写',
 		description: 'camelCase/snake_case/kebab-case/PascalCase 互转。',
@@ -157,7 +157,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'csv',
-		href: 'tools/csv',
+		href: 'tools/format/csv',
 		name: 'JSON ↔ CSV',
 		shortName: 'CSV',
 		description: 'JSON 数组与 CSV 表格互转。',
@@ -167,7 +167,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'yaml',
-		href: 'tools/yaml',
+		href: 'tools/format/yaml',
 		name: 'JSON ↔ YAML',
 		shortName: 'YAML',
 		description: 'JSON 和 YAML 格式互转。',
@@ -177,7 +177,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'css-minify',
-		href: 'tools/css-minify',
+		href: 'tools/css/minify',
 		name: 'CSS 压缩/美化',
 		shortName: 'CSS',
 		description: 'CSS 代码格式化和压缩。',
@@ -187,7 +187,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'json',
-		href: 'tools/json',
+		href: 'tools/json/format',
 		name: 'JSON 格式化',
 		shortName: 'JSON',
 		description: '格式化、压缩和校验 JSON 文本。',
@@ -197,7 +197,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'jwt',
-		href: 'tools/jwt',
+		href: 'tools/crypto/jwt',
 		name: 'JWT 解析',
 		shortName: 'JWT',
 		description: '解析 header 和 payload，不执行签名校验。',
@@ -207,7 +207,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'base64',
-		href: 'tools/base64',
+		href: 'tools/encoding/base64',
 		name: 'Base64 编解码',
 		shortName: 'Base64',
 		description: '处理 UTF-8 文本的 Base64 编码和解码。',
@@ -217,7 +217,7 @@ export const tools: ToolDefinition[] = [
 	},
 	{
 		id: 'password',
-		href: 'tools/password',
+		href: 'tools/crypto/password',
 		name: '随机密码',
 		shortName: '密码',
 		description: '按长度和字符集生成随机密码。',
@@ -244,12 +244,20 @@ export function getToolHref(tool: ToolDefinition): string {
 	return import.meta.env.BASE_URL + tool.href;
 }
 
-// Extract tool ID from a full URL pathname
+// Extract tool ID from a full URL pathname (supports both old /tools/id and new /tools/category/id)
 export function getToolIdFromPathname(pathname: string): string {
 	const base = import.meta.env.BASE_URL;
 	const relative = pathname.startsWith(base) ? pathname.slice(base.length) : pathname;
-	const match = relative.match(/^tools\/([^/]+)/);
-	return match?.[1] ?? '';
+	// Match tools/category/id pattern
+	const match = relative.match(/^tools\/([^/]+)\/([^/]+)/);
+	if (match) {
+		// Find tool by href matching the category/id pattern
+		const tool = tools.find((t) => t.href === `tools/${match[1]}/${match[2]}`);
+		return tool?.id ?? match[2];
+	}
+	// Fallback: match tools/id pattern (backward compat)
+	const legacyMatch = relative.match(/^tools\/([^/]+)/);
+	return legacyMatch?.[1] ?? '';
 }
 
 // Check if a pathname is under the tools section

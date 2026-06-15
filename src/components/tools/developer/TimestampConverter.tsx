@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
-import Button from '../ui/Button';
-import CopyRow from '../ui/CopyRow';
-import ReferencePanel from '../ui/ReferencePanel';
-import { parseTimestamp } from '../../lib/tools/timestamp';
-import { timestampReference } from '../../lib/tools/references';
-import { GeneratorPanel } from './ToolLayouts';
+import Button from '../../ui/Button';
+import CopyRow from '../../ui/CopyRow';
+import ReferencePanel from '../../ui/ReferencePanel';
+import { parseTimestamp } from '../../../lib/tools/developer/timestamp';
+import { timestampReference } from '../../../lib/tools/references';
+import { GeneratorPanel } from '../ToolLayouts';
 
 export default function TimestampConverter() {
 	const [input, setInput] = useState(String(Math.floor(Date.now() / 1000)));

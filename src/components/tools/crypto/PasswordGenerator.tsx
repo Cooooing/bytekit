@@ -1,9 +1,9 @@
 import { Hash, RotateCw, Shuffle } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import Button from '../ui/Button';
-import { generatePassword, type PasswordMode } from '../../lib/tools/password';
-import { useToolStorage } from '../../hooks/useToolStorage';
-import { GeneratorPanel } from './ToolLayouts';
+import Button from '../../ui/Button';
+import { generatePassword, type PasswordMode } from '../../../lib/tools/crypto/password';
+import { useToolStorage } from '../../../hooks/useToolStorage';
+import { GeneratorPanel } from '../ToolLayouts';
 
 const modeOptions: Array<{ value: PasswordMode; label: string; icon: typeof Shuffle }> = [
 	{ value: 'random', label: '随机', icon: Shuffle },

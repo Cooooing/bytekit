@@ -1,19 +1,19 @@
-import Base64Codec from './Base64Codec';
-import CaseConverter from './CaseConverter';
-import ColorConverter from './ColorConverter';
-import CssMinify from './CssMinify';
-import CsvConverter from './CsvConverter';
-import DiffViewer from './DiffViewer';
-import HashGenerator from './HashGenerator';
-import JsonFormatter from './JsonFormatter';
-import JwtDecoder from './JwtDecoder';
-import MarkdownPreview from './MarkdownPreview';
-import PasswordGenerator from './PasswordGenerator';
-import RegexTester from './RegexTester';
-import TimestampConverter from './TimestampConverter';
-import UrlCodec from './UrlCodec';
-import UuidGenerator from './UuidGenerator';
-import YamlConverter from './YamlConverter';
+import Base64Codec from './encoding/Base64Codec';
+import CaseConverter from './text/CaseConverter';
+import ColorConverter from './text/ColorConverter';
+import CssMinify from './css/CssMinify';
+import CsvConverter from './format/CsvConverter';
+import DiffViewer from './text/DiffViewer';
+import HashGenerator from './developer/HashGenerator';
+import JsonFormatter from './json/JsonFormatter';
+import JwtDecoder from './crypto/JwtDecoder';
+import MarkdownPreview from './text/MarkdownPreview';
+import PasswordGenerator from './crypto/PasswordGenerator';
+import RegexTester from './text/RegexTester';
+import TimestampConverter from './developer/TimestampConverter';
+import UrlCodec from './encoding/UrlCodec';
+import UuidGenerator from './developer/UuidGenerator';
+import YamlConverter from './format/YamlConverter';
 
 export const toolComponents = {
 	base64: Base64Codec,

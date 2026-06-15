@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
-import CodeEditor from '../editor/CodeEditor';
-import Badge from '../ui/Badge';
-import Button from '../ui/Button';
-import ReferencePanel from '../ui/ReferencePanel';
-import { useToolStorage } from '../../hooks/useToolStorage';
-import { decodeJwt } from '../../lib/tools/jwt';
-import { jwtReference } from '../../lib/tools/references';
-import { IoWorkbench } from './ToolLayouts';
+import CodeEditor from '../../editor/CodeEditor';
+import Badge from '../../ui/Badge';
+import Button from '../../ui/Button';
+import ReferencePanel from '../../ui/ReferencePanel';
+import { useToolStorage } from '../../../hooks/useToolStorage';
+import { decodeJwt } from '../../../lib/tools/crypto/jwt';
+import { jwtReference } from '../../../lib/tools/references';
+import { IoWorkbench } from '../ToolLayouts';
 
 const text = {
 	tool: 'JWT 解析工具',

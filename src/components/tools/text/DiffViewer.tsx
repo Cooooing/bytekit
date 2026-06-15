@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import { useToolStorage } from '../../hooks/useToolStorage';
-import { diffLines } from '../../lib/tools/diff';
+import { useToolStorage } from '../../../hooks/useToolStorage';
+import { diffLines } from '../../../lib/tools/text/diff';
 
 export default function DiffViewer() {
 	const [state, setState] = useToolStorage('bytekit:tool:diff:v1', {

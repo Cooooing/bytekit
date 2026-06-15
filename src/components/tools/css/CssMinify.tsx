@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import CodeEditor from '../editor/CodeEditor';
-import Button from '../ui/Button';
-import ReferencePanel from '../ui/ReferencePanel';
-import { useToolStorage } from '../../hooks/useToolStorage';
-import { minifyCss, beautifyCss } from '../../lib/tools/css';
-import { cssReference } from '../../lib/tools/references';
-import { IoWorkbench } from './ToolLayouts';
+import CodeEditor from '../../editor/CodeEditor';
+import Button from '../../ui/Button';
+import ReferencePanel from '../../ui/ReferencePanel';
+import { useToolStorage } from '../../../hooks/useToolStorage';
+import { minifyCss, beautifyCss } from '../../../lib/tools/css/css';
+import { cssReference } from '../../../lib/tools/references';
+import { IoWorkbench } from '../ToolLayouts';
 
 const text = {
 	tool: 'CSS 压缩/美化',

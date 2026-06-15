@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
-import CopyRow from '../ui/CopyRow';
-import ReferencePanel from '../ui/ReferencePanel';
-import { parseColor } from '../../lib/tools/color';
-import { colorReference } from '../../lib/tools/references';
-import { GeneratorPanel } from './ToolLayouts';
+import CopyRow from '../../ui/CopyRow';
+import ReferencePanel from '../../ui/ReferencePanel';
+import { parseColor } from '../../../lib/tools/text/color';
+import { colorReference } from '../../../lib/tools/references';
+import { GeneratorPanel } from '../ToolLayouts';
 
 export default function ColorConverter() {
 	const [input, setInput] = useState('#3B82F6');

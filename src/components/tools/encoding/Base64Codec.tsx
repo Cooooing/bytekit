@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import CodeEditor from '../editor/CodeEditor';
-import Button from '../ui/Button';
-import ReferencePanel from '../ui/ReferencePanel';
-import { useToolStorage } from '../../hooks/useToolStorage';
-import { decodeBase64, encodeBase64 } from '../../lib/tools/base64';
-import { base64Reference } from '../../lib/tools/references';
-import { IoWorkbench } from './ToolLayouts';
+import CodeEditor from '../../editor/CodeEditor';
+import Button from '../../ui/Button';
+import ReferencePanel from '../../ui/ReferencePanel';
+import { useToolStorage } from '../../../hooks/useToolStorage';
+import { decodeBase64, encodeBase64 } from '../../../lib/tools/encoding/base64';
+import { base64Reference } from '../../../lib/tools/references';
+import { IoWorkbench } from '../ToolLayouts';
 
 const text = {
 	tool: 'Base64 编解码工具',

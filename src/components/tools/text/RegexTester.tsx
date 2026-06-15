@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
-import Badge from '../ui/Badge';
-import Button from '../ui/Button';
-import CopyRow from '../ui/CopyRow';
-import ReferencePanel from '../ui/ReferencePanel';
-import { useToolStorage } from '../../hooks/useToolStorage';
-import { testRegex } from '../../lib/tools/regex';
+import Badge from '../../ui/Badge';
+import Button from '../../ui/Button';
+import CopyRow from '../../ui/CopyRow';
+import ReferencePanel from '../../ui/ReferencePanel';
+import { useToolStorage } from '../../../hooks/useToolStorage';
+import { testRegex } from '../../../lib/tools/text/regex';
 
 const flagOptions = [
 	{ flag: 'g', label: '全局匹配', desc: '匹配所有结果，不只第一个' },

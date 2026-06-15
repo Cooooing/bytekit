@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import CodeEditor from '../editor/CodeEditor';
-import Button from '../ui/Button';
-import ReferencePanel from '../ui/ReferencePanel';
-import { useToolStorage } from '../../hooks/useToolStorage';
-import { formatJson, minifyJson, unescapeJson, escapeJson } from '../../lib/tools/json';
-import { jsonReference } from '../../lib/tools/references';
-import { IoWorkbench } from './ToolLayouts';
+import CodeEditor from '../../editor/CodeEditor';
+import Button from '../../ui/Button';
+import ReferencePanel from '../../ui/ReferencePanel';
+import { useToolStorage } from '../../../hooks/useToolStorage';
+import { formatJson, minifyJson, unescapeJson, escapeJson } from '../../../lib/tools/json/json';
+import { jsonReference } from '../../../lib/tools/references';
+import { IoWorkbench } from '../ToolLayouts';
 
 const text = {
 	tool: 'JSON 格式化工具',

@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import CodeEditor from '../editor/CodeEditor';
-import Button from '../ui/Button';
-import { useToolStorage } from '../../hooks/useToolStorage';
-import { jsonToCsv, csvToJson } from '../../lib/tools/csv';
-import { IoWorkbench } from './ToolLayouts';
+import CodeEditor from '../../editor/CodeEditor';
+import Button from '../../ui/Button';
+import { useToolStorage } from '../../../hooks/useToolStorage';
+import { jsonToCsv, csvToJson } from '../../../lib/tools/format/csv';
+import { IoWorkbench } from '../ToolLayouts';
 
 const text = {
 	tool: 'JSON ↔ CSV',
