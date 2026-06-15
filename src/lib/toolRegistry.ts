@@ -241,12 +241,13 @@ export function getToolsByCategory(id: ToolCategoryId) {
 
 // Get the full href with base URL prefix (works across all platforms)
 export function getToolHref(tool: ToolDefinition): string {
-	return import.meta.env.BASE_URL + tool.href;
+	const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+	return base + tool.href;
 }
 
 // Extract tool ID from a full URL pathname (supports both old /tools/id and new /tools/category/id)
 export function getToolIdFromPathname(pathname: string): string {
-	const base = import.meta.env.BASE_URL;
+	const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 	const relative = pathname.startsWith(base) ? pathname.slice(base.length) : pathname;
 	// Match tools/category/id pattern
 	const match = relative.match(/^tools\/([^/]+)\/([^/]+)/);
@@ -262,5 +263,6 @@ export function getToolIdFromPathname(pathname: string): string {
 
 // Check if a pathname is under the tools section
 export function isToolPath(pathname: string): boolean {
-	return pathname.startsWith(import.meta.env.BASE_URL + 'tools/');
+	const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+	return pathname.startsWith(base + 'tools/');
 }

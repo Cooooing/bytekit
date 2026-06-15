@@ -94,7 +94,7 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 			return;
 		}
 
-		window.location.href = import.meta.env.BASE_URL + href;
+		window.location.href = import.meta.env.BASE_URL.replace(/\/?$/, '/') + href;
 	}, []);
 
 	// Scroll active item into view
