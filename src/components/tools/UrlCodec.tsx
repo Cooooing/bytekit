@@ -1,53 +1,78 @@
-import { useMemo } from 'react';
-import CodeEditor from '../editor/CodeEditor';
+import { useMemo, useState } from 'react';
 import Button from '../ui/Button';
+import CopyRow from '../ui/CopyRow';
 import { useToolStorage } from '../../hooks/useToolStorage';
 import { encodeUrl, decodeUrl } from '../../lib/tools/url';
-import { IoWorkbench } from './ToolLayouts';
-
-const text = {
-	tool: 'URL 编解码工具',
-	input: '输入',
-	output: '输出',
-	encode: '编码',
-	decode: '解码',
-	success: '已转换',
-	fail: '转换失败',
-};
+import { GeneratorPanel } from './ToolLayouts';
 
 export default function UrlCodec() {
 	const [state, setState] = useToolStorage('bytekit:tool:url:v1', {
 		input: 'https://example.com/path?name=你好&lang=中文',
-		output: '',
 		lastAction: 'encode' as 'encode' | 'decode',
 	});
-	const { input, output, lastAction } = state;
-	const setInput = (value: string) => setState((current) => ({ ...current, input: value }));
+	const { input, lastAction } = state;
+	const setInput = (v: string) => setState((c) => ({ ...c, input: v }));
 
 	function runAction(action: 'encode' | 'decode') {
-		const result = action === 'encode' ? encodeUrl(input) : decodeUrl(input);
-		setState((current) => ({
-			...current,
-			lastAction: action,
-			output: result.ok
-				? `${action === 'encode' ? '编码' : '解码'}结果:\n${action === 'encode' ? result.encoded : result.decoded}\n\nURL 组件:\n协议: ${result.components.protocol || '(无)'}\n主机: ${result.components.hostname || '(无)'}\n端口: ${result.components.port || '(无)'}\n路径: ${result.components.pathname || '(无)'}\n查询: ${result.components.search || '(无)'}\n哈希: ${result.components.hash || '(无)'}${result.components.params.length > 0 ? '\n\n参数:\n' + result.components.params.map((p) => `  ${p.key} = ${p.value}`).join('\n') : ''}`
-				: result.error,
-		}));
+		setState((c) => ({ ...c, lastAction: action }));
 	}
 
-	const encodeResult = useMemo(() => encodeUrl(input), [input]);
-
-	return (
-		<IoWorkbench
-			ariaLabel={text.tool}
-			actions={(
-				<>
-					<Button variant="primary" onClick={() => runAction('encode')}>{text.encode}</Button>
-					<Button variant="secondary" onClick={() => runAction('decode')}>{text.decode}</Button>
-				</>
-			)}
-			input={<CodeEditor title={text.input} value={input} onChange={setInput} language="text" />}
-			output={<CodeEditor title={text.output} value={output} language="text" status={encodeResult.ok ? 'success' : 'error'} statusText={encodeResult.ok ? text.success : text.fail} error={encodeResult.ok ? undefined : encodeResult.error} />}
-		/>
+	const result = useMemo(() =>
+		lastAction === 'encode' ? encodeUrl(input) : decodeUrl(input),
+		[input, lastAction]
 	);
+
+	const controls = (
+		<div className="password-card password-card--controls">
+			<div className="password-card__section">
+				<h2 className="password-card__title">输入 URL 或文本</h2>
+				<textarea
+					value={input}
+					onChange={(e) => setInput(e.target.value)}
+					placeholder="输入 URL 或要编码/解码的文本"
+					aria-label="输入"
+					rows={3}
+					style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface-subtle)', color: 'var(--text)', fontSize: '0.875rem', resize: 'vertical' }}
+				/>
+				<div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+					<Button variant={lastAction === 'encode' ? 'primary' : 'secondary'} onClick={() => runAction('encode')}>编码</Button>
+					<Button variant={lastAction === 'decode' ? 'primary' : 'secondary'} onClick={() => runAction('decode')}>解码</Button>
+				</div>
+			</div>
+		</div>
+	);
+
+	const resultPanel = (
+		<div className="password-card password-card--result">
+			<h2 className="password-card__title">转换结果</h2>
+			{result.ok ? (
+				<div style={{ display: 'grid', gap: '8px' }}>
+					<CopyRow label={lastAction === 'encode' ? '编码' : '解码'} value={lastAction === 'encode' ? result.encoded : result.decoded} />
+					{result.components.hostname && (
+						<>
+							<div style={{ fontSize: '0.8125rem', fontWeight: 650, color: 'var(--muted)', marginTop: '4px' }}>URL 组件</div>
+							<CopyRow label="协议" value={result.components.protocol} />
+							<CopyRow label="主机" value={result.components.hostname} />
+							{result.components.port && <CopyRow label="端口" value={result.components.port} />}
+							<CopyRow label="路径" value={result.components.pathname} />
+							{result.components.search && <CopyRow label="查询" value={result.components.search} />}
+							{result.components.hash && <CopyRow label="哈希" value={result.components.hash} />}
+							{result.components.params.length > 0 && (
+								<>
+									<div style={{ fontSize: '0.8125rem', fontWeight: 650, color: 'var(--muted)', marginTop: '4px' }}>查询参数</div>
+									{result.components.params.map((p, i) => (
+										<CopyRow key={i} label={p.key} value={p.value} />
+									))}
+								</>
+							)}
+						</>
+					)}
+				</div>
+			) : (
+				<div style={{ color: 'var(--semantic-danger)' }}>{result.error}</div>
+			)}
+		</div>
+	);
+
+	return <GeneratorPanel ariaLabel="URL 编解码工具" controls={controls} result={resultPanel} />;
 }

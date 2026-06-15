@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import Button from '../ui/Button';
-import { parseTimestamp, now } from '../../lib/tools/timestamp';
+import CopyRow from '../ui/CopyRow';
+import { parseTimestamp } from '../../lib/tools/timestamp';
 import { GeneratorPanel } from './ToolLayouts';
 
 export default function TimestampConverter() {
@@ -40,11 +41,11 @@ export default function TimestampConverter() {
 		<div className="password-card password-card--result">
 			<h2 className="password-card__title">转换结果</h2>
 			{result.ok ? (
-				<div style={{ display: 'grid', gap: '8px', fontSize: '0.875rem' }}>
-					<div><strong>Unix:</strong> {result.unix}</div>
-					<div><strong>ISO:</strong> {result.iso}</div>
-					<div><strong>本地:</strong> {result.local}</div>
-					<div><strong>UTC:</strong> {result.utc}</div>
+				<div style={{ display: 'grid', gap: '6px' }}>
+					<CopyRow label="Unix" value={String(result.unix)} />
+					<CopyRow label="ISO" value={result.iso} />
+					<CopyRow label="本地" value={result.local} />
+					<CopyRow label="UTC" value={result.utc} />
 				</div>
 			) : (
 				<div style={{ color: 'var(--semantic-danger)' }}>{result.error}</div>

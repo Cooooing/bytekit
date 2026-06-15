@@ -1,15 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
-import CodeEditor from '../editor/CodeEditor';
+import CopyRow from '../ui/CopyRow';
 import { useToolStorage } from '../../hooks/useToolStorage';
 import { computeHashes, type HashAlgorithm } from '../../lib/tools/hash';
-import { IoWorkbench } from './ToolLayouts';
-
-const text = {
-	tool: 'Hash 生成器',
-	input: '输入',
-	output: '结果',
-	waiting: '输入内容后自动计算',
-};
+import { GeneratorPanel } from './ToolLayouts';
 
 const algorithms: HashAlgorithm[] = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
 
@@ -26,16 +19,36 @@ export default function HashGenerator() {
 		});
 	}, [input]);
 
-	const output = input
-		? algorithms.map((algo) => `${algo}:\n${hashes[algo] ?? '...'}`).join('\n\n')
-		: '';
-
-	return (
-		<IoWorkbench
-			ariaLabel={text.tool}
-			actions={<span style={{ fontSize: '0.8125rem', color: 'var(--muted)' }}>{text.waiting}</span>}
-			input={<CodeEditor title={text.input} value={input} onChange={setInput} language="text" minHeight="compact" />}
-			output={<CodeEditor title={text.output} value={output} language="text" minHeight="compact" />}
-		/>
+	const controls = (
+		<div className="password-card password-card--controls">
+			<div className="password-card__section">
+				<h2 className="password-card__title">输入内容</h2>
+				<textarea
+					value={input}
+					onChange={(e) => setInput(e.target.value)}
+					placeholder="输入要计算哈希的内容"
+					aria-label="输入内容"
+					rows={4}
+					style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface-subtle)', color: 'var(--text)', fontFamily: 'monospace', fontSize: '0.875rem', resize: 'vertical' }}
+				/>
+			</div>
+		</div>
 	);
+
+	const resultPanel = (
+		<div className="password-card password-card--result">
+			<h2 className="password-card__title">哈希结果</h2>
+			{input ? (
+				<div style={{ display: 'grid', gap: '6px' }}>
+					{algorithms.map((algo) => (
+						<CopyRow key={algo} label={algo} value={hashes[algo] ?? '...'} />
+					))}
+				</div>
+			) : (
+				<div style={{ color: 'var(--muted)', fontSize: '0.875rem' }}>输入内容后自动计算。</div>
+			)}
+		</div>
+	);
+
+	return <GeneratorPanel ariaLabel="Hash 生成器" controls={controls} result={resultPanel} />;
 }

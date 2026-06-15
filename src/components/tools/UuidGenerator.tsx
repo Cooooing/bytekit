@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import Button from '../ui/Button';
+import CopyRow from '../ui/CopyRow';
 import { generateUuidV4, generateBatch } from '../../lib/tools/uuid';
 import { GeneratorPanel } from './ToolLayouts';
 
 export default function UuidGenerator() {
 	const [count, setCount] = useState(1);
 	const [results, setResults] = useState<string[]>([generateUuidV4()]);
-	const [notice, setNotice] = useState('');
+	const [copied, setCopied] = useState(false);
 
 	function generate() {
 		setResults(generateBatch(count));
@@ -15,9 +16,10 @@ export default function UuidGenerator() {
 	async function copyAll() {
 		try {
 			await navigator.clipboard.writeText(results.join('\n'));
-			setNotice('已复制');
+			setCopied(true);
+			setTimeout(() => setCopied(false), 1400);
 		} catch {
-			setNotice('复制失败');
+			// ignore
 		}
 	}
 
@@ -47,9 +49,8 @@ export default function UuidGenerator() {
 				</div>
 				<div style={{ display: 'flex', gap: '8px' }}>
 					<Button variant="primary" onClick={generate}>生成</Button>
-					<Button variant="secondary" onClick={copyAll}>复制全部</Button>
+					<Button variant="secondary" onClick={copyAll}>{copied ? '已复制' : '复制'}</Button>
 				</div>
-				{notice ? <span className="password-notice">{notice}</span> : null}
 			</div>
 		</div>
 	);
@@ -57,9 +58,9 @@ export default function UuidGenerator() {
 	const resultPanel = (
 		<div className="password-card password-card--result">
 			<h2 className="password-card__title">结果</h2>
-			<div style={{ fontFamily: 'monospace', fontSize: '0.875rem', lineHeight: 1.8, wordBreak: 'break-all' }}>
+			<div style={{ display: 'grid', gap: '4px' }}>
 				{results.map((uuid, i) => (
-					<div key={i}>{uuid}</div>
+					<CopyRow key={i} label={`#${i + 1}`} value={uuid} />
 				))}
 			</div>
 		</div>
