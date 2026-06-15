@@ -1,8 +1,17 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Badge from '../ui/Badge';
 import CopyRow from '../ui/CopyRow';
 import { useToolStorage } from '../../hooks/useToolStorage';
 import { testRegex } from '../../lib/tools/regex';
+
+const flagOptions = [
+	{ flag: 'g', label: '全局匹配', desc: '匹配所有结果，不只第一个' },
+	{ flag: 'i', label: '忽略大小写', desc: '不区分大小写字母' },
+	{ flag: 'm', label: '多行模式', desc: '^ 和 $ 匹配每行的开头/结尾' },
+	{ flag: 's', label: 'DotAll', desc: '. 匹配换行符 \\n' },
+	{ flag: 'u', label: 'Unicode', desc: '启用 Unicode 模式' },
+	{ flag: 'y', label: 'Sticky', desc: '从 lastIndex 位置精确匹配' },
+];
 
 export default function RegexTester() {
 	const [state, setState] = useToolStorage('bytekit:tool:regex:v1', {
@@ -14,6 +23,10 @@ export default function RegexTester() {
 	const setInput = (v: string) => setState((c) => ({ ...c, input: v }));
 	const setPattern = (v: string) => setState((c) => ({ ...c, pattern: v }));
 	const setFlags = (v: string) => setState((c) => ({ ...c, flags: v }));
+
+	function toggleFlag(flag: string) {
+		setFlags(flags.includes(flag) ? flags.replace(flag, '') : flags + flag);
+	}
 
 	const result = useMemo(() => testRegex(pattern, flags, input), [pattern, flags, input]);
 
@@ -36,8 +49,8 @@ export default function RegexTester() {
 		<div className="regex-tester">
 			<div className="regex-tester__pattern">
 				<h2 className="password-card__title">正则表达式</h2>
-				<div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-					<span style={{ color: 'var(--muted)', fontFamily: 'monospace' }}>/</span>
+				<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+					<span style={{ color: 'var(--muted)', fontFamily: 'monospace', fontSize: '1.1rem' }}>/</span>
 					<input
 						type="text"
 						value={pattern}
@@ -46,16 +59,27 @@ export default function RegexTester() {
 						aria-label="正则表达式"
 						style={{ flex: 1, padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface-subtle)', color: 'var(--text)', fontFamily: 'monospace', fontSize: '0.9375rem' }}
 					/>
-					<span style={{ color: 'var(--muted)', fontFamily: 'monospace' }}>/</span>
-					<input
-						type="text"
-						value={flags}
-						onChange={(e) => setFlags(e.target.value)}
-						placeholder="g"
-						aria-label="正则标志"
-						style={{ width: '3rem', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface-subtle)', color: 'var(--text)', fontFamily: 'monospace', fontSize: '0.9375rem' }}
-					/>
+					<span style={{ color: 'var(--muted)', fontFamily: 'monospace', fontSize: '1.1rem' }}>/</span>
+					<span style={{ color: 'var(--muted)', fontFamily: 'monospace', fontSize: '0.875rem', minWidth: '2rem' }}>{flags}</span>
 					{result.ok ? <Badge tone="success">{result.count} 个匹配</Badge> : <Badge tone="danger">错误</Badge>}
+				</div>
+				<div className="regex-flags">
+					{flagOptions.map((opt) => (
+						<label
+							key={opt.flag}
+							className={`regex-flag ${flags.includes(opt.flag) ? 'regex-flag--active' : ''}`}
+							title={opt.desc}
+						>
+							<input
+								type="checkbox"
+								checked={flags.includes(opt.flag)}
+								onChange={() => toggleFlag(opt.flag)}
+								className="sr-only"
+							/>
+							<span className="regex-flag__code">{opt.flag}</span>
+							<span className="regex-flag__label">{opt.label}</span>
+						</label>
+					))}
 				</div>
 			</div>
 

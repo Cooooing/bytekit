@@ -1170,6 +1170,63 @@ textarea:focus-visible {
 	padding: 1px 2px;
 }
 
+.regex-flags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+}
+
+.regex-flag {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 10px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: transparent;
+	cursor: pointer;
+	font-size: 0.8125rem;
+	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.regex-flag:hover {
+	background: var(--surface-muted);
+}
+
+.regex-flag--active {
+	background: var(--primary-soft);
+	border-color: var(--accent-primary);
+	color: var(--accent-primary-hover);
+}
+
+.regex-flag__code {
+	font-family: monospace;
+	font-weight: 700;
+	font-size: 0.875rem;
+	min-width: 1rem;
+	text-align: center;
+}
+
+.regex-flag__label {
+	color: var(--muted);
+	font-size: 0.75rem;
+}
+
+.regex-flag--active .regex-flag__label {
+	color: var(--accent-primary-hover);
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+}
+
 .copy-row {
 	display: flex;
 	align-items: center;
