@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import CopyRow from '../../ui/CopyRow';
 import ReferencePanel from '../../ui/ReferencePanel';
+import ToolWithReference from '../ToolWithReference';
 import { parseColor } from '../../../lib/tools/text/color';
 import { colorReference } from '../../../lib/tools/references';
 import { GeneratorPanel } from '../ToolLayouts';
@@ -59,6 +60,9 @@ export default function ColorConverter() {
 	);
 
 	return (
-		<GeneratorPanel ariaLabel="颜色转换工具" controls={controls} result={resultPanel} reference={<ReferencePanel title="颜色格式参考" sections={colorReference} />} />
+		<ToolWithReference
+			main={<GeneratorPanel ariaLabel="颜色转换工具" controls={controls} result={resultPanel} />}
+			reference={<ReferencePanel title="颜色格式参考" sections={colorReference} />}
+		/>
 	);
 }

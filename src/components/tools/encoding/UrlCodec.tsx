@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import Button from '../../ui/Button';
 import CopyRow from '../../ui/CopyRow';
 import ReferencePanel from '../../ui/ReferencePanel';
+import ToolWithReference from '../ToolWithReference';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { encodeUrl, decodeUrl } from '../../../lib/tools/encoding/url';
 import { urlReference } from '../../../lib/tools/references';
@@ -77,6 +78,9 @@ export default function UrlCodec() {
 	);
 
 	return (
-		<GeneratorPanel ariaLabel="URL 编解码工具" controls={controls} result={resultPanel} reference={<ReferencePanel title="URL 编码参考" sections={urlReference} />} />
+		<ToolWithReference
+			main={<GeneratorPanel ariaLabel="URL 编解码工具" controls={controls} result={resultPanel} />}
+			reference={<ReferencePanel title="URL 编码参考" sections={urlReference} />}
+		/>
 	);
 }

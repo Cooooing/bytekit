@@ -1196,6 +1196,22 @@ textarea:focus-visible {
 	top: calc(3.75rem + var(--layout-page-block) + var(--space-4));
 }
 
+.tool-with-ref {
+	display: grid;
+	grid-template-columns: 1fr minmax(16rem, 20rem);
+	gap: var(--space-4);
+	align-items: start;
+}
+
+.tool-with-ref__main {
+	min-width: 0;
+}
+
+.tool-with-ref__ref {
+	position: sticky;
+	top: calc(3.75rem + var(--layout-page-block) + var(--space-4));
+}
+
 .regex-flags {
 	display: flex;
 	flex-wrap: wrap;
@@ -1598,11 +1614,13 @@ textarea:focus-visible {
 }
 
 @media (max-width: 64rem) {
-	.regex-layout {
+	.regex-layout,
+	.tool-with-ref {
 		grid-template-columns: 1fr;
 	}
 
-	.regex-layout__ref {
+	.regex-layout__ref,
+	.tool-with-ref__ref {
 		position: static;
 	}
 

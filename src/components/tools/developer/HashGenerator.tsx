@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import CopyRow from '../../ui/CopyRow';
 import ReferencePanel from '../../ui/ReferencePanel';
+import ToolWithReference from '../ToolWithReference';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { computeHashes, type HashAlgorithm } from '../../../lib/tools/developer/hash';
 import { hashReference } from '../../../lib/tools/references';
@@ -53,6 +54,9 @@ export default function HashGenerator() {
 	);
 
 	return (
-		<GeneratorPanel ariaLabel="Hash 生成器" controls={controls} result={resultPanel} reference={<ReferencePanel title="Hash 算法参考" sections={hashReference} />} />
+		<ToolWithReference
+			main={<GeneratorPanel ariaLabel="Hash 生成器" controls={controls} result={resultPanel} />}
+			reference={<ReferencePanel title="Hash 算法参考" sections={hashReference} />}
+		/>
 	);
 }
