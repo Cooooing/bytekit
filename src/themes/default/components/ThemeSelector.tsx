@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { Paintbrush } from 'lucide-react';
 import { getAvailableThemes } from '../../ThemeContext';
 
 interface ThemeSelectorProps {
@@ -28,7 +29,7 @@ export default function ThemeSelector({ currentTheme, onThemeChange }: ThemeSele
 				aria-label="切换主题"
 				title="切换主题"
 			>
-				🎨
+				<Paintbrush size={17} strokeWidth={2} aria-hidden="true" />
 			</button>
 			{isOpen && (
 				<div className="theme-selector__dropdown">
