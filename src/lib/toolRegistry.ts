@@ -1,4 +1,4 @@
-export type ToolCategoryId = 'encoding' | 'crypto' | 'json';
+export type ToolCategoryId = 'encoding' | 'crypto' | 'json' | 'developer' | 'text';
 export type ToolLayout = 'io' | 'single';
 
 export interface ToolCategory {
@@ -21,6 +21,12 @@ export interface ToolDefinition {
 
 export const toolCategories: ToolCategory[] = [
 	{
+		id: 'developer',
+		name: '开发工具',
+		description: '时间戳、UUID、Hash 等常用开发辅助工具。',
+		icon: 'settings',
+	},
+	{
 		id: 'encoding',
 		name: '编码/解码',
 		description: '常见文本编码、解码和格式转换。',
@@ -38,9 +44,65 @@ export const toolCategories: ToolCategory[] = [
 		description: 'JSON 格式化、压缩和结构处理。',
 		icon: 'file-json',
 	},
+	{
+		id: 'text',
+		name: '文本处理',
+		description: '颜色转换、文本对比等文本处理工具。',
+		icon: 'palette',
+	},
 ];
 
 export const tools: ToolDefinition[] = [
+	{
+		id: 'timestamp',
+		href: 'tools/timestamp',
+		name: '时间戳转换',
+		shortName: '时间戳',
+		description: 'Unix 时间戳与日期时间互转，支持多时区。',
+		category: 'developer',
+		keywords: ['timestamp', 'unix', '时间戳', '日期', 'date', 'time', 'epoch'],
+		layout: 'single',
+	},
+	{
+		id: 'uuid',
+		href: 'tools/uuid',
+		name: 'UUID 生成器',
+		shortName: 'UUID',
+		description: '一键生成 v4 随机 UUID。',
+		category: 'developer',
+		keywords: ['uuid', 'guid', 'unique', '生成', 'generate', '随机'],
+		layout: 'single',
+	},
+	{
+		id: 'hash',
+		href: 'tools/hash',
+		name: 'Hash 生成器',
+		shortName: 'Hash',
+		description: '计算 MD5、SHA-1、SHA-256、SHA-512 哈希值。',
+		category: 'developer',
+		keywords: ['hash', 'md5', 'sha', 'sha256', 'sha512', '哈希', '摘要', 'digest'],
+		layout: 'io',
+	},
+	{
+		id: 'color',
+		href: 'tools/color',
+		name: '颜色转换',
+		shortName: '颜色',
+		description: 'HEX、RGB、HSL 颜色格式互转，实时预览。',
+		category: 'text',
+		keywords: ['color', 'hex', 'rgb', 'hsl', '颜色', '色彩', '拾色器'],
+		layout: 'single',
+	},
+	{
+		id: 'url',
+		href: 'tools/url',
+		name: 'URL 编解码',
+		shortName: 'URL',
+		description: 'URL 编码/解码及组件解析。',
+		category: 'encoding',
+		keywords: ['url', 'encode', 'decode', 'encodeuri', '编解码', '网址'],
+		layout: 'io',
+	},
 	{
 		id: 'json',
 		href: 'tools/json',
