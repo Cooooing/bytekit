@@ -1,19 +1,18 @@
 ---
 import ToolApp from '../../components/tools/ToolApp';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getToolById } from '../../lib/toolRegistry';
+import { getToolById, tools } from '../../lib/toolRegistry';
 
-const { tool: toolId } = Astro.params;
+export const prerender = true;
 
-const tool = getToolById(toolId ?? '');
-
-if (!tool) {
-	return new Response('工具不存在', { status: 404 });
+export function getStaticPaths() {
+	return tools.map((tool) => ({ params: { tool: tool.id } }));
 }
 
-export const prerender = false;
+const { tool: toolId } = Astro.params;
+const tool = getToolById(toolId ?? '');
 ---
 
-<BaseLayout title={`${tool.name} - Bytekit`} description={tool.description}>
-	<ToolApp client:load initialToolId={tool.id} />
+<BaseLayout title={`${tool?.name ?? '工具'} - Bytekit`} description={tool?.description ?? ''}>
+	<ToolApp client:load initialToolId={tool?.id ?? 'json'} />
 </BaseLayout>
