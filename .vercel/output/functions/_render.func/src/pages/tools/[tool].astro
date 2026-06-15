@@ -1,0 +1,19 @@
+---
+import ToolApp from '../../components/tools/ToolApp';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getToolById } from '../../lib/toolRegistry';
+
+const { tool: toolId } = Astro.params;
+
+const tool = getToolById(toolId ?? '');
+
+if (!tool) {
+	return new Response('工具不存在', { status: 404 });
+}
+
+export const prerender = false;
+---
+
+<BaseLayout title={`${tool.name} - Bytekit`} description={tool.description}>
+	<ToolApp client:load initialToolId={tool.id} />
+</BaseLayout>
