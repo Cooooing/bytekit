@@ -528,6 +528,9 @@ textarea:focus-visible {
 }
 
 .tool-app-shell {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: var(--space-4);
 	min-width: 0;
 }
 
@@ -536,7 +539,6 @@ textarea:focus-visible {
 	display: grid;
 	gap: var(--space-4);
 	align-content: start;
-	contain: content;
 }
 
 .tool-app-head {
@@ -547,9 +549,8 @@ textarea:focus-visible {
 }
 
 .tool-sidebar {
-	position: fixed;
+	position: sticky;
 	top: calc(3.75rem + var(--layout-page-block));
-	z-index: 20;
 	display: grid;
 	grid-template-rows: auto 1fr;
 	gap: var(--space-2);
@@ -564,7 +565,7 @@ textarea:focus-visible {
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
 	box-shadow: var(--shadow-panel);
-	transition: width 0.25s ease, padding 0.25s ease, opacity 0.25s ease;
+	transition: width 0.25s ease, padding 0.25s ease;
 }
 
 .tool-sidebar--collapsed {
@@ -572,30 +573,11 @@ textarea:focus-visible {
 	padding: 0;
 	border: none;
 	opacity: 0;
-	pointer-events: none;
+	overflow: hidden;
 }
 
 .tool-sidebar__toggle-float {
-	position: fixed;
-	top: calc(3.75rem + var(--layout-page-block) + var(--space-3));
-	left: var(--space-3);
-	z-index: 21;
-	display: grid;
-	place-items: center;
-	width: 2rem;
-	height: 2rem;
-	border-radius: 50%;
-	background: var(--surface);
-	border: 1px solid var(--border);
-	color: var(--muted);
-	cursor: pointer;
-	box-shadow: var(--shadow-panel);
-	transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.tool-sidebar__toggle-float:hover {
-	background: var(--surface-muted);
-	color: var(--text);
+	display: none;
 }
 
 .tool-sidebar__head {
