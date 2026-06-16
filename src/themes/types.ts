@@ -72,10 +72,15 @@ export interface GeneratorPanelProps {
 	controls: ReactNode;
 	result: ReactNode;
 	actions?: ReactNode;
+	reference?: ReactNode;
 	ariaLabel: string;
 }
 
 // ─── Shell Types ───
+
+export interface AppShellProps {
+	initialToolId: string;
+}
 
 export interface ToolSidebarProps {
 	activeToolId: string;
@@ -89,16 +94,22 @@ export interface ToolSearchProps {
 // ─── Theme Registry ───
 
 export interface ThemeComponents {
+	// ──── Required: Core UI primitive ────
 	Button: React.ComponentType<ButtonProps>;
-	Badge: React.ComponentType<BadgeProps>;
-	CopyRow: React.ComponentType<CopyRowProps>;
-	ReferencePanel: React.ComponentType<ReferencePanelProps>;
-	CodeEditor: React.ComponentType<CodeEditorProps>;
-	IoWorkbench: React.ComponentType<IoWorkbenchProps>;
-	GeneratorPanel: React.ComponentType<GeneratorPanelProps>;
+
+	// ──── Required: Navigation & Shell ────
+	AppShell: React.ComponentType<AppShellProps>;
 	ToolSidebar: React.ComponentType<ToolSidebarProps>;
 	ToolSearch: React.ComponentType<ToolSearchProps>;
 	ThemeSelector: React.ComponentType;
+
+	// ──── Optional overrides: shared defaults provided ────
+	Badge?: React.ComponentType<BadgeProps>;
+	CopyRow?: React.ComponentType<CopyRowProps>;
+	ReferencePanel?: React.ComponentType<ReferencePanelProps>;
+	CodeEditor?: React.ComponentType<CodeEditorProps>;
+	IoWorkbench?: React.ComponentType<IoWorkbenchProps>;
+	GeneratorPanel?: React.ComponentType<GeneratorPanelProps>;
 }
 
 export interface ThemeDefinition {

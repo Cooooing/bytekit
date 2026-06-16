@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import CopyRow from '../../ui/CopyRow';
 import ReferencePanel from '../../ui/ReferencePanel';
-import ToolWithReference from '../ToolWithReference';
+import ToolWithReference from '../../shared/ToolWithReference';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { computeHashes, type HashAlgorithm } from '../../../lib/tools/developer/hash';
 import { hashReference } from '../../../lib/tools/references';
-import { GeneratorPanel } from '../ToolLayouts';
+import GeneratorPanel from '../../shared/layouts/GeneratorPanel';
 
 const algorithms: HashAlgorithm[] = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
 

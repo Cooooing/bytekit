@@ -1,24 +1,42 @@
-import { useState, useEffect } from 'react';
-import ThemeSelector from './default/components/ThemeSelector';
+import { useState, useEffect, type ReactNode } from 'react';
+import { ThemeProvider } from './ThemeContext';
 
 const THEME_KEY = 'bytekit-theme-id';
 
 function readTheme(): string {
 	if (typeof window === 'undefined') return 'default';
 	try {
-		return window.localStorage.getItem(THEME_KEY) ?? 'default';
+		return localStorage.getItem(THEME_KEY) || 'default';
 	} catch {
 		return 'default';
 	}
 }
 
-export default function ThemeManager() {
+interface ThemeManagerProps {
+	children: ReactNode;
+}
+
+export default function ThemeManager({ children }: ThemeManagerProps) {
 	const [themeId, setThemeId] = useState(readTheme);
 
 	useEffect(() => {
-		window.localStorage.setItem(THEME_KEY, themeId);
+		try {
+			localStorage.setItem(THEME_KEY, themeId);
+		} catch {
+			// localStorage may be unavailable (Safari private browsing, etc.)
+		}
 		document.documentElement.dataset.themeId = themeId;
 	}, [themeId]);
 
-	return <ThemeSelector currentTheme={themeId} onThemeChange={setThemeId} />;
+	// Listen for theme change events from ThemeSelector
+	useEffect(() => {
+		const handler = (e: Event) => {
+			const customEvent = e as CustomEvent<string>;
+			setThemeId(customEvent.detail);
+		};
+		window.addEventListener('bytekit:change-theme', handler);
+		return () => window.removeEventListener('bytekit:change-theme', handler);
+	}, []);
+
+	return <ThemeProvider themeId={themeId}>{children}</ThemeProvider>;
 }

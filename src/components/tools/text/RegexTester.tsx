@@ -3,7 +3,7 @@ import Badge from '../../ui/Badge';
 import Button from '../../ui/Button';
 import CopyRow from '../../ui/CopyRow';
 import ReferencePanel from '../../ui/ReferencePanel';
-import ToolWithReference from '../ToolWithReference';
+import ToolWithReference from '../../shared/ToolWithReference';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { testRegex } from '../../../lib/tools/text/regex';
 

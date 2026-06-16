@@ -6,7 +6,7 @@ import ReferencePanel from '../../ui/ReferencePanel';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { decodeJwt } from '../../../lib/tools/crypto/jwt';
 import { jwtReference } from '../../../lib/tools/references';
-import { IoWorkbench } from '../ToolLayouts';
+import IoWorkbench from '../../shared/layouts/IoWorkbench';
 
 const text = {
 	tool: 'JWT 解析工具',

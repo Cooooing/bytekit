@@ -5,7 +5,7 @@ import ReferencePanel from '../../ui/ReferencePanel';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { formatJson, minifyJson, unescapeJson, escapeJson } from '../../../lib/tools/json/json';
 import { jsonReference } from '../../../lib/tools/references';
-import { IoWorkbench } from '../ToolLayouts';
+import IoWorkbench from '../../shared/layouts/IoWorkbench';
 
 const text = {
 	tool: 'JSON 格式化工具',

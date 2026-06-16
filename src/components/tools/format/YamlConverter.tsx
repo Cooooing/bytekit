@@ -3,7 +3,7 @@ import CodeEditor from '../../editor/CodeEditor';
 import Button from '../../ui/Button';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { jsonToYaml, yamlToJson } from '../../../lib/tools/format/yaml';
-import { IoWorkbench } from '../ToolLayouts';
+import IoWorkbench from '../../shared/layouts/IoWorkbench';
 
 const text = {
 	tool: 'JSON ↔ YAML',

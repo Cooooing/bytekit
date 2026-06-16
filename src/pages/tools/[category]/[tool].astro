@@ -1,7 +1,7 @@
 ---
-import ToolApp from '../../../components/tools/ToolApp';
+import AppShell from '../../../themes/default/components/AppShell';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { getToolById, tools } from '../../../lib/toolRegistry';
+import { getToolById, tools } from '../../../tools/registry';
 
 export const prerender = true;
 
@@ -17,5 +17,5 @@ const tool = tools.find((t) => t.href === `tools/${category}/${toolSlug}`);
 ---
 
 <BaseLayout title={`${tool?.name ?? '工具'} - Bytekit`} description={tool?.description ?? ''}>
-	<ToolApp client:load initialToolId={tool?.id ?? 'json'} />
+	<AppShell client:load initialToolId={tool?.id ?? 'json'} />
 </BaseLayout>

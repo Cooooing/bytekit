@@ -2,7 +2,7 @@ import MiniSearch from 'minisearch';
 import { Search } from 'lucide-react';
 import { pinyin } from 'pinyin-pro';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getCategoryById, getToolHref, getToolIdFromPathname, isToolPath, tools } from '../../../lib/toolRegistry';
+import { getCategoryById, getToolHref, getToolIdFromPathname, isToolPath, tools } from '../../../tools/registry';
 
 interface ToolSearchProps {
 	variant?: 'header' | 'hero' | 'sidebar';
@@ -94,7 +94,7 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 			return;
 		}
 
-		window.location.href = import.meta.env.BASE_URL + href;
+		window.location.href = import.meta.env.BASE_URL.replace(/\/?$/, '/') + href;
 	}, []);
 
 	// Scroll active item into view

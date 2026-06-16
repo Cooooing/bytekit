@@ -1,7 +1,7 @@
 import { Star } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useFavorites } from '../../hooks/useFavorites';
-import { getToolsByCategory, toolCategories, tools, type ToolCategoryId, type ToolDefinition } from '../../lib/toolRegistry';
+import { getToolsByCategory, toolCategories, tools, type ToolCategoryId, type ToolDefinition } from '../../tools/registry';
 
 type ActiveTab = 'all' | 'favorites' | ToolCategoryId;
 

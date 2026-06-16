@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { marked } from 'marked';
 import CodeEditor from '../../editor/CodeEditor';
 import { useToolStorage } from '../../../hooks/useToolStorage';
-import { IoWorkbench } from '../ToolLayouts';
+import IoWorkbench from '../../shared/layouts/IoWorkbench';
 
 const text = {
 	tool: 'Markdown 预览',

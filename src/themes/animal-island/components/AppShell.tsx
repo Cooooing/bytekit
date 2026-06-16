@@ -1,19 +1,16 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getToolById, getToolHref, getToolIdFromPathname, isToolPath, tools } from '../../lib/toolRegistry';
-import ToolSidebar from './ToolSidebar';
-import { toolComponents, type ToolComponentId } from './toolComponents';
+import { useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react';
+import type { AppShellProps } from '../../types';
+import { getToolById, getToolHref, getToolIdFromPathname, tools } from '../../../tools/registry';
+import { useTheme } from '../../ThemeContext';
+import { toolComponents } from '../../../tools/components';
 
-interface ToolAppProps {
-	initialToolId: string;
-}
-
-export default function ToolApp({ initialToolId }: ToolAppProps) {
+export default function AppShell({ initialToolId }: AppShellProps) {
 	const [activeToolId, setActiveToolId] = useState(initialToolId);
 	const activeToolIdRef = useRef(activeToolId);
 	const activeTool = useMemo(() => getToolById(activeToolId) ?? tools[0], [activeToolId]);
-	const ToolComponent = toolComponents[activeTool.id as ToolComponentId];
+	const ToolComponent = toolComponents[activeTool.id];
+	const { ToolSidebar } = useTheme();
 
-	// Keep ref in sync with state
 	useEffect(() => {
 		activeToolIdRef.current = activeToolId;
 	}, [activeToolId]);
@@ -21,7 +18,6 @@ export default function ToolApp({ initialToolId }: ToolAppProps) {
 	const selectTool = useCallback((toolId: string) => {
 		const nextTool = getToolById(toolId);
 		if (!nextTool || toolId === activeToolIdRef.current) return;
-
 		setActiveToolId(toolId);
 		window.history.pushState({ toolId }, '', getToolHref(nextTool));
 		document.title = `${nextTool.name} - Bytekit`;
@@ -32,12 +28,10 @@ export default function ToolApp({ initialToolId }: ToolAppProps) {
 			const nextToolId = getToolIdFromPathname(window.location.pathname);
 			if (getToolById(nextToolId)) setActiveToolId(nextToolId);
 		}
-
 		function handleSelectTool(event: Event) {
 			const customEvent = event as CustomEvent<{ toolId: string }>;
 			selectTool(customEvent.detail.toolId);
 		}
-
 		window.addEventListener('popstate', handlePopState);
 		window.addEventListener('bytekit:select-tool', handleSelectTool);
 		return () => {
@@ -56,7 +50,9 @@ export default function ToolApp({ initialToolId }: ToolAppProps) {
 						<p className="page-desc">{activeTool.description}</p>
 					</div>
 				</header>
-				{ToolComponent ? <ToolComponent /> : <div className="state-box">工具组件未注册。</div>}
+				<Suspense fallback={<div className="state-box">加载中...</div>}>
+					{ToolComponent ? <ToolComponent /> : <div className="state-box">工具组件未注册。</div>}
+				</Suspense>
 			</section>
 		</div>
 	);

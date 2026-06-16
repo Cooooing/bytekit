@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import FloatingPanel from '../ui/FloatingPanel';
+import FloatingPanel from './ui/FloatingPanel';
 
 interface ToolWithReferenceProps {
 	main: ReactNode;

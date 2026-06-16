@@ -1,6 +1,6 @@
 ---
-import ThemeManager from '../../themes/ThemeManager';
-import ToolSearch from '../search/ToolSearch';
+import ThemeSelector from '../../themes/default/components/ThemeSelector';
+import ToolSearch from '../../themes/default/components/ToolSearch';
 import ThemeToggle from './ThemeToggle';
 ---
 
@@ -17,7 +17,7 @@ import ThemeToggle from './ThemeToggle';
 			<ToolSearch client:load variant="header" />
 		</div>
 		<div class="site-header__actions">
-			<ThemeManager client:load />
+			<ThemeSelector client:load />
 			<ThemeToggle client:load />
 		</div>
 	</div>

@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import AppHeader from '../components/shell/AppHeader.astro';
+import ThemeManager from '../themes/ThemeManager';
 
 interface Props {
 	title: string;
@@ -35,9 +36,11 @@ const { title, description = 'Bytekit 开发工具站' } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
-		<AppHeader />
-		<main class="site-main">
-			<slot />
-		</main>
+		<ThemeManager client:load>
+			<AppHeader />
+			<main class="site-main">
+				<slot />
+			</main>
+		</ThemeManager>
 	</body>
 </html>

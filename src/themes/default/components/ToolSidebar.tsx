@@ -1,6 +1,6 @@
 import { ChevronLeft, ChevronDown } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { getToolsByCategory, toolCategories, tools } from '../../../lib/toolRegistry';
+import { getToolsByCategory, toolCategories, tools } from '../../../tools/registry';
 
 interface ToolSidebarProps {
 	activeToolId: string;

@@ -5,7 +5,7 @@ import ReferencePanel from '../../ui/ReferencePanel';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { decodeBase64, encodeBase64 } from '../../../lib/tools/encoding/base64';
 import { base64Reference } from '../../../lib/tools/references';
-import { IoWorkbench } from '../ToolLayouts';
+import IoWorkbench from '../../shared/layouts/IoWorkbench';
 
 const text = {
 	tool: 'Base64 编解码工具',

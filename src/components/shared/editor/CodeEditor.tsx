@@ -6,8 +6,8 @@ import { html } from '@codemirror/lang-html';
 import { javascript } from '@codemirror/lang-javascript';
 import { json } from '@codemirror/lang-json';
 import { EditorView } from '@codemirror/view';
-import Badge, { type BadgeTone } from './Badge';
-import Button from './Button';
+import Badge, { type BadgeTone } from '../ui/Badge';
+import { useTheme } from '../../../themes/ThemeContext';
 
 export type CodeEditorLanguage = 'text' | 'json' | 'javascript' | 'html' | 'css';
 export type CodeEditorStatus = 'neutral' | 'success' | 'error';
@@ -83,6 +83,7 @@ export default function CodeEditor({
 	className,
 }: CodeEditorProps) {
 	const [notice, setNotice] = useState('');
+	const { Button } = useTheme();
 	const extensions = useMemo(() => [EditorView.lineWrapping, ...languageExtensions[language]], [language]);
 	const isEmpty = value.length === 0;
 	const editorMessage = error ?? message;

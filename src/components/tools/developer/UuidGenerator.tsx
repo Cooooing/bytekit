@@ -2,7 +2,7 @@ import { useState } from 'react';
 import Button from '../../ui/Button';
 import CopyRow from '../../ui/CopyRow';
 import { generateUuidV4, generateBatch } from '../../../lib/tools/developer/uuid';
-import { GeneratorPanel } from '../ToolLayouts';
+import GeneratorPanel from '../../shared/layouts/GeneratorPanel';
 
 export default function UuidGenerator() {
 	const [count, setCount] = useState(1);

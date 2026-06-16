@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Button from './Button';
+import { useTheme } from '../../../themes/ThemeContext';
 
 interface CopyRowProps {
 	label: string;
@@ -8,6 +8,7 @@ interface CopyRowProps {
 
 export default function CopyRow({ label, value }: CopyRowProps) {
 	const [copied, setCopied] = useState(false);
+	const { Button } = useTheme();
 
 	async function handleCopy() {
 		try {

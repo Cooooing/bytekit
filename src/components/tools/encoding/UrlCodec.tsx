@@ -2,11 +2,11 @@ import { useMemo, useState } from 'react';
 import Button from '../../ui/Button';
 import CopyRow from '../../ui/CopyRow';
 import ReferencePanel from '../../ui/ReferencePanel';
-import ToolWithReference from '../ToolWithReference';
+import ToolWithReference from '../../shared/ToolWithReference';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { encodeUrl, decodeUrl } from '../../../lib/tools/encoding/url';
 import { urlReference } from '../../../lib/tools/references';
-import { GeneratorPanel } from '../ToolLayouts';
+import GeneratorPanel from '../../shared/layouts/GeneratorPanel';
 
 export default function UrlCodec() {
 	const [state, setState] = useToolStorage('bytekit:tool:url:v1', {

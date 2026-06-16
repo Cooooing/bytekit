@@ -5,7 +5,7 @@ import ReferencePanel from '../../ui/ReferencePanel';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { minifyCss, beautifyCss } from '../../../lib/tools/css/css';
 import { cssReference } from '../../../lib/tools/references';
-import { IoWorkbench } from '../ToolLayouts';
+import IoWorkbench from '../../shared/layouts/IoWorkbench';
 
 const text = {
 	tool: 'CSS 压缩/美化',

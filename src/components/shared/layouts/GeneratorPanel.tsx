@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export interface GeneratorPanelProps {
+interface GeneratorPanelProps {
 	controls: ReactNode;
 	result: ReactNode;
 	actions?: ReactNode;

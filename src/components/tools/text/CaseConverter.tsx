@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import CopyRow from '../../ui/CopyRow';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { toCamelCase, toSnakeCase, toKebabCase, toPascalCase, toUpperCase, toLowerCase } from '../../../lib/tools/text/case';
-import { GeneratorPanel } from '../ToolLayouts';
+import GeneratorPanel from '../../shared/layouts/GeneratorPanel';
 
 const converters = [
 	{ label: 'camelCase', fn: toCamelCase },
