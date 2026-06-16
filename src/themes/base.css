@@ -1,6 +1,4 @@
-@import "./themes/base.css";
-@import "./themes/light.css";
-@import "./themes/dark.css";
+@import "./tokens.css";
 
 :root {
 	--bg: var(--surface-page);
