@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import CodeEditor from '../../../../components/shared/editor/CodeEditor';
-import Button from '../../../../components/shared/ui/Button';
-import ReferencePanel from '../../../../components/shared/ui/ReferencePanel';
-import { useToolStorage } from '../../../../hooks/useToolStorage';
+import CodeEditor from '../../../components/shared/editor/CodeEditor';
+import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
+import { useToolStorage } from '../../../hooks/useToolStorage';
 import { minifyCss, beautifyCss } from './functions';
 import { cssReference } from './references';
-import IoWorkbench from '../../../../components/shared/layouts/IoWorkbench';
+import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
+import { useTheme } from '../../../themes/ThemeContext';
 
 const text = {
 	tool: 'CSS 压缩/美化',
@@ -18,6 +18,7 @@ const text = {
 };
 
 export default function CssMinify() {
+	const { Button } = useTheme();
 	const [state, setState] = useToolStorage('bytekit:tool:css:v1', {
 		input: 'body {\n  margin: 0;\n  padding: 0;\n  font-family: sans-serif;\n}\n\n.container {\n  max-width: 1200px;\n  margin: 0 auto;\n  padding: 16px;\n}',
 		output: '',

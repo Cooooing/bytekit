@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react';
-import Button from '../../../../components/shared/ui/Button';
-import CopyRow from '../../../../components/shared/ui/CopyRow';
-import ReferencePanel from '../../../../components/shared/ui/ReferencePanel';
-import ToolWithReference from '../../../../components/shared/ToolWithReference';
+import CopyRow from '../../../components/shared/ui/CopyRow';
+import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
+import ToolWithReference from '../../../components/shared/ToolWithReference';
 import { parseTimestamp } from './functions';
 import { timestampReference } from './references';
-import GeneratorPanel from '../../../../components/shared/layouts/GeneratorPanel';
+import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
+import { useTheme } from '../../../themes/ThemeContext';
 
 export default function TimestampConverter() {
+	const { Button } = useTheme();
 	const [input, setInput] = useState(String(Math.floor(Date.now() / 1000)));
 	const result = useMemo(() => parseTimestamp(input), [input]);
 

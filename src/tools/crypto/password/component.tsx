@@ -1,9 +1,9 @@
 import { Hash, RotateCw, Shuffle } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import Button from '../../../../components/shared/ui/Button';
 import { generatePassword, type PasswordMode } from './functions';
-import { useToolStorage } from '../../../../hooks/useToolStorage';
-import GeneratorPanel from '../../../../components/shared/layouts/GeneratorPanel';
+import { useToolStorage } from '../../../hooks/useToolStorage';
+import { useTheme } from '../../../themes/ThemeContext';
+import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 
 const modeOptions: Array<{ value: PasswordMode; label: string; icon: typeof Shuffle }> = [
 	{ value: 'random', label: '随机', icon: Shuffle },
@@ -25,6 +25,7 @@ function renderPassword(value: string) {
 }
 
 export default function PasswordGenerator() {
+	const { Button } = useTheme();
 	const [state, setState] = useToolStorage('bytekit:tool:password:v1', {
 		mode: 'random' as PasswordMode,
 		length: 16,

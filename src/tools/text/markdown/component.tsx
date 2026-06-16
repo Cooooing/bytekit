@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { marked } from 'marked';
-import CodeEditor from '../../../../components/shared/editor/CodeEditor';
-import { useToolStorage } from '../../../../hooks/useToolStorage';
-import IoWorkbench from '../../../../components/shared/layouts/IoWorkbench';
+import CodeEditor from '../../../components/shared/editor/CodeEditor';
+import { useToolStorage } from '../../../hooks/useToolStorage';
+import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 
 const text = {
 	tool: 'Markdown 预览',

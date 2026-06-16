@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
-import Button from '../ui/Button';
+import { useTheme } from '../../themes/ThemeContext';
 
 type Theme = 'light' | 'dark';
 
@@ -11,6 +11,7 @@ function getInitialTheme(): Theme {
 }
 
 export default function ThemeToggle() {
+	const { Button } = useTheme();
 	const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
 	useEffect(() => {

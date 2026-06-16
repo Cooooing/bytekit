@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
-import CodeEditor from '../../../../components/shared/editor/CodeEditor';
-import Button from '../../../../components/shared/ui/Button';
-import ReferencePanel from '../../../../components/shared/ui/ReferencePanel';
-import { useToolStorage } from '../../../../hooks/useToolStorage';
+import CodeEditor from '../../../components/shared/editor/CodeEditor';
+import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
+import { useToolStorage } from '../../../hooks/useToolStorage';
 import { formatJson, minifyJson, unescapeJson, escapeJson } from './functions';
 import { jsonReference } from './references';
-import IoWorkbench from '../../../../components/shared/layouts/IoWorkbench';
+import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
+import { useTheme } from '../../../themes/ThemeContext';
 
 const text = {
 	tool: 'JSON 格式化工具',
@@ -20,6 +20,7 @@ const text = {
 };
 
 export default function JsonFormatter() {
+	const { Button } = useTheme();
 	const [state, setState] = useToolStorage('bytekit:tool:json:v1', {
 		input: '{\n  "name": "bytekit"\n}',
 		output: '',

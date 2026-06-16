@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import Button from '../../../../components/shared/ui/Button';
-import CopyRow from '../../../../components/shared/ui/CopyRow';
+import CopyRow from '../../../components/shared/ui/CopyRow';
 import { generateUuidV4, generateBatch } from './functions';
-import GeneratorPanel from '../../../../components/shared/layouts/GeneratorPanel';
+import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
+import { useTheme } from '../../../themes/ThemeContext';
 
 export default function UuidGenerator() {
+	const { Button } = useTheme();
 	const [count, setCount] = useState(1);
 	const [results, setResults] = useState<string[]>([generateUuidV4()]);
 	const [copied, setCopied] = useState(false);

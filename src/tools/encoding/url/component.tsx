@@ -1,14 +1,15 @@
 import { useMemo, useState } from 'react';
-import Button from '../../../../components/shared/ui/Button';
-import CopyRow from '../../../../components/shared/ui/CopyRow';
-import ReferencePanel from '../../../../components/shared/ui/ReferencePanel';
-import ToolWithReference from '../../../../components/shared/ToolWithReference';
-import { useToolStorage } from '../../../../hooks/useToolStorage';
+import CopyRow from '../../../components/shared/ui/CopyRow';
+import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
+import ToolWithReference from '../../../components/shared/ToolWithReference';
+import { useToolStorage } from '../../../hooks/useToolStorage';
 import { encodeUrl, decodeUrl } from './functions';
 import { urlReference } from './references';
-import GeneratorPanel from '../../../../components/shared/layouts/GeneratorPanel';
+import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
+import { useTheme } from '../../../themes/ThemeContext';
 
 export default function UrlCodec() {
+	const { Button } = useTheme();
 	const [state, setState] = useToolStorage('bytekit:tool:url:v1', {
 		input: 'https://example.com/path?name=你好&lang=中文',
 		lastAction: 'encode' as 'encode' | 'decode',

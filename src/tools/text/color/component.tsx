@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
-import CopyRow from '../../../../components/shared/ui/CopyRow';
-import ReferencePanel from '../../../../components/shared/ui/ReferencePanel';
-import ToolWithReference from '../../../../components/shared/ToolWithReference';
+import CopyRow from '../../../components/shared/ui/CopyRow';
+import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
+import ToolWithReference from '../../../components/shared/ToolWithReference';
 import { parseColor } from './functions';
 import { colorReference } from './references';
-import GeneratorPanel from '../../../../components/shared/layouts/GeneratorPanel';
+import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 
 export default function ColorConverter() {
 	const [input, setInput] = useState('#3B82F6');

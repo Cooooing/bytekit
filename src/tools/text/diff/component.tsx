@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useToolStorage } from '../../../../hooks/useToolStorage';
+import { useToolStorage } from '../../../hooks/useToolStorage';
 import { diffLines } from './functions';
 
 export default function DiffViewer() {

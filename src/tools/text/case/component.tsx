@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react';
-import CopyRow from '../../../../components/shared/ui/CopyRow';
-import { useToolStorage } from '../../../../hooks/useToolStorage';
+import CopyRow from '../../../components/shared/ui/CopyRow';
+import { useToolStorage } from '../../../hooks/useToolStorage';
 import { toCamelCase, toSnakeCase, toKebabCase, toPascalCase, toUpperCase, toLowerCase } from './functions';
-import GeneratorPanel from '../../../../components/shared/layouts/GeneratorPanel';
+import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 
 const converters = [
 	{ label: 'camelCase', fn: toCamelCase },

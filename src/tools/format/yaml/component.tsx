@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import CodeEditor from '../../../../components/shared/editor/CodeEditor';
-import Button from '../../../../components/shared/ui/Button';
-import { useToolStorage } from '../../../../hooks/useToolStorage';
+import CodeEditor from '../../../components/shared/editor/CodeEditor';
+import { useToolStorage } from '../../../hooks/useToolStorage';
 import { jsonToYaml, yamlToJson } from './functions';
-import IoWorkbench from '../../../../components/shared/layouts/IoWorkbench';
+import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
+import { useTheme } from '../../../themes/ThemeContext';
 
 const text = {
 	tool: 'JSON ↔ YAML',
@@ -16,6 +16,7 @@ const text = {
 };
 
 export default function YamlConverter() {
+	const { Button } = useTheme();
 	const [state, setState] = useToolStorage('bytekit:tool:yaml:v1', {
 		input: '{\n  "name": "bytekit",\n  "version": "1.0",\n  "features": ["json", "yaml"]\n}',
 		output: '',

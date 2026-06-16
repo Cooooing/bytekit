@@ -1,12 +1,12 @@
 import { useMemo } from 'react';
-import CodeEditor from '../../../../components/shared/editor/CodeEditor';
-import Badge from '../../../../components/shared/ui/Badge';
-import Button from '../../../../components/shared/ui/Button';
-import ReferencePanel from '../../../../components/shared/ui/ReferencePanel';
-import { useToolStorage } from '../../../../hooks/useToolStorage';
+import CodeEditor from '../../../components/shared/editor/CodeEditor';
+import Badge from '../../../components/shared/ui/Badge';
+import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
+import { useToolStorage } from '../../../hooks/useToolStorage';
 import { decodeJwt } from './functions';
 import { jwtReference } from './references';
-import IoWorkbench from '../../../../components/shared/layouts/IoWorkbench';
+import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
+import { useTheme } from '../../../themes/ThemeContext';
 
 const text = {
 	tool: 'JWT 解析工具',
@@ -27,6 +27,7 @@ function formatResult(result: ReturnType<typeof decodeJwt>) {
 }
 
 export default function JwtDecoder() {
+	const { Button } = useTheme();
 	const [state, setState] = useToolStorage('bytekit:tool:jwt:v1', { token: '' });
 	const { token } = state;
 	const setToken = (value: string) => setState((current) => ({ ...current, token: value }));

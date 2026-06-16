@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
-import CodeEditor from '../../../../components/shared/editor/CodeEditor';
-import Button from '../../../../components/shared/ui/Button';
-import { useToolStorage } from '../../../../hooks/useToolStorage';
+import CodeEditor from '../../../components/shared/editor/CodeEditor';
+import { useToolStorage } from '../../../hooks/useToolStorage';
 import { jsonToCsv, csvToJson } from './functions';
-import IoWorkbench from '../../../../components/shared/layouts/IoWorkbench';
+import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
+import { useTheme } from '../../../themes/ThemeContext';
 
 const text = {
 	tool: 'JSON ↔ CSV',
@@ -16,6 +16,7 @@ const text = {
 };
 
 export default function CsvConverter() {
+	const { Button } = useTheme();
 	const [state, setState] = useToolStorage('bytekit:tool:csv:v1', {
 		input: '[\n  { "name": "Alice", "age": 30, "city": "北京" },\n  { "name": "Bob", "age": 25, "city": "上海" }\n]',
 		output: '',

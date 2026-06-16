@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
 // Lazy-loaded tool components for code splitting.
-// Each tool's component.tsx re-exports from the original implementation in src/components/tools/.
+// Each tool's component.tsx is a self-contained React component in src/tools/{category}/{id}/.
 export const toolComponents: Record<string, React.LazyExoticComponent<any>> = {
 	timestamp: lazy(() => import('./developer/timestamp/component')),
 	uuid: lazy(() => import('./developer/uuid/component')),

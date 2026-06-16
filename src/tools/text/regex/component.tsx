@@ -1,12 +1,12 @@
 import { useMemo, useState } from 'react';
-import Badge from '../../../../components/shared/ui/Badge';
-import Button from '../../../../components/shared/ui/Button';
-import CopyRow from '../../../../components/shared/ui/CopyRow';
-import ReferencePanel from '../../../../components/shared/ui/ReferencePanel';
-import ToolWithReference from '../../../../components/shared/ToolWithReference';
-import { useToolStorage } from '../../../../hooks/useToolStorage';
+import Badge from '../../../components/shared/ui/Badge';
+import CopyRow from '../../../components/shared/ui/CopyRow';
+import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
+import ToolWithReference from '../../../components/shared/ToolWithReference';
+import { useToolStorage } from '../../../hooks/useToolStorage';
 import { testRegex } from './functions';
 import { regexReference } from './references';
+import { useTheme } from '../../../themes/ThemeContext';
 
 const flagOptions = [
 	{ flag: 'g', label: '全局匹配', desc: '匹配所有结果，不只第一个' },
@@ -18,6 +18,7 @@ const flagOptions = [
 ];
 
 export default function RegexTester() {
+	const { Button } = useTheme();
 	const [state, setState] = useToolStorage('bytekit:tool:regex:v1', {
 		input: 'Hello World 123\nfoo@bar.com\n2024-01-15',
 		pattern: '\\d+',
