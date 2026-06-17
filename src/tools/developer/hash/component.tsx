@@ -60,6 +60,5 @@ export default function HashGenerator() {
 
 	return (
 		<GeneratorPanel ariaLabel="Hash 生成器" controls={controls} result={resultPanel} />
-		/>
 	);
 }
