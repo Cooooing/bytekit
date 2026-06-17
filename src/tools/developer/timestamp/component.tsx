@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
-import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
-import ToolWithReference from '../../../components/shared/ToolWithReference';
+import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { parseTimestamp } from './functions';
 import { timestampReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
@@ -9,6 +8,7 @@ import { useTheme } from '../../../themes/ThemeContext';
 
 export default function TimestampConverter() {
 	const { Button } = useTheme();
+	const { setRefContent } = useRefPanel();
 	const [input, setInput] = useState(String(Math.floor(Date.now() / 1000)));
 	const result = useMemo(() => parseTimestamp(input), [input]);
 
@@ -21,9 +21,9 @@ export default function TimestampConverter() {
 	}
 
 	const controls = (
-		<div className="password-card password-card--controls">
-			<div className="password-card__section">
-				<h2 className="password-card__title">输入时间戳或日期</h2>
+		<div className="tool-card tool-card--controls">
+			<div className="tool-card__section">
+				<h2 className="tool-card__title">输入时间戳或日期</h2>
 				<input
 					className="password-length-input"
 					type="text"
@@ -42,8 +42,8 @@ export default function TimestampConverter() {
 	);
 
 	const resultPanel = (
-		<div className="password-card password-card--result">
-			<h2 className="password-card__title">转换结果</h2>
+		<div className="tool-card tool-card--result">
+			<h2 className="tool-card__title">转换结果</h2>
 			{result.ok ? (
 				<div style={{ display: 'grid', gap: '6px' }}>
 					<CopyRow label="Unix" value={String(result.unix)} />
@@ -57,10 +57,12 @@ export default function TimestampConverter() {
 		</div>
 	);
 
+	useEffect(() => {
+		setRefContent({ title: '时间格式参考', sections: timestampReference });
+		return () => setRefContent(null);
+	}, [setRefContent]);
+
 	return (
-		<ToolWithReference
-			main={<GeneratorPanel ariaLabel="时间戳转换工具" controls={controls} result={resultPanel} />}
-			reference={<ReferencePanel title="时间格式参考" sections={timestampReference} />}
-		/>
+		<GeneratorPanel ariaLabel="时间戳转换工具" controls={controls} result={resultPanel} />
 	);
 }

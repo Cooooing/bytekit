@@ -1,19 +1,19 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
-import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
-import ToolWithReference from '../../../components/shared/ToolWithReference';
+import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { parseColor } from './functions';
 import { colorReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 
 export default function ColorConverter() {
 	const [input, setInput] = useState('#3B82F6');
+	const { setRefContent } = useRefPanel();
 	const result = useMemo(() => parseColor(input), [input]);
 
 	const controls = (
-		<div className="password-card password-card--controls">
-			<div className="password-card__section">
-				<h2 className="password-card__title">输入颜色值</h2>
+		<div className="tool-card tool-card--controls">
+			<div className="tool-card__section">
+				<h2 className="tool-card__title">输入颜色值</h2>
 				<input
 					className="password-length-input"
 					type="text"
@@ -34,8 +34,8 @@ export default function ColorConverter() {
 	);
 
 	const resultPanel = (
-		<div className="password-card password-card--result">
-			<h2 className="password-card__title">转换结果</h2>
+		<div className="tool-card tool-card--result">
+			<h2 className="tool-card__title">转换结果</h2>
 			{result.ok ? (
 				<div style={{ display: 'grid', gap: '12px' }}>
 					<div
@@ -59,10 +59,12 @@ export default function ColorConverter() {
 		</div>
 	);
 
+	useEffect(() => {
+		setRefContent({ title: '颜色格式参考', sections: colorReference });
+		return () => setRefContent(null);
+	}, [setRefContent]);
+
 	return (
-		<ToolWithReference
-			main={<GeneratorPanel ariaLabel="颜色转换工具" controls={controls} result={resultPanel} />}
-			reference={<ReferencePanel title="颜色格式参考" sections={colorReference} />}
-		/>
+		<GeneratorPanel ariaLabel="颜色转换工具" controls={controls} result={resultPanel} />
 	);
 }

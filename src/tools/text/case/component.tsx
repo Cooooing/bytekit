@@ -24,9 +24,9 @@ export default function CaseConverter() {
 	);
 
 	const controls = (
-		<div className="password-card password-card--controls">
-			<div className="password-card__section">
-				<h2 className="password-card__title">输入文本</h2>
+		<div className="tool-card tool-card--controls">
+			<div className="tool-card__section">
+				<h2 className="tool-card__title">输入文本</h2>
 				<input
 					type="text"
 					value={input}
@@ -40,8 +40,8 @@ export default function CaseConverter() {
 	);
 
 	const resultPanel = (
-		<div className="password-card password-card--result">
-			<h2 className="password-card__title">转换结果</h2>
+		<div className="tool-card tool-card--result">
+			<h2 className="tool-card__title">转换结果</h2>
 			{input ? (
 				<div style={{ display: 'grid', gap: '6px' }}>
 					{results.map((r) => (

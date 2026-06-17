@@ -68,9 +68,9 @@ export default function PasswordGenerator() {
 	}
 
 	const controls = (
-		<div className="password-card password-card--controls">
-			<div className="password-card__section">
-				<h2 className="password-card__title">选择密码类型</h2>
+		<div className="tool-card tool-card--controls">
+			<div className="tool-card__section">
+				<h2 className="tool-card__title">选择密码类型</h2>
 				<div className="password-mode-tabs" role="tablist" aria-label="密码类型">
 					{modeOptions.map((item) => {
 						const Icon = item.icon;
@@ -90,8 +90,8 @@ export default function PasswordGenerator() {
 				</div>
 			</div>
 
-			<div className="password-card__section">
-				<h2 className="password-card__title">自定义新密码</h2>
+			<div className="tool-card__section">
+				<h2 className="tool-card__title">自定义新密码</h2>
 				<div className="password-length-row">
 					<label className="password-length-row__label" htmlFor="password-length">字符</label>
 					<input
@@ -138,9 +138,9 @@ export default function PasswordGenerator() {
 	);
 
 	const resultPanel = (
-		<div className="password-card password-card--result">
-			<div className="password-card__title-row">
-				<h2 className="password-card__title">生成密码</h2>
+		<div className="tool-card tool-card--result">
+			<div className="tool-card__title-row">
+				<h2 className="tool-card__title">生成密码</h2>
 				{notice ? <span className="password-notice">{notice}</span> : null}
 			</div>
 			<div className={result.ok ? 'password-output' : 'password-output password-output--error'}>
@@ -150,7 +150,7 @@ export default function PasswordGenerator() {
 	);
 
 	const actions = (
-		<div className="password-card__actions">
+		<div className="tool-card__actions">
 			<Button disabled={!result.ok || !output} onClick={copyPassword}>复制密码</Button>
 			<Button variant="secondary" onClick={() => setNonce((value) => value + 1)}>
 				<RotateCw size={17} strokeWidth={2} aria-hidden="true" />

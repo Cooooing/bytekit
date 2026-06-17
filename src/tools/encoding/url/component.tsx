@@ -1,7 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
-import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
-import ToolWithReference from '../../../components/shared/ToolWithReference';
+import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { encodeUrl, decodeUrl } from './functions';
 import { urlReference } from './references';
@@ -10,6 +9,7 @@ import { useTheme } from '../../../themes/ThemeContext';
 
 export default function UrlCodec() {
 	const { Button } = useTheme();
+	const { setRefContent } = useRefPanel();
 	const [state, setState] = useToolStorage('bytekit:tool:url:v1', {
 		input: 'https://example.com/path?name=你好&lang=中文',
 		lastAction: 'encode' as 'encode' | 'decode',
@@ -27,9 +27,9 @@ export default function UrlCodec() {
 	);
 
 	const controls = (
-		<div className="password-card password-card--controls">
-			<div className="password-card__section">
-				<h2 className="password-card__title">输入 URL 或文本</h2>
+		<div className="tool-card tool-card--controls">
+			<div className="tool-card__section">
+				<h2 className="tool-card__title">输入 URL 或文本</h2>
 				<textarea
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
@@ -47,8 +47,8 @@ export default function UrlCodec() {
 	);
 
 	const resultPanel = (
-		<div className="password-card password-card--result">
-			<h2 className="password-card__title">转换结果</h2>
+		<div className="tool-card tool-card--result">
+			<h2 className="tool-card__title">转换结果</h2>
 			{result.ok ? (
 				<div style={{ display: 'grid', gap: '8px' }}>
 					<CopyRow label={lastAction === 'encode' ? '编码' : '解码'} value={lastAction === 'encode' ? result.encoded : result.decoded} />
@@ -78,10 +78,12 @@ export default function UrlCodec() {
 		</div>
 	);
 
+	useEffect(() => {
+		setRefContent({ title: 'URL 编码参考', sections: urlReference });
+		return () => setRefContent(null);
+	}, [setRefContent]);
+
 	return (
-		<ToolWithReference
-			main={<GeneratorPanel ariaLabel="URL 编解码工具" controls={controls} result={resultPanel} />}
-			reference={<ReferencePanel title="URL 编码参考" sections={urlReference} />}
-		/>
+		<GeneratorPanel ariaLabel="URL 编解码工具" controls={controls} result={resultPanel} />
 	);
 }

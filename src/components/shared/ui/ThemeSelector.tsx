@@ -1,31 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
 import { Paintbrush } from 'lucide-react';
-import { getAvailableThemes } from '../../ThemeContext';
-
-const THEME_KEY = 'bytekit-theme-id';
-
-function readCurrentTheme(): string {
-	try {
-		return localStorage.getItem(THEME_KEY) || 'default';
-	} catch {
-		return 'default';
-	}
-}
+import { getAvailableThemes } from '../../../themes/ThemeContext';
+import { readThemeId } from '../../../themes/constants';
 
 export default function ThemeSelector() {
 	const [isOpen, setIsOpen] = useState(false);
-	const [currentTheme, setCurrentTheme] = useState(readCurrentTheme);
+	const [currentTheme, setCurrentTheme] = useState(readThemeId);
 	const ref = useRef<HTMLDivElement>(null);
 	const themes = getAvailableThemes();
-
-	// Sync with ThemeManager when theme changes (e.g., from another source)
-	useEffect(() => {
-		const handler = (e: Event) => {
-			setCurrentTheme((e as CustomEvent<string>).detail);
-		};
-		window.addEventListener('bytekit:change-theme', handler);
-		return () => window.removeEventListener('bytekit:change-theme', handler);
-	}, []);
 
 	useEffect(() => {
 		function handleClick(e: MouseEvent) {

@@ -61,46 +61,45 @@ export default function ToolSidebar({ activeToolId, onSelectTool }: ToolSidebarP
 				<ChevronLeft
 					size={14}
 					strokeWidth={2.5}
+					className="tool-sidebar__chevron"
 					style={{ transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.25s ease' }}
 				/>
 			</button>
 
-			{collapsed ? null : (
-				<div className="tool-sidebar__groups">
-					{toolCategories.map((category) => {
-						const categoryTools = getToolsByCategory(category.id);
-						if (categoryTools.length === 0) return null;
-						const isOpen = normalizedOpenState[category.id];
+			<div className="tool-sidebar__groups">
+				{toolCategories.map((category) => {
+					const categoryTools = getToolsByCategory(category.id);
+					if (categoryTools.length === 0) return null;
+					const isOpen = normalizedOpenState[category.id];
 
-						return (
-							<section className="tool-sidebar__group" key={category.id}>
-								<button className="tool-sidebar__group-toggle" type="button" onClick={() => toggleCategory(category.id)}>
-									<span>{category.name}</span>
-									<ChevronDown
-										size={14}
-										strokeWidth={2}
-										style={{ transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s ease' }}
-									/>
-								</button>
-								{isOpen ? (
-									<div className="tool-sidebar__links">
-										{categoryTools.map((tool) => (
-											<button
-												key={tool.id}
-												className={tool.id === activeToolId ? 'tool-sidebar__link tool-sidebar__link--active' : 'tool-sidebar__link'}
-												type="button"
-												onClick={() => onSelectTool(tool.id)}
-											>
-												{tool.name}
-											</button>
-										))}
-									</div>
-								) : null}
-							</section>
-						);
-					})}
-				</div>
-			)}
+					return (
+						<section className="tool-sidebar__group" key={category.id}>
+							<button className="tool-sidebar__group-toggle" type="button" onClick={() => toggleCategory(category.id)}>
+								<span>{category.name}</span>
+								<ChevronDown
+									size={14}
+									strokeWidth={2}
+									style={{ transform: isOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s ease' }}
+								/>
+							</button>
+							{isOpen ? (
+								<div className="tool-sidebar__links">
+									{categoryTools.map((tool) => (
+										<button
+											key={tool.id}
+											className={tool.id === activeToolId ? 'tool-sidebar__link tool-sidebar__link--active' : 'tool-sidebar__link'}
+											type="button"
+											onClick={() => onSelectTool(tool.id)}
+										>
+											{tool.name}
+										</button>
+									))}
+								</div>
+							) : null}
+						</section>
+					);
+				})}
+			</div>
 		</aside>
 	);
 }

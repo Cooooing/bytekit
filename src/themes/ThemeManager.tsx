@@ -1,23 +1,13 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import { ThemeProvider } from './ThemeContext';
-
-const THEME_KEY = 'bytekit-theme-id';
-
-function readTheme(): string {
-	if (typeof window === 'undefined') return 'default';
-	try {
-		return localStorage.getItem(THEME_KEY) || 'default';
-	} catch {
-		return 'default';
-	}
-}
+import { THEME_KEY, readThemeId } from './constants';
 
 interface ThemeManagerProps {
 	children: ReactNode;
 }
 
 export default function ThemeManager({ children }: ThemeManagerProps) {
-	const [themeId, setThemeId] = useState(readTheme);
+	const [themeId, setThemeId] = useState(readThemeId);
 
 	useEffect(() => {
 		try {

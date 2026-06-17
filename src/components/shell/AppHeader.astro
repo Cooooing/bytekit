@@ -1,24 +1,5 @@
 ---
-import ThemeSelector from '../../themes/default/components/ThemeSelector';
-import ToolSearch from '../../themes/default/components/ToolSearch';
-import ThemeToggle from './ThemeToggle';
+import HeaderShell from './HeaderShell';
 ---
 
-<header class="site-header">
-	<div class="site-header__inner">
-		<a class="brand" href={import.meta.env.BASE_URL} aria-label="Bytekit 首页">
-			<span class="brand__mark">B</span>
-			<span class="brand__body">
-				<span class="brand__text">Bytekit</span>
-				<span class="brand__caption">开发工具</span>
-			</span>
-		</a>
-		<div class="site-header__search">
-			<ToolSearch client:load variant="header" />
-		</div>
-		<div class="site-header__actions">
-			<ThemeSelector client:load />
-			<ThemeToggle client:load />
-		</div>
-	</div>
-</header>
+<HeaderShell client:load />

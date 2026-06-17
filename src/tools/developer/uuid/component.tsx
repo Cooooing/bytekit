@@ -25,9 +25,9 @@ export default function UuidGenerator() {
 	}
 
 	const controls = (
-		<div className="password-card password-card--controls">
-			<div className="password-card__section">
-				<h2 className="password-card__title">生成 UUID</h2>
+		<div className="tool-card tool-card--controls">
+			<div className="tool-card__section">
+				<h2 className="tool-card__title">生成 UUID</h2>
 				<div className="password-length-row">
 					<label className="password-length-row__label">数量</label>
 					<input
@@ -57,8 +57,8 @@ export default function UuidGenerator() {
 	);
 
 	const resultPanel = (
-		<div className="password-card password-card--result">
-			<h2 className="password-card__title">结果</h2>
+		<div className="tool-card tool-card--result">
+			<h2 className="tool-card__title">结果</h2>
 			<div style={{ display: 'grid', gap: '4px' }}>
 				{results.map((uuid, i) => (
 					<CopyRow key={i} label={`#${i + 1}`} value={uuid} />

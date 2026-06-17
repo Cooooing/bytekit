@@ -26,7 +26,7 @@ export default function DiffViewer() {
 		<div className="diff-viewer">
 			<div className="diff-viewer__inputs">
 				<div className="diff-viewer__input-panel">
-					<h2 className="password-card__title">原始文本</h2>
+					<h2 className="tool-card__title">原始文本</h2>
 					<textarea
 						value={textA}
 						onChange={(e) => setTextA(e.target.value)}
@@ -36,7 +36,7 @@ export default function DiffViewer() {
 					/>
 				</div>
 				<div className="diff-viewer__input-panel">
-					<h2 className="password-card__title">修改文本</h2>
+					<h2 className="tool-card__title">修改文本</h2>
 					<textarea
 						value={textB}
 						onChange={(e) => setTextB(e.target.value)}

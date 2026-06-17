@@ -1,11 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import CodeEditor from '../../../components/shared/editor/CodeEditor';
-import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { formatJson, minifyJson, unescapeJson, escapeJson } from './functions';
 import { jsonReference } from './references';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 import { useTheme } from '../../../themes/ThemeContext';
+import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 const text = {
 	tool: 'JSON 格式化工具',
@@ -21,6 +21,7 @@ const text = {
 
 export default function JsonFormatter() {
 	const { Button } = useTheme();
+	const { setRefContent } = useRefPanel();
 	const [state, setState] = useToolStorage('bytekit:tool:json:v1', {
 		input: '{\n  "name": "bytekit"\n}',
 		output: '',
@@ -46,6 +47,11 @@ export default function JsonFormatter() {
 
 	const formatResult = useMemo(() => formatJson(input, 2), [input]);
 
+	useEffect(() => {
+		setRefContent({ title: 'JSON 参考', sections: jsonReference });
+		return () => setRefContent(null);
+	}, [setRefContent]);
+
 	return (
 		<>
 			<IoWorkbench
@@ -61,7 +67,6 @@ export default function JsonFormatter() {
 				input={<CodeEditor title={text.input} value={input} onChange={setInput} language="json" />}
 				output={<CodeEditor title={text.output} value={output} language="json" status={formatResult.ok ? 'success' : 'error'} statusText={formatResult.ok ? text.valid : text.invalid} error={formatResult.ok ? undefined : formatResult.error} />}
 			/>
-			<ReferencePanel title="JSON 参考" sections={jsonReference} />
 		</>
 	);
 }

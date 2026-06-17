@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { useTheme } from '../../themes/ThemeContext';
+import { THEME_KEY_VISUAL } from '../../themes/constants';
 
 type Theme = 'light' | 'dark';
 
@@ -16,7 +17,7 @@ export default function ThemeToggle() {
 
 	useEffect(() => {
 		document.documentElement.dataset.theme = theme;
-		window.localStorage.setItem('bytekit-theme', theme);
+		window.localStorage.setItem(THEME_KEY_VISUAL, theme);
 	}, [theme]);
 
 	function toggleTheme() {

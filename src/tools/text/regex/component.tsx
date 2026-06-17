@@ -1,8 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Badge from '../../../components/shared/ui/Badge';
 import CopyRow from '../../../components/shared/ui/CopyRow';
-import ReferencePanel from '../../../components/shared/ui/ReferencePanel';
-import ToolWithReference from '../../../components/shared/ToolWithReference';
+import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { testRegex } from './functions';
 import { regexReference } from './references';
@@ -19,6 +18,7 @@ const flagOptions = [
 
 export default function RegexTester() {
 	const { Button } = useTheme();
+	const { setRefContent } = useRefPanel();
 	const [state, setState] = useToolStorage('bytekit:tool:regex:v1', {
 		input: 'Hello World 123\nfoo@bar.com\n2024-01-15',
 		pattern: '\\d+',
@@ -61,13 +61,17 @@ export default function RegexTester() {
 		}
 	}
 
+	useEffect(() => {
+		setRefContent({ title: '正则语法速查', sections: regexReference });
+		return () => setRefContent(null);
+	}, [setRefContent]);
+
 	return (
-		<ToolWithReference
-			main={
+		
 				<>
 					<div className="regex-tester__pattern">
 						<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-							<h2 className="password-card__title" style={{ margin: 0 }}>正则表达式</h2>
+							<h2 className="tool-card__title" style={{ margin: 0 }}>正则表达式</h2>
 							<Button variant="secondary" size="sm" onClick={copyRegex}>{copied ? '已复制' : '复制正则'}</Button>
 						</div>
 						<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
@@ -105,7 +109,7 @@ export default function RegexTester() {
 					</div>
 
 					<div className="regex-tester__input">
-						<h2 className="password-card__title">测试文本</h2>
+						<h2 className="tool-card__title">测试文本</h2>
 						<textarea
 							value={input}
 							onChange={(e) => setInput(e.target.value)}
@@ -117,7 +121,7 @@ export default function RegexTester() {
 					</div>
 
 					<div className="regex-tester__highlight">
-						<h2 className="password-card__title">高亮预览</h2>
+						<h2 className="tool-card__title">高亮预览</h2>
 						<pre
 							className="regex-highlight-area"
 							dangerouslySetInnerHTML={{ __html: highlightedHtml }}
@@ -126,7 +130,7 @@ export default function RegexTester() {
 
 					{result.ok && result.matches.length > 0 && (
 						<div className="regex-tester__results">
-							<h2 className="password-card__title">匹配详情</h2>
+							<h2 className="tool-card__title">匹配详情</h2>
 							<div style={{ display: 'grid', gap: '6px' }}>
 								{result.matches.map((m, i) => (
 									<div key={i}>
@@ -152,9 +156,6 @@ export default function RegexTester() {
 						<div style={{ color: 'var(--semantic-danger)', fontSize: '0.875rem' }}>{result.error}</div>
 					)}
 				</>
-			}
-			reference={<ReferencePanel title="正则语法速查" sections={regexReference} />}
-		/>
 	);
 }
 

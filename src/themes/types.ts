@@ -48,7 +48,7 @@ export type CodeEditorMessageTone = 'neutral' | 'error';
 export interface CodeEditorProps {
 	title: string;
 	value: string;
-	onChange?: (value: string) => void;
+	onChange: (value: string) => void;
 	language?: CodeEditorLanguage;
 	status?: CodeEditorStatus;
 	statusText?: string;
@@ -88,7 +88,7 @@ export interface ToolSidebarProps {
 }
 
 export interface ToolSearchProps {
-	variant?: 'header' | 'sidebar';
+	variant?: 'header' | 'hero' | 'sidebar';
 }
 
 // ─── Theme Registry ───
@@ -98,18 +98,9 @@ export interface ThemeComponents {
 	Button: React.ComponentType<ButtonProps>;
 
 	// ──── Required: Navigation & Shell ────
-	AppShell: React.ComponentType<AppShellProps>;
 	ToolSidebar: React.ComponentType<ToolSidebarProps>;
 	ToolSearch: React.ComponentType<ToolSearchProps>;
 	ThemeSelector: React.ComponentType;
-
-	// ──── Optional overrides: shared defaults provided ────
-	Badge?: React.ComponentType<BadgeProps>;
-	CopyRow?: React.ComponentType<CopyRowProps>;
-	ReferencePanel?: React.ComponentType<ReferencePanelProps>;
-	CodeEditor?: React.ComponentType<CodeEditorProps>;
-	IoWorkbench?: React.ComponentType<IoWorkbenchProps>;
-	GeneratorPanel?: React.ComponentType<GeneratorPanelProps>;
 }
 
 export interface ThemeDefinition {

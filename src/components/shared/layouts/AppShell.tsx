@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react';
-import type { AppShellProps } from '../../types';
+import type { AppShellProps } from '../../../themes/types';
 import { getToolById, getToolHref, getToolIdFromPathname, tools } from '../../../tools/registry';
-import { useTheme } from '../../ThemeContext';
+import { useTheme } from '../../../themes/ThemeContext';
 import { toolComponents } from '../../../tools/components';
+import { RefPanelProvider, type RefContent } from './RefPanelContext';
+import ReferencePanel from '../ui/ReferencePanel';
 
 export default function AppShell({ initialToolId }: AppShellProps) {
 	const [activeToolId, setActiveToolId] = useState(initialToolId);
@@ -10,6 +12,22 @@ export default function AppShell({ initialToolId }: AppShellProps) {
 	const activeTool = useMemo(() => getToolById(activeToolId) ?? tools[0], [activeToolId]);
 	const ToolComponent = toolComponents[activeTool.id];
 	const { ToolSidebar } = useTheme();
+	const [refContent, setRefContent] = useState<RefContent | null>(null);
+	const [refCollapsed, setRefCollapsed] = useState(() => {
+		if (typeof window === 'undefined') return false;
+		return localStorage.getItem('bytekit:tool-ref:collapsed:v1') === 'true';
+	});
+
+	// Clear reference content when switching tools
+	useEffect(() => {
+		setRefContent(null);
+	}, [activeToolId]);
+
+	useEffect(() => {
+		try {
+			localStorage.setItem('bytekit:tool-ref:collapsed:v1', String(refCollapsed));
+		} catch {}
+	}, [refCollapsed]);
 
 	useEffect(() => {
 		activeToolIdRef.current = activeToolId;
@@ -50,10 +68,27 @@ export default function AppShell({ initialToolId }: AppShellProps) {
 						<p className="page-desc">{activeTool.description}</p>
 					</div>
 				</header>
-				<Suspense fallback={<div className="state-box">加载中...</div>}>
-					{ToolComponent ? <ToolComponent /> : <div className="state-box">工具组件未注册。</div>}
-				</Suspense>
+				<RefPanelProvider value={{ setRefContent }}>
+					<Suspense fallback={<div className="state-box">加载中...</div>}>
+						{ToolComponent ? <ToolComponent /> : <div className="state-box">工具组件未注册。</div>}
+					</Suspense>
+				</RefPanelProvider>
 			</section>
+			{refContent ? (
+				<aside className={`tool-ref-sidebar${refCollapsed ? ' tool-ref-sidebar--collapsed' : ''}`}>
+					<button
+						className="tool-ref-sidebar__toggle"
+						type="button"
+						onClick={() => setRefCollapsed((v) => !v)}
+						aria-label={refCollapsed ? '展开参考' : '收起参考'}
+						title={refCollapsed ? '展开参考' : '收起参考'}
+					>
+						<span className="tool-ref-sidebar__title">参考</span>
+						<span className="tool-ref-sidebar__arrow">{refCollapsed ? '◀' : '▶'}</span>
+					</button>
+					{!refCollapsed && <ReferencePanel title={refContent.title} sections={refContent.sections} />}
+				</aside>
+			) : null}
 		</div>
 	);
 }
