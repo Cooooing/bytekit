@@ -1,7 +1,7 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import Badge from '../../../components/shared/ui/Badge';
 import CopyRow from '../../../components/shared/ui/CopyRow';
-import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { testRegex } from './functions';
 import { regexReference } from './references';
@@ -18,7 +18,6 @@ const flagOptions = [
 
 export default function RegexTester() {
 	const { Button } = useTheme();
-	const { setRefContent } = useRefPanel();
 	const [state, setState] = useToolStorage('bytekit:tool:regex:v1', {
 		input: 'Hello World 123\nfoo@bar.com\n2024-01-15',
 		pattern: '\\d+',
@@ -61,10 +60,7 @@ export default function RegexTester() {
 		}
 	}
 
-	useEffect(() => {
-		setRefContent({ title: '正则语法速查', sections: regexReference });
-		return () => setRefContent(null);
-	}, [setRefContent]);
+	useToolRefPanel('正则语法速查', regexReference);
 
 	return (
 		

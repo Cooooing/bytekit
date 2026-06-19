@@ -3,6 +3,8 @@ import { marked } from 'marked';
 import CodeEditor from '../../../components/shared/editor/CodeEditor';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
+import { markdownReference } from './references';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 const text = {
 	tool: 'Markdown 预览',
@@ -24,6 +26,8 @@ export default function MarkdownPreview() {
 			return '<p style="color:red">Markdown 解析错误</p>';
 		}
 	}, [input]);
+
+	useToolRefPanel('Markdown 语法', markdownReference);
 
 	return (
 		<IoWorkbench

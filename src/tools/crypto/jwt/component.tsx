@@ -1,4 +1,4 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
 import CodeEditor from '../../../components/shared/editor/CodeEditor';
 import Badge from '../../../components/shared/ui/Badge';
 import { useToolStorage } from '../../../hooks/useToolStorage';
@@ -6,7 +6,7 @@ import { decodeJwt } from './functions';
 import { jwtReference } from './references';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 import { useTheme } from '../../../themes/ThemeContext';
-import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 const text = {
 	tool: 'JWT 解析工具',
@@ -28,7 +28,6 @@ function formatResult(result: ReturnType<typeof decodeJwt>) {
 
 export default function JwtDecoder() {
 	const { Button } = useTheme();
-	const { setRefContent } = useRefPanel();
 	const [state, setState] = useToolStorage('bytekit:tool:jwt:v1', { token: '' });
 	const { token } = state;
 	const setToken = (value: string) => setState((current) => ({ ...current, token: value }));
@@ -36,10 +35,7 @@ export default function JwtDecoder() {
 	const isEmpty = token.trim() === '';
 	const output = isEmpty || !result.ok ? '' : formatResult(result);
 
-	useEffect(() => {
-		setRefContent({ title: 'JWT', sections: jwtReference });
-		return () => setRefContent(null);
-	}, [setRefContent]);
+	useToolRefPanel('JWT', jwtReference);
 
 	return (
 		<>

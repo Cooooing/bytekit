@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import CodeEditor from '../../../components/shared/editor/CodeEditor';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { jsonToYaml, yamlToJson } from './functions';
+import { yamlReference } from './references';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 import { useTheme } from '../../../themes/ThemeContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 const text = {
 	tool: 'JSON ↔ YAML',
@@ -34,6 +36,8 @@ export default function YamlConverter() {
 		lastAction === 'toYaml' ? jsonToYaml(input) : yamlToJson(input),
 		[input, lastAction]
 	);
+
+	useToolRefPanel('YAML 格式参考', yamlReference);
 
 	return (
 		<IoWorkbench

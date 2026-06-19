@@ -1,11 +1,11 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
 import CodeEditor from '../../../components/shared/editor/CodeEditor';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { formatJson, minifyJson, unescapeJson, escapeJson } from './functions';
 import { jsonReference } from './references';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 import { useTheme } from '../../../themes/ThemeContext';
-import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 const text = {
 	tool: 'JSON 格式化工具',
@@ -21,7 +21,6 @@ const text = {
 
 export default function JsonFormatter() {
 	const { Button } = useTheme();
-	const { setRefContent } = useRefPanel();
 	const [state, setState] = useToolStorage('bytekit:tool:json:v1', {
 		input: '{\n  "name": "bytekit"\n}',
 		output: '',
@@ -47,10 +46,7 @@ export default function JsonFormatter() {
 
 	const formatResult = useMemo(() => formatJson(input, 2), [input]);
 
-	useEffect(() => {
-		setRefContent({ title: 'JSON 参考', sections: jsonReference });
-		return () => setRefContent(null);
-	}, [setRefContent]);
+	useToolRefPanel('JSON 参考', jsonReference);
 
 	return (
 		<>

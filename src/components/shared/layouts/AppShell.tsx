@@ -13,15 +13,11 @@ export default function AppShell({ initialToolId }: AppShellProps) {
 	const ToolComponent = toolComponents[activeTool.id];
 	const { ToolSidebar } = useTheme();
 	const [refContent, setRefContent] = useState<RefContent | null>(null);
+	const refPanelValue = useMemo(() => ({ setRefContent }), [setRefContent]);
 	const [refCollapsed, setRefCollapsed] = useState(() => {
 		if (typeof window === 'undefined') return false;
 		return localStorage.getItem('bytekit:tool-ref:collapsed:v1') === 'true';
 	});
-
-	// Clear reference content when switching tools
-	useEffect(() => {
-		setRefContent(null);
-	}, [activeToolId]);
 
 	useEffect(() => {
 		try {
@@ -68,7 +64,7 @@ export default function AppShell({ initialToolId }: AppShellProps) {
 						<p className="page-desc">{activeTool.description}</p>
 					</div>
 				</header>
-				<RefPanelProvider value={{ setRefContent }}>
+				<RefPanelProvider value={refPanelValue}>
 					<Suspense fallback={<div className="state-box">加载中...</div>}>
 						{ToolComponent ? <ToolComponent /> : <div className="state-box">工具组件未注册。</div>}
 					</Suspense>

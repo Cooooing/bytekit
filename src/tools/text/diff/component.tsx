@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { diffLines } from './functions';
+import { diffReference } from './references';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 export default function DiffViewer() {
 	const [state, setState] = useToolStorage('bytekit:tool:diff:v1', {
@@ -21,6 +23,8 @@ export default function DiffViewer() {
 		const unchanged = diff.filter((l) => l.type === 'equal').length;
 		return { added, removed, unchanged };
 	}, [diff]);
+
+	useToolRefPanel('差异对比参考', diffReference);
 
 	return (
 		<div className="diff-viewer">

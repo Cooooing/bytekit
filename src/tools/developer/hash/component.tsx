@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
-import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { computeHashes, type HashAlgorithm } from './functions';
 import { hashReference } from './references';
@@ -9,7 +9,6 @@ import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 const algorithms: HashAlgorithm[] = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
 
 export default function HashGenerator() {
-	const { setRefContent } = useRefPanel();
 	const [state, setState] = useToolStorage('bytekit:tool:hash:v1', { input: 'Bytekit' });
 	const { input } = state;
 	const setInput = (value: string) => setState((current) => ({ ...current, input: value }));
@@ -19,10 +18,10 @@ export default function HashGenerator() {
 		if (!input) { setHashes({}); return; }
 		computeHashes(input).then((result) => {
 			if (result.ok) setHashes(result.hashes);
-		});
+		}).catch(() => {});
 	}, [input]);
 
-	const controls = (
+	const controls = useMemo(() => (
 		<div className="tool-card tool-card--controls">
 			<div className="tool-card__section">
 				<h2 className="tool-card__title">输入内容</h2>
@@ -36,9 +35,9 @@ export default function HashGenerator() {
 				/>
 			</div>
 		</div>
-	);
+	), [input]);
 
-	const resultPanel = (
+	const resultPanel = useMemo(() => (
 		<div className="tool-card tool-card--result">
 			<h2 className="tool-card__title">哈希结果</h2>
 			{input ? (
@@ -51,12 +50,9 @@ export default function HashGenerator() {
 				<div style={{ color: 'var(--muted)', fontSize: '0.875rem' }}>输入内容后自动计算。</div>
 			)}
 		</div>
-	);
+	), [input, hashes]);
 
-	useEffect(() => {
-		setRefContent({ title: 'Hash 算法参考', sections: hashReference });
-		return () => setRefContent(null);
-	}, [setRefContent]);
+	useToolRefPanel('Hash 算法参考', hashReference);
 
 	return (
 		<GeneratorPanel ariaLabel="Hash 生成器" controls={controls} result={resultPanel} />

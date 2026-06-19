@@ -70,6 +70,7 @@ html[data-theme="light"] {
 	--code-selection-unfocused: #d9e8ff;
 	--shadow-panel: 0 1px 2px rgba(16, 24, 24, 0.05);
 	--shadow-header: 0 1px 0 rgba(16, 24, 24, 0.04);
+	--shadow-dropdown: 0 1rem 2.5rem rgba(20, 48, 92, 0.16);
 }
 
 /* ─── Dark mode colors ─── */
@@ -104,4 +105,5 @@ html[data-theme="dark"] {
 	--code-selection-unfocused: #233b5d;
 	--shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.35);
 	--shadow-header: 0 1px 0 rgba(255, 255, 255, 0.03);
+	--shadow-dropdown: 0 1rem 2.5rem rgba(0, 0, 0, 0.5);
 }

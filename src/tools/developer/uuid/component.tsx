@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
 import { generateUuidV4, generateBatch } from './functions';
+import { uuidReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 import { useTheme } from '../../../themes/ThemeContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 export default function UuidGenerator() {
 	const { Button } = useTheme();
@@ -10,11 +12,11 @@ export default function UuidGenerator() {
 	const [results, setResults] = useState<string[]>([generateUuidV4()]);
 	const [copied, setCopied] = useState(false);
 
-	function generate() {
+	const generate = useCallback(() => {
 		setResults(generateBatch(count));
-	}
+	}, [count]);
 
-	async function copyAll() {
+	const copyAll = useCallback(async () => {
 		try {
 			await navigator.clipboard.writeText(results.join('\n'));
 			setCopied(true);
@@ -22,9 +24,9 @@ export default function UuidGenerator() {
 		} catch {
 			// ignore
 		}
-	}
+	}, [results]);
 
-	const controls = (
+	const controls = useMemo(() => (
 		<div className="tool-card tool-card--controls">
 			<div className="tool-card__section">
 				<h2 className="tool-card__title">生成 UUID</h2>
@@ -54,9 +56,9 @@ export default function UuidGenerator() {
 				</div>
 			</div>
 		</div>
-	);
+	), [count, copied, generate, copyAll]);
 
-	const resultPanel = (
+	const resultPanel = useMemo(() => (
 		<div className="tool-card tool-card--result">
 			<h2 className="tool-card__title">结果</h2>
 			<div style={{ display: 'grid', gap: '4px' }}>
@@ -65,7 +67,9 @@ export default function UuidGenerator() {
 				))}
 			</div>
 		</div>
-	);
+	), [results]);
+
+	useToolRefPanel('UUID 参考', uuidReference);
 
 	return <GeneratorPanel ariaLabel="UUID 生成器" controls={controls} result={resultPanel} />;
 }

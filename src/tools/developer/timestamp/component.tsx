@@ -1,6 +1,6 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
-import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { parseTimestamp } from './functions';
 import { timestampReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
@@ -8,7 +8,6 @@ import { useTheme } from '../../../themes/ThemeContext';
 
 export default function TimestampConverter() {
 	const { Button } = useTheme();
-	const { setRefContent } = useRefPanel();
 	const [input, setInput] = useState(String(Math.floor(Date.now() / 1000)));
 	const result = useMemo(() => parseTimestamp(input), [input]);
 
@@ -57,10 +56,7 @@ export default function TimestampConverter() {
 		</div>
 	);
 
-	useEffect(() => {
-		setRefContent({ title: '时间格式参考', sections: timestampReference });
-		return () => setRefContent(null);
-	}, [setRefContent]);
+	useToolRefPanel('时间格式参考', timestampReference);
 
 	return (
 		<GeneratorPanel ariaLabel="时间戳转换工具" controls={controls} result={resultPanel} />

@@ -1,13 +1,12 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
-import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { parseColor } from './functions';
 import { colorReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 
 export default function ColorConverter() {
 	const [input, setInput] = useState('#3B82F6');
-	const { setRefContent } = useRefPanel();
 	const result = useMemo(() => parseColor(input), [input]);
 
 	const controls = (
@@ -25,9 +24,9 @@ export default function ColorConverter() {
 				/>
 				<input
 					type="color"
+					className="color-picker-input"
 					value={result.ok ? result.hex : '#000000'}
 					onChange={(e) => setInput(e.target.value)}
-					style={{ width: '100%', height: '3rem', border: 'none', borderRadius: 'var(--radius-md)', cursor: 'pointer', marginTop: '8px' }}
 				/>
 			</div>
 		</div>
@@ -59,10 +58,7 @@ export default function ColorConverter() {
 		</div>
 	);
 
-	useEffect(() => {
-		setRefContent({ title: '颜色格式参考', sections: colorReference });
-		return () => setRefContent(null);
-	}, [setRefContent]);
+	useToolRefPanel('颜色格式参考', colorReference);
 
 	return (
 		<GeneratorPanel ariaLabel="颜色转换工具" controls={controls} result={resultPanel} />

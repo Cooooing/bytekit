@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback, memo } from 'react';
 import { useTheme } from '../../../themes/ThemeContext';
 
 interface CopyRowProps {
@@ -6,11 +6,11 @@ interface CopyRowProps {
 	value: string;
 }
 
-export default function CopyRow({ label, value }: CopyRowProps) {
+const CopyRow = memo(function CopyRow({ label, value }: CopyRowProps) {
 	const [copied, setCopied] = useState(false);
 	const { Button } = useTheme();
 
-	async function handleCopy() {
+	const handleCopy = useCallback(async () => {
 		try {
 			await navigator.clipboard.writeText(value);
 			setCopied(true);
@@ -18,7 +18,7 @@ export default function CopyRow({ label, value }: CopyRowProps) {
 		} catch {
 			// ignore
 		}
-	}
+	}, [value]);
 
 	return (
 		<div className="copy-row">
@@ -29,4 +29,6 @@ export default function CopyRow({ label, value }: CopyRowProps) {
 			</Button>
 		</div>
 	);
-}
+});
+
+export default CopyRow;

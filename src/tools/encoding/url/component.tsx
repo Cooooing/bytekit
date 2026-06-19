@@ -1,6 +1,6 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
-import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { encodeUrl, decodeUrl } from './functions';
 import { urlReference } from './references';
@@ -9,7 +9,6 @@ import { useTheme } from '../../../themes/ThemeContext';
 
 export default function UrlCodec() {
 	const { Button } = useTheme();
-	const { setRefContent } = useRefPanel();
 	const [state, setState] = useToolStorage('bytekit:tool:url:v1', {
 		input: 'https://example.com/path?name=你好&lang=中文',
 		lastAction: 'encode' as 'encode' | 'decode',
@@ -78,10 +77,7 @@ export default function UrlCodec() {
 		</div>
 	);
 
-	useEffect(() => {
-		setRefContent({ title: 'URL 编码参考', sections: urlReference });
-		return () => setRefContent(null);
-	}, [setRefContent]);
+	useToolRefPanel('URL 编码参考', urlReference);
 
 	return (
 		<GeneratorPanel ariaLabel="URL 编解码工具" controls={controls} result={resultPanel} />

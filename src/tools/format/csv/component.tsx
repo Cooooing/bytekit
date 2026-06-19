@@ -2,8 +2,10 @@ import { useMemo } from 'react';
 import CodeEditor from '../../../components/shared/editor/CodeEditor';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { jsonToCsv, csvToJson } from './functions';
+import { csvReference } from './references';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 import { useTheme } from '../../../themes/ThemeContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 const text = {
 	tool: 'JSON ↔ CSV',
@@ -34,6 +36,8 @@ export default function CsvConverter() {
 		lastAction === 'toCsv' ? jsonToCsv(input) : csvToJson(input),
 		[input, lastAction]
 	);
+
+	useToolRefPanel('CSV 格式参考', csvReference);
 
 	return (
 		<IoWorkbench

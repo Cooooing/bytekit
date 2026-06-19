@@ -1,11 +1,11 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
 import CodeEditor from '../../../components/shared/editor/CodeEditor';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { minifyCss, beautifyCss } from './functions';
 import { cssReference } from './references';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 import { useTheme } from '../../../themes/ThemeContext';
-import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 const text = {
 	tool: 'CSS 压缩/美化',
@@ -19,7 +19,6 @@ const text = {
 
 export default function CssMinify() {
 	const { Button } = useTheme();
-	const { setRefContent } = useRefPanel();
 	const [state, setState] = useToolStorage('bytekit:tool:css:v1', {
 		input: 'body {\n  margin: 0;\n  padding: 0;\n  font-family: sans-serif;\n}\n\n.container {\n  max-width: 1200px;\n  margin: 0 auto;\n  padding: 16px;\n}',
 		output: '',
@@ -38,10 +37,7 @@ export default function CssMinify() {
 		[input, lastAction]
 	);
 
-	useEffect(() => {
-		setRefContent({ title: 'CSS 参考', sections: cssReference });
-		return () => setRefContent(null);
-	}, [setRefContent]);
+	useToolRefPanel('CSS 参考', cssReference);
 
 	return (
 		<>

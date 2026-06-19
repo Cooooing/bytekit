@@ -1,9 +1,11 @@
 import { Hash, RotateCw, Shuffle } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { generatePassword, type PasswordMode } from './functions';
+import { useMemo, useState, useCallback } from 'react';
+import { generatePassword, computeEntropy, type PasswordMode } from './functions';
+import { passwordReference } from './references';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { useTheme } from '../../../themes/ThemeContext';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 const modeOptions: Array<{ value: PasswordMode; label: string; icon: typeof Shuffle }> = [
 	{ value: 'random', label: '随机', icon: Shuffle },
@@ -44,11 +46,16 @@ export default function PasswordGenerator() {
 
 	const output = result.ok ? result.password : '';
 
-	function updateSetting<Key extends keyof typeof state>(key: Key, value: typeof state[Key]) {
-		setState((current) => ({ ...current, [key]: value }));
-	}
+	const entropy = useMemo(
+		() => computeEntropy({ mode, length, lowercase, uppercase, numbers, symbols }),
+		[mode, length, lowercase, uppercase, numbers, symbols],
+	);
 
-	async function copyPassword() {
+	const updateSetting = useCallback(<Key extends keyof typeof state>(key: Key, value: typeof state[Key]) => {
+		setState((current) => ({ ...current, [key]: value }));
+	}, []);
+
+	const copyPassword = useCallback(async () => {
 		if (!output) return;
 		try {
 			await navigator.clipboard.writeText(output);
@@ -56,18 +63,18 @@ export default function PasswordGenerator() {
 		} catch {
 			setNotice('复制失败');
 		}
-	}
+	}, [output]);
 
-	function switchMode(nextMode: PasswordMode) {
+	const switchMode = useCallback((nextMode: PasswordMode) => {
 		setState((current) => ({
 			...current,
 			mode: nextMode,
 			length: nextMode === 'pin' ? 6 : Math.max(current.length, 12),
 		}));
 		setNonce((value) => value + 1);
-	}
+	}, []);
 
-	const controls = (
+	const controls = useMemo(() => (
 		<div className="tool-card tool-card--controls">
 			<div className="tool-card__section">
 				<h2 className="tool-card__title">选择密码类型</h2>
@@ -135,9 +142,9 @@ export default function PasswordGenerator() {
 				) : null}
 			</div>
 		</div>
-	);
+	), [mode, switchMode, length, lowercase, uppercase, numbers, symbols, updateSetting]);
 
-	const resultPanel = (
+	const resultPanel = useMemo(() => (
 		<div className="tool-card tool-card--result">
 			<div className="tool-card__title-row">
 				<h2 className="tool-card__title">生成密码</h2>
@@ -146,10 +153,21 @@ export default function PasswordGenerator() {
 			<div className={result.ok ? 'password-output' : 'password-output password-output--error'}>
 				{result.ok ? renderPassword(output) : result.error}
 			</div>
+			{result.ok ? (
+				<div className="password-strength">
+					<div className="password-strength__bar">
+						<div className={`password-strength__fill password-strength__fill--${entropy.strength}`} />
+					</div>
+					<div className="password-strength__info">
+						<span className="password-strength__label">{entropy.strengthLabel}</span>
+						<span className="password-strength__bits">{entropy.bits} bits · 字符集 {entropy.poolSize}</span>
+					</div>
+				</div>
+			) : null}
 		</div>
-	);
+	), [result, output, notice, entropy]);
 
-	const actions = (
+	const actions = useMemo(() => (
 		<div className="tool-card__actions">
 			<Button disabled={!result.ok || !output} onClick={copyPassword}>复制密码</Button>
 			<Button variant="secondary" onClick={() => setNonce((value) => value + 1)}>
@@ -157,7 +175,9 @@ export default function PasswordGenerator() {
 				刷新密码
 			</Button>
 		</div>
-	);
+	), [result, output, copyPassword]);
+
+	useToolRefPanel('密码安全参考', passwordReference);
 
 	return <GeneratorPanel ariaLabel="随机密码工具" controls={controls} result={resultPanel} actions={actions} />;
 }

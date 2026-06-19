@@ -2,7 +2,9 @@ import { useMemo, useState } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { toCamelCase, toSnakeCase, toKebabCase, toPascalCase, toUpperCase, toLowerCase } from './functions';
+import { caseReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 const converters = [
 	{ label: 'camelCase', fn: toCamelCase },
@@ -53,6 +55,8 @@ export default function CaseConverter() {
 			)}
 		</div>
 	);
+
+	useToolRefPanel('大小写格式参考', caseReference);
 
 	return <GeneratorPanel ariaLabel="大小写转换工具" controls={controls} result={resultPanel} />;
 }

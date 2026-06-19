@@ -76,3 +76,41 @@ export function generatePassword(options: PasswordOptions): PasswordResult {
 
 	return { ok: true, password: shuffle(chars).join('') };
 }
+
+const POOL_SIZES = { lowercase: 26, uppercase: 26, numbers: 10, symbols: 24 } as const;
+
+export interface EntropyResult {
+	bits: number;
+	poolSize: number;
+	strength: 'very-weak' | 'weak' | 'fair' | 'strong' | 'very-strong';
+	strengthLabel: string;
+}
+
+const STRENGTH_LABELS: Record<EntropyResult['strength'], string> = {
+	'very-weak': '极弱',
+	weak: '弱',
+	fair: '一般',
+	strong: '强',
+	'very-strong': '极强',
+};
+
+export function computeEntropy(options: PasswordOptions): EntropyResult {
+	const mode = options.mode ?? 'random';
+	const poolSize = mode === 'pin'
+		? POOL_SIZES.numbers
+		: (options.lowercase ? POOL_SIZES.lowercase : 0)
+			+ (options.uppercase ? POOL_SIZES.uppercase : 0)
+			+ (options.numbers ? POOL_SIZES.numbers : 0)
+			+ (options.symbols ? POOL_SIZES.symbols : 0);
+
+	const bits = poolSize > 0 ? Math.round(options.length * Math.log2(poolSize) * 10) / 10 : 0;
+
+	let strength: EntropyResult['strength'];
+	if (bits < 28) strength = 'very-weak';
+	else if (bits < 36) strength = 'weak';
+	else if (bits < 60) strength = 'fair';
+	else if (bits < 128) strength = 'strong';
+	else strength = 'very-strong';
+
+	return { bits, poolSize, strength, strengthLabel: STRENGTH_LABELS[strength] };
+}

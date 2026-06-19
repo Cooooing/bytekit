@@ -1,11 +1,11 @@
-import { useMemo, useEffect } from 'react';
+import { useMemo } from 'react';
 import CodeEditor from '../../../components/shared/editor/CodeEditor';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { decodeBase64, encodeBase64 } from './functions';
 import { base64Reference } from './references';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 import { useTheme } from '../../../themes/ThemeContext';
-import { useRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
 const text = {
 	tool: 'Base64 编解码工具',
@@ -19,7 +19,6 @@ const text = {
 
 export default function Base64Codec() {
 	const { Button } = useTheme();
-	const { setRefContent } = useRefPanel();
 	const [state, setState] = useToolStorage('bytekit:tool:base64:v1', {
 		input: 'Bytekit',
 		output: '',
@@ -39,10 +38,7 @@ export default function Base64Codec() {
 
 	const encodeResult = useMemo(() => encodeBase64(input), [input]);
 
-	useEffect(() => {
-		setRefContent({ title: 'Base64 参考', sections: base64Reference });
-		return () => setRefContent(null);
-	}, [setRefContent]);
+	useToolRefPanel('Base64 参考', base64Reference);
 
 	return (
 		<>
