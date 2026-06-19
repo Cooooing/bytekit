@@ -38,9 +38,23 @@ Thumbs.db
 .gitnexus
 .agents/
 .claude/
+.agent/
 .playwright-mcp/
 AGENTS.md
 CLAUDE.md
+
+# AI editor configs (do not commit)
+.codebuddy/
+.codex/
+.continue/
+.cursor/
+.gemini/
+.kiro/
+.opencode/
+.qoder/
+.roo/
+.trae/
+.windsurf/
 
 # internal docs
 doc/
