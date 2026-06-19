@@ -13,37 +13,44 @@ interface ReferenceSection {
 interface ReferencePanelProps {
 	title: string;
 	sections: ReferenceSection[];
+	collapsed?: boolean;
+	onToggleCollapse?: () => void;
 }
 
-export default function ReferencePanel({ title, sections }: ReferencePanelProps) {
+export default function ReferencePanel({ title, sections, collapsed, onToggleCollapse }: ReferencePanelProps) {
 	const [isOpen, setIsOpen] = useState(true);
+	const isCollapsed = collapsed ?? false;
 
 	return (
-		<div className="ref-panel">
+		<div className={`ref-panel${isCollapsed ? ' ref-panel--collapsed' : ''}`}>
 			<button
 				className="ref-panel__toggle"
 				type="button"
-				onClick={() => setIsOpen(!isOpen)}
-				aria-expanded={isOpen}
+				onClick={onToggleCollapse ?? (() => setIsOpen(!isOpen))}
+				aria-expanded={isCollapsed ? undefined : isOpen}
+				aria-label={isCollapsed ? '展开参考' : '收起参考'}
+				title={isCollapsed ? '展开参考' : '收起参考'}
 			>
 				<span className="ref-panel__title">{title}</span>
-				<span className="ref-panel__arrow">{isOpen ? '▼' : '▶'}</span>
+				<span className="ref-panel__arrow">{isCollapsed ? '◀' : isOpen ? '▼' : '▶'}</span>
 			</button>
-			<div className={`ref-panel__body${isOpen ? '' : ' ref-panel__body--collapsed'}`}>
-				{sections.map((section) => (
-					<div key={section.title} className="ref-section">
-						<h3 className="ref-section__title">{section.title}</h3>
-						<div className="ref-section__items">
-							{section.items.map((item) => (
-								<div key={item.syntax} className="ref-item">
-									<code className="ref-item__syntax">{item.syntax}</code>
-									<span className="ref-item__desc">{item.desc}</span>
-								</div>
-							))}
+			{!isCollapsed && (
+				<div className={`ref-panel__body${isOpen ? '' : ' ref-panel__body--collapsed'}`}>
+					{sections.map((section) => (
+						<div key={section.title} className="ref-section">
+							<h3 className="ref-section__title">{section.title}</h3>
+							<div className="ref-section__items">
+								{section.items.map((item) => (
+									<div key={item.syntax} className="ref-item">
+										<code className="ref-item__syntax">{item.syntax}</code>
+										<span className="ref-item__desc">{item.desc}</span>
+									</div>
+								))}
+							</div>
 						</div>
-					</div>
-				))}
-			</div>
+					))}
+				</div>
+			)}
 		</div>
 	);
 }

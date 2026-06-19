@@ -76,17 +76,12 @@ export default function AppShell({ initialToolId }: AppShellProps) {
 			</section>
 			{refContent ? (
 				<aside className={`tool-ref-sidebar${refCollapsed ? ' tool-ref-sidebar--collapsed' : ''}`}>
-					<button
-						className="tool-ref-sidebar__toggle"
-						type="button"
-						onClick={() => setRefCollapsed((v) => !v)}
-						aria-label={refCollapsed ? '展开参考' : '收起参考'}
-						title={refCollapsed ? '展开参考' : '收起参考'}
-					>
-						<span className="tool-ref-sidebar__title">参考</span>
-						<span className="tool-ref-sidebar__arrow">{refCollapsed ? '◀' : '▶'}</span>
-					</button>
-					{!refCollapsed && <ReferencePanel title={refContent.title} sections={refContent.sections} />}
+					<ReferencePanel
+						title={refContent.title}
+						sections={refContent.sections}
+						collapsed={refCollapsed}
+						onToggleCollapse={() => setRefCollapsed((v) => !v)}
+					/>
 				</aside>
 			) : null}
 		</div>
