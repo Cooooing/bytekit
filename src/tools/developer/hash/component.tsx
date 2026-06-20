@@ -31,7 +31,7 @@ export default function HashGenerator() {
 					placeholder="输入要计算哈希的内容"
 					aria-label="输入内容"
 					rows={4}
-					style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface-subtle)', color: 'var(--text)', fontFamily: 'monospace', fontSize: '0.875rem', resize: 'vertical' }}
+					className="tool-textarea"
 				/>
 			</div>
 		</div>

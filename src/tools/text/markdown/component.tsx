@@ -45,7 +45,7 @@ export default function MarkdownPreview() {
 					</div>
 					<div
 						className="markdown-preview"
-						style={{ padding: '16px', overflow: 'auto', minHeight: 'var(--editor-height-default)', background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '0 0 var(--radius-md) var(--radius-md)' }}
+						style={{ padding: '16px', overflow: 'auto', minHeight: 'var(--editor-height-default)' }}
 						dangerouslySetInnerHTML={{ __html: html }}
 					/>
 				</div>

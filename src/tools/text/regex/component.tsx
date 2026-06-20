@@ -63,9 +63,8 @@ export default function RegexTester() {
 	useToolRefPanel('正则语法速查', regexReference);
 
 	return (
-		
-				<>
-					<div className="regex-tester__pattern">
+		<div className="regex-tester">
+			<div className="regex-tester__pattern">
 						<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
 							<h2 className="tool-card__title" style={{ margin: 0 }}>正则表达式</h2>
 							<Button variant="secondary" size="sm" onClick={copyRegex}>{copied ? '已复制' : '复制正则'}</Button>
@@ -151,7 +150,7 @@ export default function RegexTester() {
 					{!result.ok && (
 						<div style={{ color: 'var(--semantic-danger)', fontSize: '0.875rem' }}>{result.error}</div>
 					)}
-				</>
+				</div>
 	);
 }
 

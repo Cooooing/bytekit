@@ -30,7 +30,6 @@ export default function TimestampConverter() {
 					onChange={(e) => setInput(e.target.value)}
 					placeholder="如 1700000000 或 2024-01-01"
 					aria-label="时间戳输入"
-					style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface-subtle)', color: 'var(--text)' }}
 				/>
 				<div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
 					<Button variant="secondary" onClick={setToNow}>当前（秒）</Button>
