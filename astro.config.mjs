@@ -23,12 +23,14 @@ export default defineConfig({
 	vite: {
 		build: {
 			rollupOptions: {
-				output: {
-					manualChunks: {
-						'react-vendor': ['react', 'react-dom'],
-						'codemirror-core': ['@codemirror/view', '@codemirror/state'],
+				...(!isVercel ? {
+					output: {
+						manualChunks: {
+							'react-vendor': ['react', 'react-dom'],
+							'codemirror-core': ['@codemirror/view', '@codemirror/state'],
+						},
 					},
-				},
+				} : {}),
 				...(isVercel ? { external: ['cloudflare:workers'] } : {}),
 			},
 		},
