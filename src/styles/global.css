@@ -1,0 +1,4 @@
+@import "tailwindcss";
+@import "../themes/base.css";
+@import "../themes/tools.css";
+@import "../themes/animal-island/styles.css";

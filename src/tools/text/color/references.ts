@@ -4,8 +4,9 @@ export const colorReference = [
 		items: [
 			{ syntax: 'HEX', desc: '#FF5733（6位）或 #F53（3位缩写）' },
 			{ syntax: 'RGB', desc: 'rgb(255, 87, 51) 取值 0-255' },
-			{ syntax: 'HSL', desc: 'hsl(14, 100%, 60%) 色相0-360 饱和度/亮度0-100%' },
 			{ syntax: 'RGBA', desc: '带透明度：rgba(255,87,51,0.5)' },
+			{ syntax: 'HSL', desc: 'hsl(14, 100%, 60%) 色相0-360 饱和度/亮度0-100%' },
+			{ syntax: 'HSLA', desc: '带透明度：hsla(14,100%,60%,0.5)' },
 		],
 	},
 	{

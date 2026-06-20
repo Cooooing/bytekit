@@ -6,6 +6,8 @@ export const csvReference = [
 			{ syntax: '"..."', desc: '字段包含逗号/换行时用双引号包裹' },
 			{ syntax: '""', desc: '双引号字段内的双引号用两个双引号转义' },
 			{ syntax: '\\n', desc: '字段内换行需用双引号包裹整个字段' },
+			{ syntax: 'CRLF/LF', desc: 'Windows 常见 CRLF，Unix 常见 LF，本工具会兼容解析' },
+			{ syntax: '空字段', desc: '连续分隔符表示空字段，例如 a,,c' },
 		],
 	},
 	{
@@ -15,6 +17,14 @@ export const csvReference = [
 			{ syntax: '表头行', desc: '第一行通常为列名，便于数据处理' },
 			{ syntax: '类型推断', desc: 'CSV 无类型信息，数字/日期均为文本' },
 			{ syntax: '大文件', desc: '超过 100MB 建议分块处理或用流式解析' },
+		],
+	},
+	{
+		title: '转换提示',
+		items: [
+			{ syntax: 'CSV → JSON', desc: '首行会作为对象字段名，后续行按字段名映射' },
+			{ syntax: 'JSON → CSV', desc: '对象数组会输出为表格；缺失字段输出为空值' },
+			{ syntax: '分隔符', desc: '切换分隔符后需要重新执行转换' },
 		],
 	},
 ];

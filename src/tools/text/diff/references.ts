@@ -10,7 +10,7 @@ export const diffReference = [
 	{
 		title: '输出格式',
 		items: [
-			{ syntax: '逐行对比', desc: '逐行逐字符比较，高亮差异部分' },
+			{ syntax: '逐行对比', desc: '按行比较文本，整行标记相同、新增或删除' },
 			{ syntax: '新增行', desc: '蓝色高亮，标记为 + ' },
 			{ syntax: '删除行', desc: '红色高亮，标记为 - ' },
 			{ syntax: '统计信息', desc: '显示相同/新增/删除行数' },

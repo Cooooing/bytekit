@@ -1,11 +1,13 @@
 import { Hash, RotateCw, Shuffle } from 'lucide-react';
-import { useMemo, useState, useCallback } from 'react';
-import { generatePassword, computeEntropy, type PasswordMode } from './functions';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import { generatePassword, computeEntropy, PIN_MAX_LENGTH, RANDOM_PASSWORD_MAX_LENGTH, type PasswordMode } from './functions';
 import { passwordReference } from './references';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { useTheme } from '../../../themes/ThemeContext';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useTransientNotice } from '../../../hooks/useTransientNotice';
+import { useAppMessage, useMessageOnError } from '../../../components/shared/ui/AppMessage';
 
 const modeOptions: Array<{ value: PasswordMode; label: string; icon: typeof Shuffle }> = [
 	{ value: 'random', label: '随机', icon: Shuffle },
@@ -28,6 +30,7 @@ function renderPassword(value: string) {
 
 export default function PasswordGenerator() {
 	const { Button } = useTheme();
+	const message = useAppMessage();
 	const [state, setState] = useToolStorage('bytekit:tool:password:v1', {
 		mode: 'random' as PasswordMode,
 		length: 16,
@@ -37,14 +40,18 @@ export default function PasswordGenerator() {
 		symbols: true,
 	});
 	const { mode, length, lowercase, uppercase, numbers, symbols } = state;
+	const [isReady, setIsReady] = useState(false);
 	const [nonce, setNonce] = useState(0);
-	const [notice, setNotice] = useState('');
+	const [notice, showNotice] = useTransientNotice();
+	const [lastPassword, setLastPassword] = useState('');
 	const result = useMemo(
-		() => generatePassword({ mode, length, lowercase, uppercase, numbers, symbols }),
-		[mode, length, lowercase, uppercase, numbers, symbols, nonce],
+		() => isReady ? generatePassword({ mode, length, lowercase, uppercase, numbers, symbols }) : { ok: false as const, error: '正在生成密码。' },
+		[isReady, mode, length, lowercase, uppercase, numbers, symbols, nonce],
 	);
 
 	const output = result.ok ? result.password : '';
+	const displayPassword = result.ok ? result.password : lastPassword;
+	useMessageOnError(!isReady || result.ok ? undefined : result.error);
 
 	const entropy = useMemo(
 		() => computeEntropy({ mode, length, lowercase, uppercase, numbers, symbols }),
@@ -55,24 +62,42 @@ export default function PasswordGenerator() {
 		setState((current) => ({ ...current, [key]: value }));
 	}, []);
 
+	const normalizeLength = useCallback((value: number) => {
+		const max = mode === 'pin' ? PIN_MAX_LENGTH : RANDOM_PASSWORD_MAX_LENGTH;
+		const next = Number.isFinite(value) ? Math.round(value) : 4;
+		const clamped = Math.min(max, Math.max(4, next));
+		updateSetting('length', clamped);
+		if (clamped !== value) showNotice(`长度已调整为 ${clamped}`);
+	}, [mode, showNotice, updateSetting]);
+
 	const copyPassword = useCallback(async () => {
 		if (!output) return;
 		try {
 			await navigator.clipboard.writeText(output);
-			setNotice('已复制');
+			showNotice('已复制');
 		} catch {
-			setNotice('复制失败');
+			message.error('复制失败。');
 		}
-	}, [output]);
+	}, [message, output, showNotice]);
 
 	const switchMode = useCallback((nextMode: PasswordMode) => {
 		setState((current) => ({
 			...current,
 			mode: nextMode,
-			length: nextMode === 'pin' ? 6 : Math.max(current.length, 12),
+			length: nextMode === 'pin' ? Math.min(current.length, PIN_MAX_LENGTH) : Math.max(current.length, PIN_MAX_LENGTH),
 		}));
 		setNonce((value) => value + 1);
 	}, []);
+
+	const maxLength = mode === 'pin' ? PIN_MAX_LENGTH : RANDOM_PASSWORD_MAX_LENGTH;
+
+	useEffect(() => {
+		setIsReady(true);
+	}, []);
+
+	useEffect(() => {
+		if (result.ok) setLastPassword(result.password);
+	}, [result]);
 
 	const controls = useMemo(() => (
 		<div className="tool-card tool-card--controls">
@@ -106,7 +131,7 @@ export default function PasswordGenerator() {
 						className="password-range"
 						type="range"
 						min={4}
-						max={mode === 'pin' ? 12 : 128}
+						max={maxLength}
 						value={length}
 						onChange={(event) => updateSetting('length', Number(event.target.value))}
 					/>
@@ -114,9 +139,10 @@ export default function PasswordGenerator() {
 						className="password-length-input"
 						type="number"
 						min={4}
-						max={mode === 'pin' ? 12 : 128}
+						max={maxLength}
 						value={length}
 						onChange={(event) => updateSetting('length', Number(event.target.value))}
+						onBlur={(event) => normalizeLength(Number(event.target.value))}
 						aria-label="密码长度"
 					/>
 				</div>
@@ -142,16 +168,16 @@ export default function PasswordGenerator() {
 				) : null}
 			</div>
 		</div>
-	), [mode, switchMode, length, lowercase, uppercase, numbers, symbols, updateSetting]);
+	), [mode, switchMode, length, maxLength, lowercase, uppercase, numbers, symbols, updateSetting]);
 
 	const resultPanel = useMemo(() => (
 		<div className="tool-card tool-card--result">
 			<div className="tool-card__title-row">
 				<h2 className="tool-card__title">生成密码</h2>
-				{notice ? <span className="password-notice">{notice}</span> : null}
+				{notice ? <span className="password-notice" role="status" aria-live="polite">{notice}</span> : null}
 			</div>
-			<div className={result.ok ? 'password-output' : 'password-output password-output--error'}>
-				{result.ok ? renderPassword(output) : result.error}
+			<div className="password-output">
+				{displayPassword ? renderPassword(displayPassword) : <span className="tool-empty-state">调整设置后生成密码。</span>}
 			</div>
 			{result.ok ? (
 				<div className="password-strength">
@@ -165,7 +191,7 @@ export default function PasswordGenerator() {
 				</div>
 			) : null}
 		</div>
-	), [result, output, notice, entropy]);
+	), [result, displayPassword, notice, entropy]);
 
 	const actions = useMemo(() => (
 		<div className="tool-card__actions">

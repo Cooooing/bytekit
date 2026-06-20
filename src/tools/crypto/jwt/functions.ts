@@ -5,8 +5,8 @@ export async function createJwt(
 ): Promise<{ ok: true; token: string } | { ok: false; error: string }> {
 	try {
 		const enc = new TextEncoder();
-		const headerB64 = btoa(JSON.stringify(header)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-		const payloadB64 = btoa(JSON.stringify(payload)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+		const headerB64 = encodeBase64Url(enc.encode(JSON.stringify(header)));
+		const payloadB64 = encodeBase64Url(enc.encode(JSON.stringify(payload)));
 
 		if (!secret || header.alg === 'none') {
 			return { ok: true, token: `${headerB64}.${payloadB64}` };
@@ -14,12 +14,22 @@ export async function createJwt(
 
 		const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
 		const signature = await crypto.subtle.sign('HMAC', key, enc.encode(`${headerB64}.${payloadB64}`));
-		const sigB64 = btoa(String.fromCharCode(...new Uint8Array(signature))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+		const sigB64 = encodeBase64Url(new Uint8Array(signature));
 
 		return { ok: true, token: `${headerB64}.${payloadB64}.${sigB64}` };
 	} catch (e) {
 		return { ok: false, error: 'JWT 生成失败：' + String(e) };
 	}
+}
+
+function encodeBase64Url(bytes: Uint8Array): string {
+	let binary = '';
+
+	for (const byte of bytes) {
+		binary += String.fromCharCode(byte);
+	}
+
+	return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 export type DecodedJwt =

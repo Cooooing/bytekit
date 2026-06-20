@@ -7,8 +7,7 @@ import { jwtReference } from './references';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 import { useTheme } from '../../../themes/ThemeContext';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
-
-const noop = () => {};
+import { useAppMessage, useMessageOnError } from '../../../components/shared/ui/AppMessage';
 
 const DEFAULT_HEADER = JSON.stringify({ alg: 'HS256', typ: 'JWT' }, null, 2);
 const DEFAULT_PAYLOAD = JSON.stringify({ sub: '1001', name: 'Test User', iat: Math.floor(Date.now() / 1000) }, null, 2);
@@ -26,11 +25,13 @@ const text = {
 	json: 'JSON 结果',
 	autoDecode: '输入后自动解析',
 	emptyDecodeMessage: '输入 JWT 后显示 header 和 payload。',
+	decodeMode: '解析模式',
+	createMode: '生成模式',
 	headerLabel: 'Header',
 	payloadLabel: 'Payload',
 	secretLabel: '密钥',
 	secretPlaceholder: '留空则无签名',
-	generate: '生成',
+	generate: '生成 JWT',
 	decodeTitle: 'JWT',
 	decodeResultTitle: '解析结果',
 	createResultTitle: '生成结果',
@@ -43,6 +44,7 @@ function formatResult(result: ReturnType<typeof decodeJwt>) {
 
 export default function JwtDecoder() {
 	const { Button } = useTheme();
+	const message = useAppMessage();
 	const [mode, setMode] = useState<Mode>('decode');
 
 	const [state, setState] = useToolStorage<{
@@ -66,11 +68,12 @@ export default function JwtDecoder() {
 	const decodeResult = useMemo(() => decodeJwt(token), [token]);
 	const isDecodeEmpty = token.trim() === '';
 	const decodeOutput = isDecodeEmpty || !decodeResult.ok ? '' : formatResult(decodeResult);
+	useMessageOnError(!isDecodeEmpty && !decodeResult.ok ? decodeResult.error : undefined);
 
 	// Create mode
-	const setHeader = useCallback((value: string) => setState((current) => ({ ...current, header: value })), [setState]);
-	const setPayload = useCallback((value: string) => setState((current) => ({ ...current, payload: value })), [setState]);
-	const setSecret = useCallback((value: string) => setState((current) => ({ ...current, secret: value })), [setState]);
+	const setHeader = useCallback((value: string) => setState((current) => ({ ...current, header: value, createResult: '' })), [setState]);
+	const setPayload = useCallback((value: string) => setState((current) => ({ ...current, payload: value, createResult: '' })), [setState]);
+	const setSecret = useCallback((value: string) => setState((current) => ({ ...current, secret: value, createResult: '' })), [setState]);
 
 	const handleGenerate = useCallback(async () => {
 		let parsedHeader: Record<string, unknown>;
@@ -78,25 +81,28 @@ export default function JwtDecoder() {
 		try {
 			parsedHeader = JSON.parse(header);
 		} catch {
-			setState((current) => ({ ...current, createResult: '// Header: 无效的 JSON' }));
+			message.error('Header: 无效的 JSON');
 			return;
 		}
 		try {
 			parsedPayload = JSON.parse(payload);
 		} catch {
-			setState((current) => ({ ...current, createResult: '// Payload: 无效的 JSON' }));
+			message.error('Payload: 无效的 JSON');
 			return;
 		}
 		const result = await createJwt(parsedHeader, parsedPayload, secret || undefined);
+		if (!result.ok) {
+			message.error(result.error);
+			return;
+		}
 		setState((current) => ({
 			...current,
-			createResult: result.ok ? result.token : '// ' + result.error,
+			createResult: result.token,
 		}));
-	}, [header, payload, secret, setState]);
+	}, [header, payload, secret, message, setState]);
 
 	const createStatus = useMemo(() => {
 		if (!createResult) return 'neutral' as const;
-		if (createResult.startsWith('//')) return 'error' as const;
 		return 'success' as const;
 	}, [createResult]);
 
@@ -108,9 +114,8 @@ export default function JwtDecoder() {
 
 	const decodeActions = (
 		<>
-			<Button variant="primary" onClick={() => handleModeChange('decode')}>{text.decode}</Button>
-			<Button variant="secondary" onClick={() => handleModeChange('create')}>{text.create}</Button>
-			<Button variant="primary" disabled={isDecodeEmpty || !decodeResult.ok}>{text.decode}</Button>
+			<Button variant="primary" onClick={() => handleModeChange('decode')}>{text.decodeMode}</Button>
+			<Button variant="secondary" onClick={() => handleModeChange('create')}>{text.createMode}</Button>
 			<span style={{ fontSize: '0.8125rem', color: 'var(--muted)' }}>{text.autoDecode}</span>
 			<Badge tone={isDecodeEmpty ? 'neutral' : decodeResult.ok ? 'success' : 'danger'}>{isDecodeEmpty ? text.empty : decodeResult.ok ? text.success : text.fail}</Badge>
 		</>
@@ -118,10 +123,10 @@ export default function JwtDecoder() {
 
 	const createActions = (
 		<>
-			<Button variant="secondary" onClick={() => handleModeChange('decode')}>{text.decode}</Button>
-			<Button variant="primary" onClick={() => handleModeChange('create')}>{text.create}</Button>
+			<Button variant="secondary" onClick={() => handleModeChange('decode')}>{text.decodeMode}</Button>
+			<Button variant="primary" onClick={() => handleModeChange('create')}>{text.createMode}</Button>
 			<Button variant="primary" onClick={handleGenerate}>{text.generate}</Button>
-			<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginLeft: '8px' }}>
+			<div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px', minWidth: 0 }}>
 				<label style={{ fontSize: '0.8125rem', color: 'var(--muted)' }}>{text.secretLabel}</label>
 				<input
 					type="text"
@@ -134,8 +139,8 @@ export default function JwtDecoder() {
 						borderRadius: '6px',
 						padding: '4px 8px',
 						fontSize: '0.8125rem',
-						color: 'var(--fg)',
-						width: '140px',
+						color: 'var(--text)',
+						width: 'min(140px, 100%)',
 					}}
 					aria-label={text.secretLabel}
 				/>
@@ -149,7 +154,7 @@ export default function JwtDecoder() {
 				ariaLabel={text.tool}
 				actions={decodeActions}
 				input={<CodeEditor title={text.decodeTitle} value={token} onChange={setToken} language="text" status={isDecodeEmpty ? 'neutral' : decodeResult.ok ? 'success' : 'error'} statusText={isDecodeEmpty ? text.waiting : decodeResult.ok ? text.success : text.fail} />}
-				output={<CodeEditor title={text.decodeResultTitle} value={decodeOutput} language="json" status={isDecodeEmpty ? 'neutral' : decodeResult.ok ? 'success' : 'error'} statusText={isDecodeEmpty ? text.empty : decodeResult.ok ? text.json : text.fail} message={isDecodeEmpty ? text.emptyDecodeMessage : undefined} error={isDecodeEmpty || decodeResult.ok ? undefined : decodeResult.error} onChange={noop} />}
+				output={<CodeEditor title={text.decodeResultTitle} value={decodeOutput} language="json" status={isDecodeEmpty ? 'neutral' : decodeResult.ok ? 'success' : 'neutral'} statusText={isDecodeEmpty ? text.empty : decodeResult.ok ? text.json : text.empty} message={isDecodeEmpty ? text.emptyDecodeMessage : undefined} />}
 			/>
 		);
 	}
@@ -164,7 +169,7 @@ export default function JwtDecoder() {
 					<CodeEditor title={text.payloadLabel} value={payload} onChange={setPayload} language="json" />
 				</div>
 			}
-			output={<CodeEditor title={text.createResultTitle} value={createResult} language="text" status={createStatus} statusText={createStatus === 'success' ? text.success : createStatus === 'error' ? text.fail : '等待生成'} onChange={noop} />}
+			output={<CodeEditor title={text.createResultTitle} value={createResult} language="text" status={createStatus} statusText={createStatus === 'success' ? text.success : '等待生成'} />}
 		/>
 	);
 }

@@ -2,8 +2,11 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import type { Extension } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { tags } from '@lezer/highlight';
 import Badge, { type BadgeTone } from '../ui/Badge';
 import { useTheme } from '../../../themes/ThemeContext';
+import { useTransientNotice } from '../../../hooks/useTransientNotice';
 
 export type CodeEditorLanguage = 'text' | 'json' | 'javascript' | 'html' | 'css';
 export type CodeEditorStatus = 'neutral' | 'success' | 'error';
@@ -12,7 +15,7 @@ export type CodeEditorMessageTone = 'neutral' | 'error';
 interface CodeEditorProps {
 	title: string;
 	value: string;
-	onChange: (value: string) => void;
+	onChange?: (value: string) => void;
 	language?: CodeEditorLanguage;
 	status?: CodeEditorStatus;
 	statusText?: string;
@@ -21,6 +24,7 @@ interface CodeEditorProps {
 	error?: string;
 	minHeight?: 'default' | 'compact' | string;
 	className?: string;
+	readOnly?: boolean;
 }
 
 const label = {
@@ -47,6 +51,17 @@ const basicSetup = {
 	highlightActiveLine: true,
 	bracketMatching: true,
 };
+
+const themeHighlightStyle = HighlightStyle.define([
+	{ tag: tags.string, color: 'var(--code-token-string, #116329)' },
+	{ tag: tags.number, color: 'var(--code-token-number, #175cd3)' },
+	{ tag: tags.bool, color: 'var(--code-token-bool, #7a3db8)' },
+	{ tag: tags.null, color: 'var(--code-token-null, #7a3db8)' },
+	{ tag: tags.keyword, color: 'var(--code-token-keyword, #7a3db8)', fontWeight: '600' },
+	{ tag: tags.propertyName, color: 'var(--code-token-property, #0f54b8)' },
+	{ tag: tags.comment, color: 'var(--code-token-comment, #647089)', fontStyle: 'italic' },
+	{ tag: tags.punctuation, color: 'var(--code-token-punctuation, var(--text-secondary))' },
+]);
 
 function meta(value: string) {
 	const lines = value === '' ? 0 : value.split('\n').length;
@@ -77,8 +92,9 @@ export default function CodeEditor({
 	error,
 	minHeight = 'default',
 	className,
+	readOnly,
 }: CodeEditorProps) {
-	const [notice, setNotice] = useState('');
+	const [notice, showNotice] = useTransientNotice();
 	const { Button } = useTheme();
 	const [extensions, setExtensions] = useState<Extension[]>([]);
 
@@ -90,32 +106,28 @@ export default function CodeEditor({
 		return () => { cancelled = true; };
 	}, [language]);
 
-	const allExtensions = useMemo(() => [EditorView.lineWrapping, ...extensions], [extensions]);
+	const allExtensions = useMemo(() => [EditorView.lineWrapping, syntaxHighlighting(themeHighlightStyle, { fallback: true }), ...extensions], [extensions]);
+	const isReadOnly = readOnly ?? !onChange;
 	const isEmpty = value.length === 0;
 	const editorMessage = error ?? message;
 	const editorMessageTone = error ? 'error' : messageTone;
 	const editorMessageClassName = 'code-editor__message code-editor__message--' + editorMessageTone;
 	const editorStyle = { '--code-editor-min-height': editorHeight(minHeight) } as CSSProperties;
 
-	useEffect(() => {
-		if (!notice) return;
-		const timer = window.setTimeout(() => setNotice(''), 1400);
-		return () => window.clearTimeout(timer);
-	}, [notice]);
-
 	async function copyValue() {
 		if (isEmpty) return;
 		try {
 			await navigator.clipboard.writeText(value);
-			setNotice(label.copied);
+			showNotice(label.copied);
 		} catch {
-			setNotice(label.copyFailed);
+			showNotice(label.copyFailed);
 		}
 	}
 
 	function clearValue() {
+		if (!onChange || isReadOnly) return;
 		onChange('');
-		setNotice(label.cleared);
+		showNotice(label.cleared);
 	}
 
 	return (
@@ -127,9 +139,9 @@ export default function CodeEditor({
 				</div>
 				<div className="code-editor__actions">
 					{statusText ? <Badge tone={statusTone(status)}>{statusText}</Badge> : null}
-					{notice ? <span className="code-editor__action-status">{notice}</span> : null}
+					{notice ? <span className="code-editor__action-status" role="status" aria-live="polite">{notice}</span> : null}
 					<Button variant="secondary" size="sm" disabled={isEmpty} onClick={copyValue}>{label.copy}</Button>
-					<Button variant="ghost" size="sm" disabled={isEmpty} onClick={clearValue}>{label.clear}</Button>
+					{!isReadOnly ? <Button variant="ghost" size="sm" disabled={isEmpty} onClick={clearValue}>{label.clear}</Button> : null}
 				</div>
 			</div>
 			{editorMessage ? <div className={editorMessageClassName}>{editorMessage}</div> : null}
@@ -138,7 +150,8 @@ export default function CodeEditor({
 				value={value}
 				basicSetup={basicSetup}
 				extensions={allExtensions}
-				onChange={onChange}
+				onChange={isReadOnly ? undefined : onChange}
+				readOnly={isReadOnly}
 			/>
 		</div>
 	);

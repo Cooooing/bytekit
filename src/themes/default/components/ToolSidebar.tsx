@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronDown } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { getToolsByCategory, toolCategories, tools } from '../../../tools/registry';
 
 interface ToolSidebarProps {
@@ -20,12 +20,13 @@ function readCollapsed() {
 export default function ToolSidebar({ activeToolId, onSelectTool }: ToolSidebarProps) {
 	const [openState, setOpenState] = useState<OpenState>(readOpenState);
 	const [collapsed, setCollapsed] = useState(readCollapsed);
+	const sidebarRef = useRef<HTMLElement | null>(null);
 	const activeTool = tools.find((tool) => tool.id === activeToolId);
 
 	const normalizedOpenState = useMemo(() => {
 		const next: OpenState = {};
 		for (const category of toolCategories) {
-			next[category.id] = openState[category.id] ?? category.id === activeTool?.category;
+			next[category.id] = category.id === activeTool?.category || (openState[category.id] ?? false);
 		}
 		return next;
 	}, [activeTool?.category, openState]);
@@ -47,12 +48,22 @@ export default function ToolSidebar({ activeToolId, onSelectTool }: ToolSidebarP
 		window.localStorage.setItem('bytekit:tool-nav:collapsed:v1', String(collapsed));
 	}, [collapsed]);
 
+	useEffect(() => {
+		const sidebar = sidebarRef.current;
+		if (!sidebar || !window.matchMedia('(max-width: 900px)').matches) return;
+		const frame = window.requestAnimationFrame(() => {
+			const activeLink = sidebar.querySelector<HTMLElement>('.tool-sidebar__link--active');
+			activeLink?.scrollIntoView({ block: 'nearest', inline: 'center' });
+		});
+		return () => window.cancelAnimationFrame(frame);
+	}, [activeToolId, collapsed, normalizedOpenState]);
+
 	function toggleCategory(categoryId: string) {
 		setOpenState((current) => ({ ...current, [categoryId]: !normalizedOpenState[categoryId] }));
 	}
 
 	return (
-		<aside className={collapsed ? 'tool-sidebar tool-sidebar--collapsed' : 'tool-sidebar'} aria-label="工具目录">
+		<aside ref={sidebarRef} className={collapsed ? 'tool-sidebar tool-sidebar--collapsed' : 'tool-sidebar'} aria-label="工具目录">
 			<button
 				className="tool-sidebar__head"
 				type="button"

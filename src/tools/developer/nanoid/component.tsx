@@ -1,36 +1,65 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
 import { generateBatch } from './functions';
 import { nanoidReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 import { useTheme } from '../../../themes/ThemeContext';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useTransientNotice } from '../../../hooks/useTransientNotice';
+
+const MIN_LENGTH = 1;
+const MAX_LENGTH = 50;
+const MIN_COUNT = 1;
+const MAX_COUNT = 50;
+
+function normalizeInteger(value: string | number, min: number, max: number, fallback: number): number {
+	const parsed = typeof value === 'number' ? value : Number(value);
+	if (!Number.isFinite(parsed)) return fallback;
+	return Math.min(max, Math.max(min, Math.trunc(parsed)));
+}
 
 export default function NanoidGenerator() {
 	const { Button } = useTheme();
 	const [length, setLength] = useState(21);
 	const [count, setCount] = useState(5);
 	const [alphabet, setAlphabet] = useState('');
-	const [results, setResults] = useState<string[]>(() => generateBatch(5, 21));
-	const [copied, setCopied] = useState(false);
-	const [copyError, setCopyError] = useState(false);
+	const [results, setResults] = useState<string[]>([]);
+	const [generatedConfig, setGeneratedConfig] = useState({ length: 21, count: 5, alphabet: '' });
+	const [copyNotice, showCopyNotice] = useTransientNotice();
+	const normalizedAlphabet = alphabet.trim();
+	const isDirty = results.length > 0 && (
+		generatedConfig.length !== length ||
+		generatedConfig.count !== count ||
+		generatedConfig.alphabet !== normalizedAlphabet
+	);
+
+	const updateLength = useCallback((value: string | number) => {
+		setLength((current) => normalizeInteger(value, MIN_LENGTH, MAX_LENGTH, current));
+	}, []);
+
+	const updateCount = useCallback((value: string | number) => {
+		setCount((current) => normalizeInteger(value, MIN_COUNT, MAX_COUNT, current));
+	}, []);
 
 	const generate = useCallback(() => {
-		const chars = alphabet.trim() || undefined;
+		const chars = normalizedAlphabet || undefined;
 		setResults(generateBatch(count, length, chars));
-	}, [count, length, alphabet]);
+		setGeneratedConfig({ length, count, alphabet: normalizedAlphabet });
+	}, [count, length, normalizedAlphabet]);
+
+	useEffect(() => {
+		setResults(generateBatch(5, 21));
+	}, []);
 
 	const copyAll = useCallback(async () => {
+		if (results.length === 0 || isDirty) return;
 		try {
 			await navigator.clipboard.writeText(results.join('\n'));
-			setCopied(true);
-			setCopyError(false);
-			setTimeout(() => setCopied(false), 1400);
+			showCopyNotice(`已复制 ${results.length} 个`);
 		} catch {
-			setCopyError(true);
-			setTimeout(() => setCopyError(false), 1400);
+			showCopyNotice('复制失败');
 		}
-	}, [results]);
+	}, [isDirty, results, showCopyNotice]);
 
 	const controls = useMemo(() => (
 		<div className="tool-card tool-card--controls">
@@ -41,18 +70,18 @@ export default function NanoidGenerator() {
 					<input
 						className="password-range"
 						type="range"
-						min={1}
-						max={50}
+						min={MIN_LENGTH}
+						max={MAX_LENGTH}
 						value={length}
-						onChange={(e) => setLength(Number(e.target.value))}
+						onChange={(e) => updateLength(e.target.value)}
 					/>
 					<input
 						className="password-length-input"
 						type="number"
-						min={1}
-						max={50}
+						min={MIN_LENGTH}
+						max={MAX_LENGTH}
 						value={length}
-						onChange={(e) => setLength(Number(e.target.value))}
+						onChange={(e) => updateLength(e.target.value)}
 						aria-label="NanoID 长度"
 					/>
 				</div>
@@ -61,18 +90,18 @@ export default function NanoidGenerator() {
 					<input
 						className="password-range"
 						type="range"
-						min={1}
-						max={50}
+						min={MIN_COUNT}
+						max={MAX_COUNT}
 						value={count}
-						onChange={(e) => setCount(Number(e.target.value))}
+						onChange={(e) => updateCount(e.target.value)}
 					/>
 					<input
 						className="password-length-input"
 						type="number"
-						min={1}
-						max={100}
+						min={MIN_COUNT}
+						max={MAX_COUNT}
 						value={count}
-						onChange={(e) => setCount(Number(e.target.value))}
+						onChange={(e) => updateCount(e.target.value)}
 						aria-label="NanoID 数量"
 					/>
 				</div>
@@ -90,22 +119,24 @@ export default function NanoidGenerator() {
 				</div>
 				<div style={{ display: 'flex', gap: '8px' }}>
 					<Button variant="primary" onClick={generate}>生成</Button>
-					<Button variant="secondary" onClick={copyAll}>{copied ? '已复制' : copyError ? '复制失败' : '复制全部'}</Button>
+					<Button variant="secondary" disabled={results.length === 0 || isDirty} onClick={copyAll}>复制全部</Button>
+					{copyNotice ? <span className="code-editor__action-status" role="status" aria-live="polite">{copyNotice}</span> : null}
 				</div>
 			</div>
 		</div>
-	), [length, count, alphabet, copied, copyError, generate, copyAll]);
+	), [length, count, alphabet, copyNotice, generate, copyAll, isDirty, results.length, updateLength, updateCount]);
 
 	const resultPanel = useMemo(() => (
 		<div className="tool-card tool-card--result">
 			<h2 className="tool-card__title">结果</h2>
+			{isDirty ? <div className="code-editor__message code-editor__message--neutral">参数已变化，请重新生成。</div> : null}
 			<div style={{ display: 'grid', gap: '4px' }}>
 				{results.map((id, i) => (
 					<CopyRow key={i} label={`#${i + 1}`} value={id} />
 				))}
 			</div>
 		</div>
-	), [results]);
+	), [isDirty, results]);
 
 	useToolRefPanel('NanoID 参考', nanoidReference);
 

@@ -2,7 +2,7 @@ import { useTheme } from '../../themes/ThemeContext';
 import ThemeToggle from './ThemeToggle';
 
 export default function HeaderShell() {
-	const { ToolSearch, ThemeSelector } = useTheme();
+	const { ToolSearch } = useTheme();
 
 	return (
 		<header className="site-header">
@@ -18,7 +18,6 @@ export default function HeaderShell() {
 					<ToolSearch variant="header" />
 				</div>
 				<div className="site-header__actions">
-					<ThemeSelector />
 					<ThemeToggle />
 				</div>
 			</div>

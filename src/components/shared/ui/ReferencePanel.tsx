@@ -1,3 +1,5 @@
+import * as Collapsible from '@radix-ui/react-collapsible';
+import { ChevronDown, ChevronLeft, ChevronRight, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import { useState } from 'react';
 
 interface ReferenceItem {
@@ -21,36 +23,55 @@ export default function ReferencePanel({ title, sections, collapsed, onToggleCol
 	const [isOpen, setIsOpen] = useState(true);
 	const isCollapsed = collapsed ?? false;
 
+	if (isCollapsed) {
+		return (
+			<div className="ref-panel ref-panel--collapsed">
+				<button
+					className="ref-panel__rail-toggle"
+					type="button"
+					onClick={onToggleCollapse}
+					aria-label="展开参考面板"
+					title="展开参考面板"
+				>
+					<ChevronLeft size={17} strokeWidth={2.2} aria-hidden="true" />
+					<span>参考</span>
+				</button>
+			</div>
+		);
+	}
+
 	return (
-		<div className={`ref-panel${isCollapsed ? ' ref-panel--collapsed' : ''}`}>
-			<button
-				className="ref-panel__toggle"
-				type="button"
-				onClick={onToggleCollapse ?? (() => setIsOpen(!isOpen))}
-				aria-expanded={isCollapsed ? undefined : isOpen}
-				aria-label={isCollapsed ? '展开参考' : '收起参考'}
-				title={isCollapsed ? '展开参考' : '收起参考'}
-			>
-				<span className="ref-panel__title">{title}</span>
-				<span className="ref-panel__arrow">{isCollapsed ? '◀' : isOpen ? '▼' : '▶'}</span>
-			</button>
-			{!isCollapsed && (
-				<div className={`ref-panel__body${isOpen ? '' : ' ref-panel__body--collapsed'}`}>
-					{sections.map((section) => (
-						<div key={section.title} className="ref-section">
-							<h3 className="ref-section__title">{section.title}</h3>
-							<div className="ref-section__items">
-								{section.items.map((item) => (
-									<div key={item.syntax} className="ref-item">
-										<code className="ref-item__syntax">{item.syntax}</code>
-										<span className="ref-item__desc">{item.desc}</span>
-									</div>
-								))}
-							</div>
+		<Collapsible.Root className="ref-panel" open={isOpen} onOpenChange={setIsOpen}>
+			<div className="ref-panel__header">
+				<Collapsible.Trigger className="ref-panel__toggle" aria-label={isOpen ? '收起参考内容' : '展开参考内容'}>
+					<span className="ref-panel__title">{title}</span>
+					{isOpen ? <ChevronDown size={17} strokeWidth={2.2} aria-hidden="true" /> : <ChevronRight size={17} strokeWidth={2.2} aria-hidden="true" />}
+				</Collapsible.Trigger>
+				<button
+					className="ref-panel__dock-toggle"
+					type="button"
+					onClick={onToggleCollapse}
+					aria-label="收起参考面板"
+					title="收起参考面板"
+				>
+					{isOpen ? <PanelRightClose size={16} strokeWidth={2.2} aria-hidden="true" /> : <PanelRightOpen size={16} strokeWidth={2.2} aria-hidden="true" />}
+				</button>
+			</div>
+			<Collapsible.Content className="ref-panel__body">
+				{sections.map((section) => (
+					<section key={section.title} className="ref-section">
+						<h3 className="ref-section__title">{section.title}</h3>
+						<div className="ref-section__items">
+							{section.items.map((item, index) => (
+								<div key={`${section.title}-${item.syntax}-${index}`} className="ref-item">
+									<code className="ref-item__syntax">{item.syntax}</code>
+									<span className="ref-item__desc">{item.desc}</span>
+								</div>
+							))}
 						</div>
-					))}
-				</div>
-			)}
-		</div>
+					</section>
+				))}
+			</Collapsible.Content>
+		</Collapsible.Root>
 	);
 }

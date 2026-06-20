@@ -1,37 +1,45 @@
 export interface ColorValues {
 	hex: string;
 	rgb: { r: number; g: number; b: number };
+	alpha: number;
 	hsl: { h: number; s: number; l: number };
 	rgba: string;
 	hsla: string;
 }
 
 export type ColorResult =
-	| { ok: true } & ColorValues
+	| ({ ok: true } & ColorValues)
 	| { ok: false; error: string };
 
 export function parseColor(input: string): ColorResult {
 	const trimmed = input.trim();
 	if (!trimmed) return { ok: false, error: '请输入颜色值。' };
 
-	// Try HEX
 	if (/^#?[0-9a-fA-F]{3,8}$/.test(trimmed)) {
 		return parseHex(trimmed.startsWith('#') ? trimmed : '#' + trimmed);
 	}
 
-	// Try rgb(r, g, b)
 	const rgbMatch = trimmed.match(/^rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)$/i);
 	if (rgbMatch) {
 		return fromRgb(+rgbMatch[1], +rgbMatch[2], +rgbMatch[3]);
 	}
 
-	// Try hsl(h, s%, l%)
+	const rgbaMatch = trimmed.match(/^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([+-]?(?:\d+|\d*\.\d+))\s*\)$/i);
+	if (rgbaMatch) {
+		return fromRgb(+rgbaMatch[1], +rgbaMatch[2], +rgbaMatch[3], roundAlpha(+rgbaMatch[4]), true);
+	}
+
 	const hslMatch = trimmed.match(/^hsl\(\s*([\d.]+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\s*\)$/i);
 	if (hslMatch) {
 		return fromHsl(+hslMatch[1], +hslMatch[2], +hslMatch[3]);
 	}
 
-	return { ok: false, error: '无法解析颜色值。支持 HEX、RGB、HSL 格式。' };
+	const hslaMatch = trimmed.match(/^hsla\(\s*([\d.]+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%\s*,\s*([+-]?(?:\d+|\d*\.\d+))\s*\)$/i);
+	if (hslaMatch) {
+		return fromHsl(+hslaMatch[1], +hslaMatch[2], +hslaMatch[3], roundAlpha(+hslaMatch[4]));
+	}
+
+	return { ok: false, error: '无法解析颜色值。支持 HEX、RGB、RGBA、HSL、HSLA 格式。' };
 }
 
 function parseHex(hex: string): ColorResult {
@@ -43,28 +51,48 @@ function parseHex(hex: string): ColorResult {
 	const r = parseInt(h.slice(0, 2), 16);
 	const g = parseInt(h.slice(2, 4), 16);
 	const b = parseInt(h.slice(4, 6), 16);
-	return fromRgb(r, g, b);
+	const hasAlpha = h.length === 8;
+	const alpha = hasAlpha ? roundAlpha(parseInt(h.slice(6, 8), 16) / 255) : 1;
+	return fromRgb(r, g, b, alpha, hasAlpha);
 }
 
-function fromRgb(r: number, g: number, b: number): ColorResult {
-	if (r > 255 || g > 255 || b > 255) return { ok: false, error: 'RGB 值必须在 0-255 之间。' };
+function fromRgb(r: number, g: number, b: number, alpha: number = 1, includeAlphaHex: boolean = false): ColorResult {
+	if (r < 0 || r > 255 || g < 0 || g > 255 || b < 0 || b > 255) {
+		return { ok: false, error: 'RGB 值必须在 0-255 之间。' };
+	}
+	if (alpha < 0 || alpha > 1) return { ok: false, error: 'Alpha 值必须在 0-1 之间。' };
+
 	const hsl = rgbToHsl(r, g, b);
-	const hex = '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+	const rgbHex = '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+	const alphaHex = includeAlphaHex ? Math.round(alpha * 255).toString(16).padStart(2, '0') : '';
+	const alphaText = formatAlpha(alpha);
+
 	return {
 		ok: true,
-		hex: hex.toUpperCase(),
+		hex: (rgbHex + alphaHex).toUpperCase(),
 		rgb: { r, g, b },
+		alpha,
 		hsl,
-		rgba: `rgb(${r}, ${g}, ${b})`,
-		hsla: `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`,
+		rgba: alpha < 1 ? `rgba(${r}, ${g}, ${b}, ${alphaText})` : `rgb(${r}, ${g}, ${b})`,
+		hsla: alpha < 1 ? `hsla(${hsl.h}, ${hsl.s}%, ${hsl.l}%, ${alphaText})` : `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`,
 	};
 }
 
-function fromHsl(h: number, s: number, l: number): ColorResult {
+function fromHsl(h: number, s: number, l: number, alpha: number = 1): ColorResult {
 	if (h < 0 || h > 360) return { ok: false, error: 'HSL 色相必须在 0-360 之间。' };
-	if (s < 0 || s > 100 || l < 0 || l > 100) return { ok: false, error: 'HSL 饱和度/亮度必须在 0-100 之间。' };
+	if (s < 0 || s > 100 || l < 0 || l > 100) {
+		return { ok: false, error: 'HSL 饱和度、亮度必须在 0-100 之间。' };
+	}
 	const rgb = hslToRgb(h, s, l);
-	return fromRgb(rgb.r, rgb.g, rgb.b);
+	return fromRgb(rgb.r, rgb.g, rgb.b, alpha, alpha < 1);
+}
+
+function roundAlpha(alpha: number): number {
+	return Math.round(alpha * 1000) / 1000;
+}
+
+function formatAlpha(alpha: number): string {
+	return Number(alpha.toFixed(3)).toString();
 }
 
 function rgbToHsl(r: number, g: number, b: number): { h: number; s: number; l: number } {
@@ -130,8 +158,9 @@ function hslToHex(h: number, s: number, l: number): string {
 }
 
 export function generatePalette(hex: string): string[] | null {
-	if (!/^#[0-9a-fA-F]{6}$/.test(hex)) return null;
-	const { h, s } = hexToHsl(hex);
+	const baseHex = hex.length === 9 ? hex.slice(0, 7) : hex;
+	if (!/^#[0-9a-fA-F]{6}$/.test(baseHex)) return null;
+	const { h, s } = hexToHsl(baseHex);
 	const lightnesses = [95, 80, 50, 35, 20];
-	return lightnesses.map(l => hslToHex(h, s, l));
+	return lightnesses.map((l) => hslToHex(h, s, l));
 }

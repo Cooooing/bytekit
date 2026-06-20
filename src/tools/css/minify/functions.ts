@@ -8,10 +8,17 @@ export function minifyCss(input: string): CssResult {
 
 	try {
 		let result = trimmed;
-		result = result.replace(/\/\*[\s\S]*?\*\//g, '');
+		const bangComments: string[] = [];
+		result = result.replace(/\/\*[\s\S]*?\*\//g, (comment) => {
+			if (!comment.startsWith('/*!')) return '';
+			const marker = `___CSS_BANG_COMMENT_${bangComments.length}___`;
+			bangComments.push(comment.trim().replace(/\s+/g, ' '));
+			return marker + ' ';
+		});
 		result = result.replace(/\s+/g, ' ');
 		result = result.replace(/\s*([{}:;,])\s*/g, '$1');
 		result = result.replace(/;}/g, '}');
+		result = result.replace(/___CSS_BANG_COMMENT_(\d+)___/g, (_, index: string) => bangComments[Number(index)] ?? '');
 		result = result.trim();
 		return { ok: true, output: result };
 	} catch (error) {

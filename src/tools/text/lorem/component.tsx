@@ -4,35 +4,40 @@ import { generateLorem } from './functions';
 import { loremReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 import { useTheme } from '../../../themes/ThemeContext';
+import { useTransientNotice } from '../../../hooks/useTransientNotice';
 
 export default function LoremGenerator() {
 	const { Button } = useTheme();
 	const [paragraphs, setParagraphs] = useState(3);
 	const [language, setLanguage] = useState<'zh' | 'en'>('zh');
 	const [output, setOutput] = useState('');
-	const [copyNotice, setCopyNotice] = useState('');
+	const [generatedFor, setGeneratedFor] = useState<{ paragraphs: number; language: 'zh' | 'en' } | null>(null);
+	const [copyNotice, showCopyNotice] = useTransientNotice();
 
 	const handleGenerate = useCallback(() => {
 		setOutput(generateLorem(paragraphs, language));
+		setGeneratedFor({ paragraphs, language });
 	}, [paragraphs, language]);
 
 	// Generate on first render
 	useEffect(() => {
 		if (!output) {
 			setOutput(generateLorem(paragraphs, language));
+			setGeneratedFor({ paragraphs, language });
 		}
 	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+	const isPending = Boolean(output && generatedFor && (generatedFor.paragraphs !== paragraphs || generatedFor.language !== language));
+
 	const handleCopy = useCallback(async () => {
+		if (!output || isPending) return;
 		try {
 			await navigator.clipboard.writeText(output);
-			setCopyNotice('已复制');
-			setTimeout(() => setCopyNotice(''), 1400);
+			showCopyNotice('已复制');
 		} catch {
-			setCopyNotice('复制失败');
-			setTimeout(() => setCopyNotice(''), 1400);
+			showCopyNotice('复制失败');
 		}
-	}, [output]);
+	}, [isPending, output, showCopyNotice]);
 
 	const controls = (
 		<div className="tool-card tool-card--controls">
@@ -71,18 +76,24 @@ export default function LoremGenerator() {
 	const resultPanel = (
 		<div className="tool-card tool-card--result" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
 			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-				<h2 className="tool-card__title">生成结果{copyNotice && <span style={{ marginLeft: '8px', fontSize: '0.8rem', color: copyNotice === '已复制' ? 'var(--semantic-success)' : 'var(--semantic-danger)' }}>{copyNotice}</span>}</h2>
-				<Button variant="ghost" size="sm" onClick={handleCopy}>
+				<h2 className="tool-card__title">生成结果</h2>
+				{copyNotice ? <span className="code-editor__action-status" role="status" aria-live="polite">{copyNotice}</span> : null}
+				<Button variant="ghost" size="sm" onClick={handleCopy} disabled={!output || isPending}>
 					复制
 				</Button>
 			</div>
+			{isPending ? (
+				<div role="status" aria-live="polite" style={{ color: 'var(--semantic-warning)', fontSize: '0.8125rem', marginBottom: '8px' }}>
+					参数已变更，请重新生成。
+				</div>
+			) : null}
 			<div
 				style={{
 					flex: 1,
 					overflow: 'auto',
 					fontSize: '0.875rem',
 					lineHeight: 1.7,
-					color: 'var(--fg)',
+					color: isPending ? 'var(--muted)' : 'var(--text)',
 					whiteSpace: 'pre-wrap',
 				}}
 			>

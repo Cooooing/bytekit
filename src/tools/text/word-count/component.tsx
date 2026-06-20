@@ -29,7 +29,7 @@ export default function WordCount() {
 	const output = (
 		<div className="tool-card tool-card--result" style={{ height: '100%', overflow: 'auto' }}>
 			<h2 className="tool-card__title">统计结果</h2>
-			<div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+			<div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 9rem), 1fr))', gap: '8px' }}>
 				{statLabels.map(({ key, label }) => (
 					<div
 						key={key}
@@ -40,10 +40,11 @@ export default function WordCount() {
 							borderRadius: '8px',
 							background: 'var(--surface)',
 							gap: '4px',
+							minWidth: 0,
 						}}
 					>
 						<span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>{label}</span>
-						<span style={{ fontSize: '1.25rem', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+						<span style={{ fontSize: '1.25rem', fontWeight: 600, fontFamily: 'var(--font-mono)', overflowWrap: 'anywhere' }}>
 							{stats[key].toLocaleString()}
 						</span>
 					</div>

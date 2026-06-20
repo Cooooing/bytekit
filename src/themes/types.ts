@@ -2,8 +2,8 @@ import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
 // ─── UI Component Types ───
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
-export type ButtonSize = 'sm' | 'md';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonSize = 'sm' | 'md' | 'icon';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	variant?: ButtonVariant;
@@ -100,7 +100,7 @@ export interface ThemeComponents {
 	// ──── Required: Navigation & Shell ────
 	ToolSidebar: React.ComponentType<ToolSidebarProps>;
 	ToolSearch: React.ComponentType<ToolSearchProps>;
-	ThemeSelector: React.ComponentType;
+	ThemeSelector?: React.ComponentType;
 }
 
 export interface ThemeDefinition {

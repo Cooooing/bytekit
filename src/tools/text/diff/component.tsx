@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useToolStorage } from '../../../hooks/useToolStorage';
-import { diffLines } from './functions';
+import { diffLines, type DiffCell } from './functions';
 import { diffReference } from './references';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 
@@ -13,14 +13,12 @@ export default function DiffViewer() {
 	const setTextA = (v: string) => setState((c) => ({ ...c, textA: v }));
 	const setTextB = (v: string) => setState((c) => ({ ...c, textB: v }));
 
-	const linesA = useMemo(() => textA.split('\n'), [textA]);
-	const linesB = useMemo(() => textB.split('\n'), [textB]);
 	const diff = useMemo(() => diffLines(textA, textB), [textA, textB]);
 
 	const stats = useMemo(() => {
-		const added = diff.filter((l) => l.type === 'added').length;
-		const removed = diff.filter((l) => l.type === 'removed').length;
-		const unchanged = diff.filter((l) => l.type === 'equal').length;
+		const added = diff.filter((row) => row.right.type === 'added').length;
+		const removed = diff.filter((row) => row.left.type === 'removed').length;
+		const unchanged = diff.filter((row) => row.left.type === 'equal' && row.right.type === 'equal').length;
 		return { added, removed, unchanged };
 	}, [diff]);
 
@@ -57,27 +55,57 @@ export default function DiffViewer() {
 					<span className="diff-stat diff-stat--added">+{stats.added} 行新增</span>
 					<span className="diff-stat diff-stat--removed">-{stats.removed} 行删除</span>
 				</div>
-				<div className="diff-viewer__columns">
-					<div className="diff-viewer__col diff-viewer__col--left">
-						<div className="diff-viewer__col-header">原始</div>
-						{diff.filter((l) => l.type !== 'added').map((line, i) => (
-							<div key={i} className={`diff-line diff-line--${line.type}`}>
-								<span className="diff-line__num">{line.lineNum}</span>
-								<span className="diff-line__content">{line.content || ' '}</span>
-							</div>
-						))}
-					</div>
-					<div className="diff-viewer__col diff-viewer__col--right">
-						<div className="diff-viewer__col-header">修改</div>
-						{diff.filter((l) => l.type !== 'removed').map((line, i) => (
-							<div key={i} className={`diff-line diff-line--${line.type}`}>
-								<span className="diff-line__num">{line.lineNum}</span>
-								<span className="diff-line__content">{line.content || ' '}</span>
-							</div>
-						))}
-					</div>
+				<div style={{ overflow: 'auto' }}>
+					<table style={{ width: '100%', minWidth: 0, borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+						<thead>
+							<tr>
+								<th className="diff-viewer__col-header" style={{ width: '50%', textAlign: 'left' }}>原始</th>
+								<th className="diff-viewer__col-header" style={{ width: '50%', textAlign: 'left', borderLeft: '1px solid var(--border)' }}>修改</th>
+							</tr>
+						</thead>
+						<tbody>
+							{diff.map((row, i) => (
+								<tr key={i}>
+									<DiffCellView cell={row.left} side="left" />
+									<DiffCellView cell={row.right} side="right" />
+								</tr>
+							))}
+						</tbody>
+					</table>
 				</div>
 			</div>
 		</div>
+	);
+}
+
+function DiffCellView({ cell, side }: { cell: DiffCell; side: 'left' | 'right' }) {
+	return (
+		<td
+			className={`diff-line diff-line--${cell.type}`}
+			style={{
+				display: 'table-cell',
+				minHeight: '1.5rem',
+				padding: 0,
+				borderLeft: side === 'right' ? '1px solid var(--border)' : undefined,
+				verticalAlign: 'top',
+			}}
+		>
+			<span className="diff-line__num" style={{ display: 'inline-block' }}>
+				{cell.lineNum ?? ''}
+			</span>
+			<span
+				className="diff-line__content"
+				style={{
+					display: 'inline-block',
+					minWidth: 'calc(100% - 2.5rem)',
+					overflow: 'visible',
+					textOverflow: 'clip',
+					whiteSpace: 'pre-wrap',
+					overflowWrap: 'anywhere',
+				}}
+			>
+				{cell.content || ' '}
+			</span>
+		</td>
 	);
 }

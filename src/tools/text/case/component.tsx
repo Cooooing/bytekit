@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { toCamelCase, toSnakeCase, toKebabCase, toPascalCase, toUpperCase, toLowerCase } from './functions';
@@ -29,13 +29,13 @@ export default function CaseConverter() {
 		<div className="tool-card tool-card--controls">
 			<div className="tool-card__section">
 				<h2 className="tool-card__title">输入文本</h2>
-				<input
-					type="text"
+				<textarea
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
 					placeholder="输入要转换的文本"
 					aria-label="输入文本"
 					className="tool-textarea"
+					rows={5}
 				/>
 			</div>
 		</div>

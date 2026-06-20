@@ -1,15 +1,29 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { parseTimestamp } from './functions';
 import { timestampReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 import { useTheme } from '../../../themes/ThemeContext';
+import { useMessageOnError } from '../../../components/shared/ui/AppMessage';
+
+const INPUT_KIND_LABELS = {
+	seconds: '秒时间戳',
+	milliseconds: '毫秒时间戳',
+	date: '日期字符串',
+} as const;
 
 export default function TimestampConverter() {
 	const { Button } = useTheme();
-	const [input, setInput] = useState(String(Math.floor(Date.now() / 1000)));
+	const [input, setInput] = useState('1700000000');
 	const result = useMemo(() => parseTimestamp(input), [input]);
+	const displayResult = result.ok ? result : null;
+
+	useMessageOnError(result.ok ? undefined : result.error);
+
+	useEffect(() => {
+		setInput(String(Math.floor(Date.now() / 1000)));
+	}, []);
 
 	function setToNow() {
 		setInput(String(Math.floor(Date.now() / 1000)));
@@ -28,7 +42,7 @@ export default function TimestampConverter() {
 					type="text"
 					value={input}
 					onChange={(e) => setInput(e.target.value)}
-					placeholder="如 1700000000 或 2024-01-01"
+					placeholder="如 1700000000、1700000000000 或 2024-01-01"
 					aria-label="时间戳输入"
 				/>
 				<div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
@@ -42,15 +56,17 @@ export default function TimestampConverter() {
 	const resultPanel = (
 		<div className="tool-card tool-card--result">
 			<h2 className="tool-card__title">转换结果</h2>
-			{result.ok ? (
+			{displayResult ? (
 				<div style={{ display: 'grid', gap: '6px' }}>
-					<CopyRow label="Unix" value={String(result.unix)} />
-					<CopyRow label="ISO" value={result.iso} />
-					<CopyRow label="本地" value={result.local} />
-					<CopyRow label="UTC" value={result.utc} />
+					<CopyRow label="识别" value={INPUT_KIND_LABELS[displayResult.inputKind]} />
+					<CopyRow label="Unix 秒" value={String(displayResult.unix)} />
+					<CopyRow label="Unix 毫秒" value={String(displayResult.unixMs)} />
+					<CopyRow label="ISO" value={displayResult.iso} />
+					<CopyRow label="本地" value={displayResult.local} />
+					<CopyRow label="UTC" value={displayResult.utc} />
 				</div>
 			) : (
-				<div style={{ color: 'var(--semantic-danger)' }}>{result.error}</div>
+				<div className="tool-empty-state">输入时间戳或日期后显示转换结果。</div>
 			)}
 		</div>
 	);

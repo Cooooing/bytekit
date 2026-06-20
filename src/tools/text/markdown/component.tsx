@@ -1,10 +1,11 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { marked } from 'marked';
 import CodeEditor from '../../../components/shared/editor/CodeEditor';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 import { markdownReference } from './references';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useMessageOnError } from '../../../components/shared/ui/AppMessage';
 
 const text = {
 	tool: 'Markdown 预览',
@@ -19,13 +20,21 @@ export default function MarkdownPreview() {
 	const { input } = state;
 	const setInput = (v: string) => setState((c) => ({ ...c, input: v }));
 
-	const html = useMemo(() => {
+	const renderResult = useMemo(() => {
 		try {
-			return marked.parse(input) as string;
+			return { ok: true as const, html: renderMarkdown(input) };
 		} catch {
-			return '<p style="color:red">Markdown 解析错误</p>';
+			return { ok: false as const, error: 'Markdown 解析错误。' };
 		}
 	}, [input]);
+	const [lastHtml, setLastHtml] = useState(renderResult.ok ? renderResult.html : '');
+	const html = renderResult.ok ? renderResult.html : lastHtml;
+
+	useMessageOnError(renderResult.ok ? undefined : renderResult.error);
+
+	useEffect(() => {
+		if (renderResult.ok) setLastHtml(renderResult.html);
+	}, [renderResult]);
 
 	useToolRefPanel('Markdown 语法', markdownReference);
 
@@ -56,4 +65,32 @@ export default function MarkdownPreview() {
 			}
 		/>
 	);
+}
+
+function renderMarkdown(input: string): string {
+	const html = marked.parse(escapeRawHtml(input)) as string;
+	return sanitizeMarkdownHtml(html)
+		.replace(/<table>/g, '<div style="max-width:100%;overflow-x:auto;"><table>')
+		.replace(/<\/table>/g, '</table></div>');
+}
+
+function escapeRawHtml(input: string): string {
+	return input
+		.replace(/&/g, '&amp;')
+		.replace(/</g, '&lt;')
+		.replace(/>/g, '&gt;');
+}
+
+function sanitizeMarkdownHtml(html: string): string {
+	return html.replace(/\s(href|src)=("([^"]*)"|'([^']*)')/gi, (match, attr, quoted, doubleQuotedValue, singleQuotedValue) => {
+		const value = doubleQuotedValue ?? singleQuotedValue ?? '';
+		return isSafeUrl(value) ? ` ${attr}=${quoted}` : '';
+	});
+}
+
+function isSafeUrl(value: string): boolean {
+	const trimmed = value.trim().replace(/[\u0000-\u001f\u007f\s]+/g, '');
+	if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('/') || trimmed.startsWith('./') || trimmed.startsWith('../')) return true;
+	if (trimmed.startsWith('//')) return false;
+	return /^(https?:|mailto:|tel:)/i.test(trimmed);
 }

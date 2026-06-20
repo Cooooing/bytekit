@@ -2,10 +2,12 @@ const DEFAULT_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01
 
 export function generateNanoId(length: number = 21, alphabet: string = DEFAULT_ALPHABET): string {
 	let id = '';
-	const bytes = new Uint8Array(length);
-	crypto.getRandomValues(bytes);
+	const chars = Array.from(alphabet);
+	if (chars.length === 0) return id;
+	const randomValues = new Uint32Array(length);
+	crypto.getRandomValues(randomValues);
 	for (let i = 0; i < length; i++) {
-		id += alphabet[bytes[i] % alphabet.length];
+		id += chars[randomValues[i] % chars.length];
 	}
 	return id;
 }

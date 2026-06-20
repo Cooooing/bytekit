@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import CodeEditor from '../../../components/shared/editor/CodeEditor';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { minifyCss, beautifyCss } from './functions';
@@ -6,6 +5,7 @@ import { cssReference } from './references';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 import { useTheme } from '../../../themes/ThemeContext';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useAppMessage } from '../../../components/shared/ui/AppMessage';
 
 const text = {
 	tool: 'CSS 压缩/美化',
@@ -15,27 +15,36 @@ const text = {
 	beautify: '美化',
 	success: '完成',
 	fail: '失败',
+	pending: '待执行',
+	dirty: '输入已变化，点击操作按钮更新输出。',
 };
 
 export default function CssMinify() {
 	const { Button } = useTheme();
+	const message = useAppMessage();
 	const [state, setState] = useToolStorage('bytekit:tool:css:v1', {
 		input: 'body {\n  margin: 0;\n  padding: 0;\n  font-family: sans-serif;\n}\n\n.container {\n  max-width: 1200px;\n  margin: 0 auto;\n  padding: 16px;\n}',
 		output: '',
 		lastAction: 'minify' as 'minify' | 'beautify',
+		lastInput: '',
+		error: '',
 	});
-	const { input, output, lastAction } = state;
+	const { input, output, lastAction, lastInput } = state;
 	const setInput = (v: string) => setState((c) => ({ ...c, input: v }));
 
 	function runAction(action: 'minify' | 'beautify') {
 		const result = action === 'minify' ? minifyCss(input) : beautifyCss(input);
-		setState((c) => ({ ...c, lastAction: action, output: result.ok ? result.output : c.output }));
+		if (!result.ok) {
+			message.error(result.error);
+			return;
+		}
+		setState((c) => ({ ...c, lastAction: action, lastInput: input, output: result.output, error: '' }));
 	}
 
-	const currentResult = useMemo(() =>
-		lastAction === 'minify' ? minifyCss(input) : beautifyCss(input),
-		[input, lastAction]
-	);
+	const isDirty = input !== (lastInput ?? '');
+	const hasExecuted = !isDirty && lastInput !== '';
+	const outputStatus = !hasExecuted ? 'neutral' : 'success';
+	const outputStatusText = !hasExecuted ? text.pending : text.success;
 
 	useToolRefPanel('CSS 参考', cssReference);
 
@@ -45,12 +54,12 @@ export default function CssMinify() {
 				ariaLabel={text.tool}
 				actions={(
 					<>
-						<Button variant="primary" onClick={() => runAction('minify')}>{text.minify}</Button>
-						<Button variant="secondary" onClick={() => runAction('beautify')}>{text.beautify}</Button>
+						<Button variant={lastAction === 'minify' ? 'primary' : 'secondary'} onClick={() => runAction('minify')}>{text.minify}</Button>
+						<Button variant={lastAction === 'beautify' ? 'primary' : 'secondary'} onClick={() => runAction('beautify')}>{text.beautify}</Button>
 					</>
 				)}
 				input={<CodeEditor title={text.input} value={input} onChange={setInput} language="css" />}
-				output={<CodeEditor title={text.output} value={output} language="css" status={currentResult.ok ? 'success' : 'error'} statusText={currentResult.ok ? text.success : text.fail} error={currentResult.ok ? undefined : currentResult.error} />}
+				output={<CodeEditor title={text.output} value={output} language="css" status={outputStatus} statusText={outputStatusText} message={isDirty ? text.dirty : undefined} />}
 			/>
 		</>
 	);

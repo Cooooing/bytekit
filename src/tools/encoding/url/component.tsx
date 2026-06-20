@@ -1,22 +1,32 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { useToolStorage } from '../../../hooks/useToolStorage';
-import { encodeUrl, decodeUrl } from './functions';
+import { encodeUrl, decodeUrl, type UrlComponents } from './functions';
 import { urlReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 import { useTheme } from '../../../themes/ThemeContext';
+import { useMessageOnError } from '../../../components/shared/ui/AppMessage';
+
+type UrlAction = 'encode' | 'decode';
+
+interface UrlDisplay {
+	action: UrlAction;
+	encoded: string;
+	decoded: string;
+	components: UrlComponents;
+}
 
 export default function UrlCodec() {
 	const { Button } = useTheme();
 	const [state, setState] = useToolStorage('bytekit:tool:url:v1', {
 		input: 'https://example.com/path?name=你好&lang=中文',
-		lastAction: 'encode' as 'encode' | 'decode',
+		lastAction: 'encode' as UrlAction,
 	});
 	const { input, lastAction } = state;
 	const setInput = (v: string) => setState((c) => ({ ...c, input: v }));
 
-	function runAction(action: 'encode' | 'decode') {
+	function runAction(action: UrlAction) {
 		setState((c) => ({ ...c, lastAction: action }));
 	}
 
@@ -24,6 +34,13 @@ export default function UrlCodec() {
 		lastAction === 'encode' ? encodeUrl(input) : decodeUrl(input),
 		[input, lastAction]
 	);
+	const currentDisplay = useMemo<UrlDisplay | null>(
+		() => result.ok ? { action: lastAction, encoded: result.encoded, decoded: result.decoded, components: result.components } : null,
+		[lastAction, result],
+	);
+	const displayResult = currentDisplay;
+
+	useMessageOnError(!result.ok && input.trim() ? result.error : undefined);
 
 	const controls = (
 		<div className="tool-card tool-card--controls">
@@ -48,22 +65,22 @@ export default function UrlCodec() {
 	const resultPanel = (
 		<div className="tool-card tool-card--result">
 			<h2 className="tool-card__title">转换结果</h2>
-			{result.ok ? (
+			{displayResult ? (
 				<div style={{ display: 'grid', gap: '8px' }}>
-					<CopyRow label={lastAction === 'encode' ? '编码' : '解码'} value={lastAction === 'encode' ? result.encoded : result.decoded} />
-					{result.components.hostname && (
+					<CopyRow label={displayResult.action === 'encode' ? '编码' : '解码'} value={displayResult.action === 'encode' ? displayResult.encoded : displayResult.decoded} />
+					{displayResult.components.hostname && (
 						<>
 							<div style={{ fontSize: '0.8125rem', fontWeight: 650, color: 'var(--muted)', marginTop: '4px' }}>URL 组件</div>
-							<CopyRow label="协议" value={result.components.protocol} />
-							<CopyRow label="主机" value={result.components.hostname} />
-							{result.components.port && <CopyRow label="端口" value={result.components.port} />}
-							<CopyRow label="路径" value={result.components.pathname} />
-							{result.components.search && <CopyRow label="查询" value={result.components.search} />}
-							{result.components.hash && <CopyRow label="哈希" value={result.components.hash} />}
-							{result.components.params.length > 0 && (
+							<CopyRow label="协议" value={displayResult.components.protocol} />
+							<CopyRow label="主机" value={displayResult.components.hostname} />
+							{displayResult.components.port && <CopyRow label="端口" value={displayResult.components.port} />}
+							<CopyRow label="路径" value={displayResult.components.pathname} />
+							{displayResult.components.search && <CopyRow label="查询" value={displayResult.components.search} />}
+							{displayResult.components.hash && <CopyRow label="哈希" value={displayResult.components.hash} />}
+							{displayResult.components.params.length > 0 && (
 								<>
 									<div style={{ fontSize: '0.8125rem', fontWeight: 650, color: 'var(--muted)', marginTop: '4px' }}>查询参数</div>
-									{result.components.params.map((p, i) => (
+									{displayResult.components.params.map((p, i) => (
 										<CopyRow key={i} label={p.key} value={p.value} />
 									))}
 								</>
@@ -72,7 +89,7 @@ export default function UrlCodec() {
 					)}
 				</div>
 			) : (
-				<div style={{ color: 'var(--semantic-danger)' }}>{result.error}</div>
+				<div className="tool-empty-state">输入 URL 或文本后显示转换结果。</div>
 			)}
 		</div>
 	);

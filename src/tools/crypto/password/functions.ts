@@ -13,6 +13,9 @@ export type PasswordResult =
 	| { ok: true; password: string }
 	| { ok: false; error: string };
 
+export const RANDOM_PASSWORD_MAX_LENGTH = 128;
+export const PIN_MAX_LENGTH = 12;
+
 const CHARSETS = {
 	lowercase: 'abcdefghijklmnopqrstuvwxyz',
 	uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
@@ -37,9 +40,10 @@ function shuffle(chars: string[]): string[] {
 
 export function generatePassword(options: PasswordOptions): PasswordResult {
 	const mode = options.mode ?? 'random';
+	const maxLength = mode === 'pin' ? PIN_MAX_LENGTH : RANDOM_PASSWORD_MAX_LENGTH;
 
-	if (!Number.isInteger(options.length) || options.length < 4 || options.length > 128) {
-		return { ok: false, error: '密码长度必须在 4 到 128 之间。' };
+	if (!Number.isInteger(options.length) || options.length < 4 || options.length > maxLength) {
+		return { ok: false, error: `密码长度必须在 4 到 ${maxLength} 之间。` };
 	}
 
 	if (mode === 'pin') {

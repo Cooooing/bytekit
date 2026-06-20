@@ -10,8 +10,8 @@
 	--size-page-max: 96rem;
 	--size-sidebar: 14rem;
 	--size-sidebar-collapsed: 3rem;
-	--size-ref-panel: 18rem;
-	--size-ref-panel-collapsed: 2rem;
+	--size-ref-panel: 24rem;
+	--size-ref-panel-collapsed: 2.75rem;
 	--size-search: clamp(13rem, 22vw, 22rem);
 	--size-action-rail: clamp(8.5rem, 10vw, 11rem);
 	--space-1: 0.25rem;
@@ -58,6 +58,8 @@ html[data-theme="light"] {
 	--accent-primary-soft: #e4efff;
 	--semantic-danger: #b42318;
 	--semantic-danger-soft: #fff1ef;
+	--semantic-success: #067647;
+	--semantic-success-soft: #ecfdf3;
 	--semantic-warning: #a16207;
 	--semantic-warning-soft: #fff7dc;
 	--semantic-info: #2563eb;
@@ -68,6 +70,14 @@ html[data-theme="light"] {
 	--code-active-line: #edf4ff;
 	--code-selection: #c6ddff;
 	--code-selection-unfocused: #d9e8ff;
+	--code-token-string: #116329;
+	--code-token-number: #175cd3;
+	--code-token-bool: #7a3db8;
+	--code-token-null: #6b7280;
+	--code-token-keyword: #7a3db8;
+	--code-token-property: #0f54b8;
+	--code-token-comment: #647089;
+	--code-token-punctuation: #647089;
 	--shadow-panel: 0 1px 2px rgba(16, 24, 24, 0.05);
 	--shadow-header: 0 1px 0 rgba(16, 24, 24, 0.04);
 	--shadow-dropdown: 0 1rem 2.5rem rgba(20, 48, 92, 0.16);
@@ -93,6 +103,8 @@ html[data-theme="dark"] {
 	--accent-primary-soft: #18345f;
 	--semantic-danger: #f97066;
 	--semantic-danger-soft: #3a1715;
+	--semantic-success: #32d583;
+	--semantic-success-soft: #083a23;
 	--semantic-warning: #facc15;
 	--semantic-warning-soft: #332707;
 	--semantic-info: #93c5fd;
@@ -103,6 +115,14 @@ html[data-theme="dark"] {
 	--code-active-line: #172845;
 	--code-selection: #214d86;
 	--code-selection-unfocused: #233b5d;
+	--code-token-string: #7ddc9e;
+	--code-token-number: #8ab8ff;
+	--code-token-bool: #c4a5ff;
+	--code-token-null: #aebbd2;
+	--code-token-keyword: #c4a5ff;
+	--code-token-property: #93c5fd;
+	--code-token-comment: #8190aa;
+	--code-token-punctuation: #aebbd2;
 	--shadow-panel: 0 1px 2px rgba(0, 0, 0, 0.35);
 	--shadow-header: 0 1px 0 rgba(255, 255, 255, 0.03);
 	--shadow-dropdown: 0 1rem 2.5rem rgba(0, 0, 0, 0.5);

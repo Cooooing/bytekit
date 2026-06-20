@@ -1,36 +1,83 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useToolStorage } from '../../../hooks/useToolStorage';
 import { convertAll, UNIT_LABELS, type CssUnit } from './functions';
 import { cssUnitReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useMessageOnError } from '../../../components/shared/ui/AppMessage';
 
 const unitOptions: CssUnit[] = ['px', 'rem', 'em', 'vw', 'vh', 'percent'];
+
+interface UnitDisplay {
+	directText: string;
+	results: Array<{ unit: CssUnit; label: string; value: number }>;
+}
 
 function unitSuffix(unit: CssUnit): string {
 	return unit === 'percent' ? '%' : unit;
 }
 
+function fieldValue(value: unknown, fallback: string): string {
+	return typeof value === 'string' ? value : typeof value === 'number' ? String(value) : fallback;
+}
+
+function positiveNumber(value: string): number | null {
+	const parsed = Number(value);
+	return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
+
 export default function CssUnitConverter() {
 	const [state, setState] = useToolStorage('bytekit:tool:css-unit:v1', {
-		value: 16,
+		value: '16',
 		from: 'px' as CssUnit,
 		to: 'rem' as CssUnit,
-		baseFontSize: 16,
-		viewportWidth: 1920,
-		viewportHeight: 1080,
+		baseFontSize: '16',
+		viewportWidth: '1920',
+		viewportHeight: '1080',
 	});
 	const { value, from, to, baseFontSize, viewportWidth, viewportHeight } = state;
+	const valueText = fieldValue(value, '16');
+	const baseFontSizeText = fieldValue(baseFontSize, '16');
+	const viewportWidthText = fieldValue(viewportWidth, '1920');
+	const viewportHeightText = fieldValue(viewportHeight, '1080');
+	const numericValue = Number(valueText);
+	const numericBaseFontSize = positiveNumber(baseFontSizeText);
+	const numericViewportWidth = positiveNumber(viewportWidthText);
+	const numericViewportHeight = positiveNumber(viewportHeightText);
+	const hasValidInput = Number.isFinite(numericValue) && numericBaseFontSize !== null && numericViewportWidth !== null && numericViewportHeight !== null;
+	const error = !Number.isFinite(numericValue)
+		? '请输入有效数值。'
+		: numericBaseFontSize === null
+			? '根字体大小必须大于 0。'
+			: numericViewportWidth === null
+				? '视窗宽度必须大于 0。'
+				: numericViewportHeight === null
+					? '视窗高度必须大于 0。'
+					: '';
 
 	const results = useMemo(
-		() => convertAll(value, from, baseFontSize, viewportWidth, viewportHeight),
-		[value, from, baseFontSize, viewportWidth, viewportHeight],
+		() => hasValidInput ? convertAll(numericValue, from, numericBaseFontSize, numericViewportWidth, numericViewportHeight) : [],
+		[hasValidInput, numericValue, from, numericBaseFontSize, numericViewportWidth, numericViewportHeight],
 	);
 
 	const directResult = useMemo(
 		() => results.find((r) => r.unit === to),
 		[results, to],
 	);
+	const currentDisplay = useMemo<UnitDisplay | null>(
+		() => hasValidInput && directResult
+			? { directText: `${valueText}${unitSuffix(from)} = ${directResult.value}${unitSuffix(to)}`, results }
+			: null,
+		[directResult, from, hasValidInput, results, to, valueText],
+	);
+	const [lastDisplay, setLastDisplay] = useState<UnitDisplay | null>(currentDisplay);
+	const display = error ? null : currentDisplay ?? lastDisplay;
+
+	useMessageOnError(error || undefined);
+
+	useEffect(() => {
+		if (currentDisplay) setLastDisplay(currentDisplay);
+	}, [currentDisplay]);
 
 	const controls = (
 		<div className="tool-card tool-card--controls">
@@ -40,8 +87,8 @@ export default function CssUnitConverter() {
 					<input
 						type="number"
 						className="tool-textarea"
-						value={value}
-						onChange={(e) => setState((c) => ({ ...c, value: Number(e.target.value) }))}
+						value={valueText}
+						onChange={(e) => setState((c) => ({ ...c, value: e.target.value }))}
 						aria-label="输入值"
 						style={{ width: '120px' }}
 					/>
@@ -65,7 +112,7 @@ export default function CssUnitConverter() {
 						<button
 							key={u}
 							type="button"
-							className={to === u ? 'password-mode-tabs__item password-mode-tabs__item--active' : 'password-mode-tabs__item'}
+							className={to === u ? 'css-unit-option css-unit-option--active' : 'css-unit-option'}
 							onClick={() => setState((c) => ({ ...c, to: u }))}
 							aria-pressed={to === u}
 						>
@@ -83,8 +130,8 @@ export default function CssUnitConverter() {
 						<input
 							type="number"
 							className="tool-textarea"
-							value={baseFontSize}
-							onChange={(e) => setState((c) => ({ ...c, baseFontSize: Number(e.target.value) }))}
+							value={baseFontSizeText}
+							onChange={(e) => setState((c) => ({ ...c, baseFontSize: e.target.value }))}
 							aria-label="根字体大小"
 							style={{ width: '80px' }}
 						/>
@@ -94,8 +141,8 @@ export default function CssUnitConverter() {
 						<input
 							type="number"
 							className="tool-textarea"
-							value={viewportWidth}
-							onChange={(e) => setState((c) => ({ ...c, viewportWidth: Number(e.target.value) }))}
+							value={viewportWidthText}
+							onChange={(e) => setState((c) => ({ ...c, viewportWidth: e.target.value }))}
 							aria-label="视窗宽度"
 							style={{ width: '80px' }}
 						/>
@@ -105,8 +152,8 @@ export default function CssUnitConverter() {
 						<input
 							type="number"
 							className="tool-textarea"
-							value={viewportHeight}
-							onChange={(e) => setState((c) => ({ ...c, viewportHeight: Number(e.target.value) }))}
+							value={viewportHeightText}
+							onChange={(e) => setState((c) => ({ ...c, viewportHeight: e.target.value }))}
 							aria-label="视窗高度"
 							style={{ width: '80px' }}
 						/>
@@ -119,28 +166,32 @@ export default function CssUnitConverter() {
 	const resultPanel = (
 		<div className="tool-card tool-card--result">
 			<h2 className="tool-card__title">换算结果</h2>
-			{directResult ? (
-				<div style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '16px', color: 'var(--accent)' }}>
-					{value}{unitSuffix(from)} = {directResult.value}{unitSuffix(to)}
+			{display ? (
+				<div style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '16px', color: 'var(--primary)', overflowWrap: 'anywhere', lineHeight: 1.25 }}>
+					{display.directText}
 				</div>
-			) : null}
+			) : (
+				<div className="tool-empty-state">输入数值和基准后显示换算结果。</div>
+			)}
 			<div style={{ display: 'grid', gap: '6px' }}>
-				{results.map((r) => (
+				{display?.results.map((r) => (
 					<div
 						key={r.unit}
 						style={{
 							display: 'flex',
 							justifyContent: 'space-between',
 							alignItems: 'center',
+							gap: '12px',
+							minWidth: 0,
 							padding: '8px 12px',
 							borderRadius: '6px',
-							background: r.unit === to ? 'var(--accent-bg, rgba(var(--accent-rgb, 99,102,241), 0.1))' : 'var(--surface)',
-							border: r.unit === to ? '1px solid var(--accent-border, var(--accent))' : '1px solid transparent',
+							background: r.unit === to ? 'var(--primary-soft)' : 'var(--surface)',
+							border: r.unit === to ? '1px solid var(--primary)' : '1px solid transparent',
 							fontSize: '0.875rem',
 						}}
 					>
 						<span style={{ color: 'var(--muted)' }}>{r.label}</span>
-						<span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500 }}>
+						<span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, minWidth: 0, overflowWrap: 'anywhere', textAlign: 'right' }}>
 							{r.value} {unitSuffix(r.unit)}
 						</span>
 					</div>

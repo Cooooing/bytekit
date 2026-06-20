@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 
 import react from '@astrojs/react';
+import tailwindcss from '@tailwindcss/vite';
 
 const isVercel = !!process.env.VERCEL;
 const isGitHub = !!process.env.GITHUB_ACTIONS;
@@ -21,6 +22,7 @@ export default defineConfig({
 	integrations: [react()],
 	adapter,
 	vite: {
+		plugins: [tailwindcss()],
 		build: {
 			rollupOptions: {
 				...(!isVercel ? {

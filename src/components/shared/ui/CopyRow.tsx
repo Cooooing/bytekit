@@ -1,5 +1,6 @@
-import { useState, useCallback, memo } from 'react';
+import { useCallback, useEffect, memo } from 'react';
 import { useTheme } from '../../../themes/ThemeContext';
+import { useTransientNotice } from '../../../hooks/useTransientNotice';
 
 interface CopyRowProps {
 	label: string;
@@ -7,28 +8,31 @@ interface CopyRowProps {
 }
 
 const CopyRow = memo(function CopyRow({ label, value }: CopyRowProps) {
-	const [copied, setCopied] = useState(false);
-	const [error, setError] = useState(false);
+	const [notice, showNotice] = useTransientNotice();
 	const { Button } = useTheme();
+	const isEmpty = value.length === 0;
+
+	useEffect(() => {
+		showNotice('');
+	}, [showNotice, value]);
 
 	const handleCopy = useCallback(async () => {
+		if (isEmpty) return;
 		try {
 			await navigator.clipboard.writeText(value);
-			setCopied(true);
-			setError(false);
-			setTimeout(() => setCopied(false), 1400);
+			showNotice('已复制');
 		} catch {
-			setError(true);
-			setTimeout(() => setError(false), 1400);
+			showNotice('复制失败');
 		}
-	}, [value]);
+	}, [isEmpty, showNotice, value]);
 
 	return (
 		<div className="copy-row">
 			<span className="copy-row__label">{label}</span>
 			<code className="copy-row__value">{value}</code>
-			<Button variant="ghost" size="sm" onClick={handleCopy}>
-				{copied ? '已复制' : error ? '复制失败' : '复制'}
+			{notice ? <span className="copy-row__notice" role="status" aria-live="polite">{notice}</span> : null}
+			<Button variant="ghost" size="sm" disabled={isEmpty} onClick={handleCopy}>
+				复制
 			</Button>
 		</div>
 	);
