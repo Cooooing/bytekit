@@ -1,16 +1,8 @@
+import { formatCode, minifyCode } from '../shared-formatter';
+
 export function formatXml(xml: string): { ok: true; output: string } | { ok: false; error: string } {
 	try {
-		let formatted = '';
-		let indent = 0;
-		const lines = xml.replace(/>\s*</g, '>\n<').split('\n');
-		for (let line of lines) {
-			line = line.trim();
-			if (!line) continue;
-			if (line.startsWith('</')) indent--;
-			formatted += '  '.repeat(Math.max(0, indent)) + line + '\n';
-			if (line.startsWith('<') && !line.startsWith('</') && !line.startsWith('<?') && !line.endsWith('/>') && !/<[^/][^>]*\/>/.test(line)) indent++;
-		}
-		return { ok: true, output: formatted.trim() };
+		return { ok: true, output: formatCode(xml) };
 	} catch (e) {
 		return { ok: false, error: 'XML 格式化失败：' + String(e) };
 	}
@@ -18,8 +10,7 @@ export function formatXml(xml: string): { ok: true; output: string } | { ok: fal
 
 export function minifyXml(xml: string): { ok: true; output: string } | { ok: false; error: string } {
 	try {
-		const output = xml.replace(/>\s+</g, '><').replace(/\s+/g, ' ').trim();
-		return { ok: true, output };
+		return { ok: true, output: minifyCode(xml) };
 	} catch (e) {
 		return { ok: false, error: 'XML 压缩失败：' + String(e) };
 	}

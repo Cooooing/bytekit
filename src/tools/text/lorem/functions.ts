@@ -6,19 +6,19 @@ function pickRandom<T>(arr: T[]): T {
 	return arr[Math.floor(Math.random() * arr.length)];
 }
 
-function generateSentence(wordPool: string[], minWords: number = 5, maxWords: number = 15): string {
+function generateSentence(wordPool: string[], language: 'en' | 'zh' = 'zh', minWords: number = 5, maxWords: number = 15): string {
 	const len = minWords + Math.floor(Math.random() * (maxWords - minWords));
 	const words = Array.from({ length: len }, () => pickRandom(wordPool));
 	words[0] = words[0][0].toUpperCase() + words[0].slice(1);
-	return words.join(' ') + '.';
+	return words.join(language === 'zh' ? '' : ' ') + '.';
 }
 
-function generateParagraph(wordPool: string[], minSentences: number = 3, maxSentences: number = 7): string {
+function generateParagraph(wordPool: string[], language: 'en' | 'zh' = 'zh', minSentences: number = 3, maxSentences: number = 7): string {
 	const len = minSentences + Math.floor(Math.random() * (maxSentences - minSentences));
-	return Array.from({ length: len }, () => generateSentence(wordPool)).join(' ');
+	return Array.from({ length: len }, () => generateSentence(wordPool, language)).join(' ');
 }
 
 export function generateLorem(paragraphs: number = 3, language: 'en' | 'zh' = 'zh'): string {
 	const pool = language === 'zh' ? ZH_WORDS : EN_WORDS;
-	return Array.from({ length: paragraphs }, () => generateParagraph(pool)).join('\n\n');
+	return Array.from({ length: paragraphs }, () => generateParagraph(pool, language)).join('\n\n');
 }

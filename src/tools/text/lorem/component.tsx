@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { generateLorem } from './functions';
 import { loremReference } from './references';
@@ -16,9 +16,11 @@ export default function LoremGenerator() {
 	}, [paragraphs, language]);
 
 	// Generate on first render
-	if (!output) {
-		setOutput(generateLorem(paragraphs, language));
-	}
+	useEffect(() => {
+		if (!output) {
+			setOutput(generateLorem(paragraphs, language));
+		}
+	}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const controls = (
 		<div className="tool-card tool-card--controls">
@@ -58,6 +60,9 @@ export default function LoremGenerator() {
 		<div className="tool-card tool-card--result" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
 			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
 				<h2 className="tool-card__title">生成结果</h2>
+				<Button variant="ghost" size="sm" onClick={() => navigator.clipboard.writeText(output)}>
+					复制
+				</Button>
 			</div>
 			<div
 				style={{

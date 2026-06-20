@@ -22,14 +22,13 @@ import { definition as jsEscapeDef } from './encoding/js-escape/definition';
 import { definition as passwordDef } from './crypto/password/definition';
 import { definition as cronDef } from './developer/cron/definition';
 import { definition as cssUnitDef } from './css/unit-converter/definition';
-import { definition as colorPaletteDef } from './css/color-palette/definition';
+
 import { definition as wordCountDef } from './text/word-count/definition';
 import { definition as nanoidDef } from './developer/nanoid/definition';
 import { definition as jsonPathDef } from './json/jsonpath/definition';
 import { definition as xmlDef } from './format/xml/definition';
 import { definition as loremDef } from './text/lorem/definition';
 import { definition as htmlFormatDef } from './format/html/definition';
-import { definition as jwtCreateDef } from './crypto/jwt-create/definition';
 
 export const tools: ToolDefinition[] = [
 	timestampDef,
@@ -52,14 +51,13 @@ export const tools: ToolDefinition[] = [
 	jsEscapeDef,
 	passwordDef,
 	cssUnitDef,
-	colorPaletteDef,
+
 	wordCountDef,
 	nanoidDef,
 	jsonPathDef,
 	xmlDef,
 	loremDef,
 	htmlFormatDef,
-	jwtCreateDef,
 ];
 
 // ── Categories (imported from the first tool in each category) ──

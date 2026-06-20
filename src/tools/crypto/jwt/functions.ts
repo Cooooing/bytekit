@@ -1,3 +1,27 @@
+export async function createJwt(
+	header: Record<string, unknown>,
+	payload: Record<string, unknown>,
+	secret?: string,
+): Promise<{ ok: true; token: string } | { ok: false; error: string }> {
+	try {
+		const enc = new TextEncoder();
+		const headerB64 = btoa(JSON.stringify(header)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+		const payloadB64 = btoa(JSON.stringify(payload)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+		if (!secret || header.alg === 'none') {
+			return { ok: true, token: `${headerB64}.${payloadB64}` };
+		}
+
+		const key = await crypto.subtle.importKey('raw', enc.encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+		const signature = await crypto.subtle.sign('HMAC', key, enc.encode(`${headerB64}.${payloadB64}`));
+		const sigB64 = btoa(String.fromCharCode(...new Uint8Array(signature))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+		return { ok: true, token: `${headerB64}.${payloadB64}.${sigB64}` };
+	} catch (e) {
+		return { ok: false, error: 'JWT 生成失败：' + String(e) };
+	}
+}
+
 export type DecodedJwt =
 	| {
 			ok: true;

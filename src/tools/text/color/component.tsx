@@ -1,13 +1,16 @@
 import { useMemo, useState } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
-import { parseColor } from './functions';
+import { parseColor, generatePalette } from './functions';
 import { colorReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
+
+const PALETTE_LABELS = ['50', '200', '500', '700', '900'];
 
 export default function ColorConverter() {
 	const [input, setInput] = useState('#3B82F6');
 	const result = useMemo(() => parseColor(input), [input]);
+	const palette = useMemo(() => (result.ok ? generatePalette(result.hex) : null), [result]);
 
 	const controls = (
 		<div className="tool-card tool-card--controls">
@@ -51,6 +54,29 @@ export default function ColorConverter() {
 						<CopyRow label="RGB" value={result.rgba} />
 						<CopyRow label="HSL" value={result.hsla} />
 					</div>
+					{palette && (
+						<div style={{ display: 'grid', gap: '6px' }}>
+							<div style={{ fontSize: '0.875rem', color: 'var(--muted)', marginTop: '4px' }}>调色板</div>
+							<div style={{ display: 'flex', gap: '8px' }}>
+								{palette.map((color, i) => (
+									<div key={color} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+										<div
+											style={{
+												width: '100%',
+												height: '2rem',
+												borderRadius: 'var(--radius-sm)',
+												background: color,
+												border: '1px solid var(--border)',
+											}}
+										/>
+										<span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)' }}>
+											{PALETTE_LABELS[i]} {color}
+										</span>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
 				</div>
 			) : (
 				<div style={{ color: 'var(--semantic-danger)' }}>{result.error}</div>
