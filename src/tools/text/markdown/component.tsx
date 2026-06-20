@@ -48,7 +48,7 @@ export default function MarkdownPreview() {
 					<div className="code-editor__surface">
 						<div
 							className="markdown-preview"
-							style={{ padding: '10px 12px', overflow: 'auto', minHeight: 'var(--editor-height-default)', width: '100%' }}
+							style={{ flex: 1, padding: '10px 12px', overflow: 'auto' }}
 							dangerouslySetInnerHTML={{ __html: html }}
 						/>
 					</div>
