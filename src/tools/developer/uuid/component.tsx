@@ -11,6 +11,7 @@ export default function UuidGenerator() {
 	const [count, setCount] = useState(1);
 	const [results, setResults] = useState<string[]>([generateUuidV4()]);
 	const [copied, setCopied] = useState(false);
+	const [copyError, setCopyError] = useState(false);
 
 	const generate = useCallback(() => {
 		setResults(generateBatch(count));
@@ -20,9 +21,11 @@ export default function UuidGenerator() {
 		try {
 			await navigator.clipboard.writeText(results.join('\n'));
 			setCopied(true);
+			setCopyError(false);
 			setTimeout(() => setCopied(false), 1400);
 		} catch {
-			// ignore
+			setCopyError(true);
+			setTimeout(() => setCopyError(false), 1400);
 		}
 	}, [results]);
 
@@ -52,11 +55,11 @@ export default function UuidGenerator() {
 				</div>
 				<div style={{ display: 'flex', gap: '8px' }}>
 					<Button variant="primary" onClick={generate}>生成</Button>
-					<Button variant="secondary" onClick={copyAll}>{copied ? '已复制' : '复制'}</Button>
+					<Button variant="secondary" onClick={copyAll}>{copied ? '已复制' : copyError ? '复制失败' : '复制'}</Button>
 				</div>
 			</div>
 		</div>
-	), [count, copied, generate, copyAll]);
+	), [count, copied, copyError, generate, copyAll]);
 
 	const resultPanel = useMemo(() => (
 		<div className="tool-card tool-card--result">

@@ -13,6 +13,7 @@ export default function NanoidGenerator() {
 	const [alphabet, setAlphabet] = useState('');
 	const [results, setResults] = useState<string[]>(() => generateBatch(5, 21));
 	const [copied, setCopied] = useState(false);
+	const [copyError, setCopyError] = useState(false);
 
 	const generate = useCallback(() => {
 		const chars = alphabet.trim() || undefined;
@@ -23,9 +24,11 @@ export default function NanoidGenerator() {
 		try {
 			await navigator.clipboard.writeText(results.join('\n'));
 			setCopied(true);
+			setCopyError(false);
 			setTimeout(() => setCopied(false), 1400);
 		} catch {
-			// ignore
+			setCopyError(true);
+			setTimeout(() => setCopyError(false), 1400);
 		}
 	}, [results]);
 
@@ -87,11 +90,11 @@ export default function NanoidGenerator() {
 				</div>
 				<div style={{ display: 'flex', gap: '8px' }}>
 					<Button variant="primary" onClick={generate}>生成</Button>
-					<Button variant="secondary" onClick={copyAll}>{copied ? '已复制' : '复制全部'}</Button>
+					<Button variant="secondary" onClick={copyAll}>{copied ? '已复制' : copyError ? '复制失败' : '复制全部'}</Button>
 				</div>
 			</div>
 		</div>
-	), [length, count, alphabet, copied, generate, copyAll]);
+	), [length, count, alphabet, copied, copyError, generate, copyAll]);
 
 	const resultPanel = useMemo(() => (
 		<div className="tool-card tool-card--result">

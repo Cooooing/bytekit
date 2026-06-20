@@ -10,6 +10,7 @@ export default function LoremGenerator() {
 	const [paragraphs, setParagraphs] = useState(3);
 	const [language, setLanguage] = useState<'zh' | 'en'>('zh');
 	const [output, setOutput] = useState('');
+	const [copyNotice, setCopyNotice] = useState('');
 
 	const handleGenerate = useCallback(() => {
 		setOutput(generateLorem(paragraphs, language));
@@ -21,6 +22,17 @@ export default function LoremGenerator() {
 			setOutput(generateLorem(paragraphs, language));
 		}
 	}, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+	const handleCopy = useCallback(async () => {
+		try {
+			await navigator.clipboard.writeText(output);
+			setCopyNotice('已复制');
+			setTimeout(() => setCopyNotice(''), 1400);
+		} catch {
+			setCopyNotice('复制失败');
+			setTimeout(() => setCopyNotice(''), 1400);
+		}
+	}, [output]);
 
 	const controls = (
 		<div className="tool-card tool-card--controls">
@@ -59,8 +71,8 @@ export default function LoremGenerator() {
 	const resultPanel = (
 		<div className="tool-card tool-card--result" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
 			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-				<h2 className="tool-card__title">生成结果</h2>
-				<Button variant="ghost" size="sm" onClick={() => navigator.clipboard.writeText(output)}>
+				<h2 className="tool-card__title">生成结果{copyNotice && <span style={{ marginLeft: '8px', fontSize: '0.8rem', color: copyNotice === '已复制' ? 'var(--semantic-success)' : 'var(--semantic-danger)' }}>{copyNotice}</span>}</h2>
+				<Button variant="ghost" size="sm" onClick={handleCopy}>
 					复制
 				</Button>
 			</div>

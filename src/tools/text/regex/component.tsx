@@ -28,6 +28,7 @@ export default function RegexTester() {
 	const setPattern = (v: string) => setState((c) => ({ ...c, pattern: v }));
 	const setFlags = (v: string) => setState((c) => ({ ...c, flags: v }));
 	const [copied, setCopied] = useState(false);
+	const [copyError, setCopyError] = useState(false);
 
 	function toggleFlag(flag: string) {
 		setFlags(flags.includes(flag) ? flags.replace(flag, '') : flags + flag);
@@ -54,9 +55,11 @@ export default function RegexTester() {
 		try {
 			await navigator.clipboard.writeText(regex);
 			setCopied(true);
+			setCopyError(false);
 			setTimeout(() => setCopied(false), 1400);
 		} catch {
-			// ignore
+			setCopyError(true);
+			setTimeout(() => setCopyError(false), 1400);
 		}
 	}
 
@@ -67,7 +70,7 @@ export default function RegexTester() {
 			<div className="regex-tester__pattern">
 						<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
 							<h2 className="tool-card__title" style={{ margin: 0 }}>正则表达式</h2>
-							<Button variant="secondary" size="sm" onClick={copyRegex}>{copied ? '已复制' : '复制正则'}</Button>
+							<Button variant="secondary" size="sm" onClick={copyRegex}>{copied ? '已复制' : copyError ? '复制失败' : '复制正则'}</Button>
 						</div>
 						<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
 							<span style={{ color: 'var(--muted)', fontFamily: 'monospace', fontSize: '1.1rem' }}>/</span>

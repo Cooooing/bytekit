@@ -24,12 +24,16 @@ function parseField(field: string, min: number, max: number): number[] {
 			const [start, step] = part.split('/');
 			const s = (start === '*' || start === '?') ? min : parseInt(start, 10);
 			const st = parseInt(step, 10);
+			if (isNaN(s) || isNaN(st) || st <= 0) continue;
 			for (let i = s; i <= max; i += st) values.push(i);
 		} else if (part.includes('-')) {
 			const [a, b] = part.split('-').map(Number);
-			for (let i = a; i <= b; i++) values.push(i);
+			if (isNaN(a) || isNaN(b)) continue;
+			const lo = Math.min(a, b), hi = Math.max(a, b);
+			for (let i = lo; i <= hi; i++) values.push(i);
 		} else {
-			values.push(parseInt(part, 10));
+			const v = parseInt(part, 10);
+			if (!isNaN(v)) values.push(v);
 		}
 	}
 	return [...new Set(values)].sort((a, b) => a - b);

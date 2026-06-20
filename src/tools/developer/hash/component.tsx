@@ -18,7 +18,8 @@ export default function HashGenerator() {
 		if (!input) { setHashes({}); return; }
 		computeHashes(input).then((result) => {
 			if (result.ok) setHashes(result.hashes);
-		}).catch(() => {});
+			else setHashes({});
+		}).catch(() => setHashes({}));
 	}, [input]);
 
 	const controls = useMemo(() => (

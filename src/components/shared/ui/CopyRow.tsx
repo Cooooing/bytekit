@@ -8,15 +8,18 @@ interface CopyRowProps {
 
 const CopyRow = memo(function CopyRow({ label, value }: CopyRowProps) {
 	const [copied, setCopied] = useState(false);
+	const [error, setError] = useState(false);
 	const { Button } = useTheme();
 
 	const handleCopy = useCallback(async () => {
 		try {
 			await navigator.clipboard.writeText(value);
 			setCopied(true);
+			setError(false);
 			setTimeout(() => setCopied(false), 1400);
 		} catch {
-			// ignore
+			setError(true);
+			setTimeout(() => setError(false), 1400);
 		}
 	}, [value]);
 
@@ -25,7 +28,7 @@ const CopyRow = memo(function CopyRow({ label, value }: CopyRowProps) {
 			<span className="copy-row__label">{label}</span>
 			<code className="copy-row__value">{value}</code>
 			<Button variant="ghost" size="sm" onClick={handleCopy}>
-				{copied ? '已复制' : '复制'}
+				{copied ? '已复制' : error ? '复制失败' : '复制'}
 			</Button>
 		</div>
 	);

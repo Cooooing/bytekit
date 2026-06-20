@@ -10,6 +10,14 @@ export const cronReference = [
 		],
 	},
 	{
+		title: '特殊字符',
+		items: [
+			{ syntax: '?', desc: '不指定（等同于 *，用于日和周字段）' },
+			{ syntax: 'L', desc: '最后一天（仅限日字段）' },
+			{ syntax: 'W', desc: '最近的工作日（仅限日字段）' },
+		],
+	},
+	{
 		title: '示例',
 		items: [
 			{ syntax: '0 * * * *', desc: '每小时执行' },
