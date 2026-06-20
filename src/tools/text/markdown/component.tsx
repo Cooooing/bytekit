@@ -41,13 +41,17 @@ export default function MarkdownPreview() {
 			output={
 				<div className="code-editor" style={{ '--code-editor-min-height': 'var(--editor-height-default)' } as React.CSSProperties}>
 					<div className="code-editor__toolbar">
-						<span className="code-editor__title">{text.output}</span>
+						<div className="code-editor__title-group">
+							<span className="code-editor__title">{text.output}</span>
+						</div>
 					</div>
-					<div
-						className="markdown-preview"
-						style={{ padding: '16px', overflow: 'auto', minHeight: 'var(--editor-height-default)' }}
-						dangerouslySetInnerHTML={{ __html: html }}
-					/>
+					<div className="code-editor__surface">
+						<div
+							className="markdown-preview"
+							style={{ padding: '10px 12px', overflow: 'auto', minHeight: 'var(--editor-height-default)', width: '100%' }}
+							dangerouslySetInnerHTML={{ __html: html }}
+						/>
+					</div>
 				</div>
 			}
 		/>
