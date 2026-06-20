@@ -35,15 +35,14 @@ export default function CronParser() {
 		<div className="tool-card tool-card--result">
 			<h2 className="tool-card__title">解析结果</h2>
 			{result.ok ? (
-				<div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+				<div style={{ display: 'grid', gap: 'var(--space-4)' }}>
 					{/* Description */}
 					<div className="tool-card__section">
 						<div className="tool-card__title-row">
 							<span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>自然语言描述</span>
 						</div>
-						<div style={{ fontSize: '1rem', fontWeight: 600 }}>{result.result.description}</div>
-						<div>
-							<CopyRow label="描述" value={result.result.description} />
+						<div style={{ fontSize: '1.125rem', fontWeight: 600, lineHeight: 1.5 }}>
+							{result.result.description}
 						</div>
 					</div>
 
@@ -53,13 +52,10 @@ export default function CronParser() {
 							<div className="tool-card__title-row">
 								<span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>下次执行时间</span>
 							</div>
-							<ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
+							<div style={{ display: 'grid', gap: '2px' }}>
 								{result.result.nextRuns.map((run, i) => (
-									<li key={i} style={{ fontSize: '0.875rem', fontFamily: 'var(--font-mono)' }}>{run}</li>
+									<CopyRow key={i} label={`#${i + 1}`} value={run} />
 								))}
-							</ul>
-							<div>
-								<CopyRow label="执行计划" value={result.result.nextRuns.join('\n')} />
 							</div>
 						</div>
 					)}
@@ -69,11 +65,24 @@ export default function CronParser() {
 						<div className="tool-card__title-row">
 							<span style={{ fontSize: '0.8rem', color: 'var(--muted)' }}>字段明细</span>
 						</div>
-						<div style={{ display: 'grid', gap: '4px' }}>
+						<div style={{ display: 'grid', gap: 'var(--space-2)' }}>
 							{FIELD_KEYS.map((key, i) => (
-								<div key={key} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.875rem' }}>
-									<span>{FIELD_LABELS[i]}</span>
-									<span style={{ fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>
+								<div key={key} style={{
+									display: 'grid',
+									gridTemplateColumns: '4rem 1fr',
+									gap: 'var(--space-2)',
+									fontSize: '0.8125rem',
+									padding: 'var(--space-2)',
+									borderRadius: 'var(--radius-sm)',
+									background: 'var(--surface-subtle)',
+								}}>
+									<span style={{ fontWeight: 600, color: 'var(--muted)' }}>{FIELD_LABELS[i]}</span>
+									<span style={{
+										fontFamily: 'var(--font-mono)',
+										fontSize: '0.75rem',
+										wordBreak: 'break-all',
+										lineHeight: 1.6,
+									}}>
 										{result.result.fields[key].join(', ')}
 									</span>
 								</div>

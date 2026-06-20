@@ -24,16 +24,17 @@ function parseField(field: string, min: number, max: number): number[] {
 			const [start, step] = part.split('/');
 			const s = (start === '*' || start === '?') ? min : parseInt(start, 10);
 			const st = parseInt(step, 10);
-			if (isNaN(s) || isNaN(st) || st <= 0) continue;
+			if (isNaN(s) || isNaN(st) || st <= 0 || s < min || s > max) continue;
 			for (let i = s; i <= max; i += st) values.push(i);
 		} else if (part.includes('-')) {
 			const [a, b] = part.split('-').map(Number);
 			if (isNaN(a) || isNaN(b)) continue;
-			const lo = Math.min(a, b), hi = Math.max(a, b);
+			const lo = Math.max(min, Math.min(a, b));
+			const hi = Math.min(max, Math.max(a, b));
 			for (let i = lo; i <= hi; i++) values.push(i);
 		} else {
 			const v = parseInt(part, 10);
-			if (!isNaN(v)) values.push(v);
+			if (!isNaN(v) && v >= min && v <= max) values.push(v);
 		}
 	}
 	return [...new Set(values)].sort((a, b) => a - b);
@@ -56,19 +57,15 @@ function buildDescription(minute: string, hour: string, dayOfMonth: string, mont
 		} else {
 			desc.push(`${startH}:00 至 ${endH}:00 每小时的第 ${minute} 分钟`);
 		}
+	} else if (minute === '*' && hour !== '*' && !isFullHourRange) {
+		desc.push(`每小时的第 ${hour} 分钟`);
 	} else if (minute === '*' && hour === '*') {
 		desc.push('每分钟');
 	} else if (minute === '0' && hour === '*') {
-		desc.push('每小时的第 0 分钟');
+		desc.push('每整点');
 	} else if (minute !== '*' && hour === '*') {
 		desc.push(`每小时的第 ${minute} 分钟`);
-	} else if (minute.includes('-') && hour === '*') {
-		desc.push(`每小时的第 ${minute} 分钟`);
-	} else if (minute === '*' && !isFullHourRange) {
-		desc.push(`每小时`);
-	} else if (minute === '0' && !isFullHourRange) {
-		desc.push(`每整点`);
-	} else if (!isFullHourRange) {
+	} else {
 		desc.push(`${hour}:${minute.padStart(2, '0')}`);
 	}
 
@@ -147,6 +144,13 @@ export function parseCron(expression: string): { ok: true; result: CronResult } 
 		const daysOfMonth = parseField(dayOfMonth, 1, 31);
 		const months = parseField(month, 1, 12);
 		const daysOfWeek = parseField(dayOfWeek, 0, 7).map(d => d === 7 ? 0 : d);
+
+		// Validate: all fields must have at least one value
+		if (minutes.length === 0) return { ok: false, error: `分钟字段 "${minute}" 无效` };
+		if (hours.length === 0) return { ok: false, error: `小时字段 "${hour}" 无效` };
+		if (daysOfMonth.length === 0) return { ok: false, error: `日字段 "${dayOfMonth}" 无效` };
+		if (months.length === 0) return { ok: false, error: `月字段 "${month}" 无效` };
+		if (daysOfWeek.length === 0) return { ok: false, error: `星期字段 "${dayOfWeek}" 无效` };
 
 		const description = buildDescription(minute, hour, dayOfMonth, month, dayOfWeek);
 		const nextRuns = getNextRuns(minutes, hours, daysOfMonth, months, daysOfWeek, 5);
