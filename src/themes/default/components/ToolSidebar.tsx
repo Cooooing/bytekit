@@ -10,17 +10,11 @@ interface ToolSidebarProps {
 type OpenState = Record<string, boolean>;
 
 function readOpenState(): OpenState {
-	if (typeof window === 'undefined') return {};
-	try {
-		return JSON.parse(window.localStorage.getItem('bytekit:tool-nav:open:v1') ?? '{}');
-	} catch {
-		return {};
-	}
+	return {};
 }
 
 function readCollapsed() {
-	if (typeof window === 'undefined') return false;
-	return window.localStorage.getItem('bytekit:tool-nav:collapsed:v1') === 'true';
+	return false;
 }
 
 export default function ToolSidebar({ activeToolId, onSelectTool }: ToolSidebarProps) {
@@ -37,6 +31,15 @@ export default function ToolSidebar({ activeToolId, onSelectTool }: ToolSidebarP
 	}, [activeTool?.category, openState]);
 
 	useEffect(() => {
+		try {
+			const stored = window.localStorage.getItem('bytekit:tool-nav:collapsed:v1');
+			if (stored === 'true') setCollapsed(true);
+			const openStored = window.localStorage.getItem('bytekit:tool-nav:open:v1');
+			if (openStored) setOpenState(JSON.parse(openStored));
+		} catch {}
+	}, []);
+
+	useEffect(() => {
 		window.localStorage.setItem('bytekit:tool-nav:open:v1', JSON.stringify(normalizedOpenState));
 	}, [normalizedOpenState]);
 
@@ -49,7 +52,7 @@ export default function ToolSidebar({ activeToolId, onSelectTool }: ToolSidebarP
 	}
 
 	return (
-		<aside suppressHydrationWarning className={collapsed ? 'tool-sidebar tool-sidebar--collapsed' : 'tool-sidebar'} aria-label="工具目录">
+		<aside className={collapsed ? 'tool-sidebar tool-sidebar--collapsed' : 'tool-sidebar'} aria-label="工具目录">
 			<button
 				className="tool-sidebar__head"
 				type="button"

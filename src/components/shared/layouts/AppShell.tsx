@@ -14,10 +14,13 @@ export default function AppShell({ initialToolId }: AppShellProps) {
 	const { ToolSidebar } = useTheme();
 	const [refContent, setRefContent] = useState<RefContent | null>(null);
 	const refPanelValue = useMemo(() => ({ setRefContent }), [setRefContent]);
-	const [refCollapsed, setRefCollapsed] = useState(() => {
-		if (typeof window === 'undefined') return false;
-		return localStorage.getItem('bytekit:tool-ref:collapsed:v1') === 'true';
-	});
+	const [refCollapsed, setRefCollapsed] = useState(false);
+
+	useEffect(() => {
+		try {
+			setRefCollapsed(localStorage.getItem('bytekit:tool-ref:collapsed:v1') === 'true');
+		} catch {}
+	}, []);
 
 	useEffect(() => {
 		try {
