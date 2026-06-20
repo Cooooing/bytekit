@@ -20,11 +20,17 @@ export default defineConfig({
 	base,
 	integrations: [react()],
 	adapter,
-	vite: isVercel ? {
+	vite: {
 		build: {
 			rollupOptions: {
-				external: ['cloudflare:workers'],
+				output: {
+					manualChunks: {
+						'react-vendor': ['react', 'react-dom'],
+						'codemirror-core': ['@codemirror/view', '@codemirror/state'],
+					},
+				},
+				...(isVercel ? { external: ['cloudflare:workers'] } : {}),
 			},
 		},
-	} : {},
+	},
 });

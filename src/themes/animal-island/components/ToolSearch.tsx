@@ -1,6 +1,4 @@
-import MiniSearch from 'minisearch';
 import { Search } from 'lucide-react';
-import { pinyin } from 'pinyin-pro';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getCategoryById, getToolHref, getToolIdFromPathname, isToolPath, tools } from '../../../tools/registry';
 
@@ -8,39 +6,55 @@ interface ToolSearchProps {
 	variant?: 'header' | 'hero' | 'sidebar';
 }
 
-function toPinyinSearchText(value: string) {
+let cachedMiniSearch: any = null;
+let cachedPinyin: ((text: string, options: any) => string[]) | null = null;
+
+async function loadSearchDeps() {
+	if (!cachedMiniSearch) {
+		const [miniSearchModule, pinyinModule] = await Promise.all([
+			import('minisearch'),
+			import('pinyin-pro'),
+		]);
+		cachedMiniSearch = miniSearchModule.default;
+		cachedPinyin = pinyinModule.pinyin;
+	}
+	return { MiniSearch: cachedMiniSearch, pinyin: cachedPinyin! };
+}
+
+function toPinyinSearchText(pinyinFn: (text: string, options: any) => string[], value: string) {
 	const chineseSegments = value.match(/[㐀-鿿]+/g) ?? [];
 	const pinyinTokens = chineseSegments.flatMap((segment) => {
-		const full = pinyin(segment, { toneType: 'none', type: 'array' });
-		const initials = pinyin(segment, { pattern: 'first', toneType: 'none', type: 'array' });
-
+		const full = pinyinFn(segment, { toneType: 'none', type: 'array' });
+		const initials = pinyinFn(segment, { pattern: 'first', toneType: 'none', type: 'array' });
 		return [full.join(' '), full.join(''), initials.join('')];
 	});
-
 	return pinyinTokens.filter(Boolean).join(' ');
 }
 
-const documents = tools.map((tool) => {
-	const category = getCategoryById(tool.category)?.name ?? '';
-	const keywords = tool.keywords.join(' ');
-	const searchSource = [tool.name, tool.shortName, tool.description, keywords, category].join(' ');
-
-	return {
-		id: tool.id,
-		name: tool.name,
-		shortName: tool.shortName,
-		description: tool.description,
-		keywords,
-		category,
-		pinyin: toPinyinSearchText(searchSource),
-		href: tool.href,
-	};
-});
+function buildDocuments(pinyinFn: (text: string, options: any) => string[]) {
+	return tools.map((tool) => {
+		const category = getCategoryById(tool.category)?.name ?? '';
+		const keywords = tool.keywords.join(' ');
+		const searchSource = [tool.name, tool.shortName, tool.description, keywords, category].join(' ');
+		return {
+			id: tool.id,
+			name: tool.name,
+			shortName: tool.shortName,
+			description: tool.description,
+			keywords,
+			category,
+			pinyin: toPinyinSearchText(pinyinFn, searchSource),
+			href: tool.href,
+		};
+	});
+}
 
 export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 	const [query, setQuery] = useState('');
 	const [isFocused, setIsFocused] = useState(false);
 	const [activeIndex, setActiveIndex] = useState(-1);
+	const [searchReady, setSearchReady] = useState(false);
+	const miniSearchRef = useRef<any>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const resultsRef = useRef<HTMLDivElement>(null);
 	const queryRef = useRef(query);
@@ -48,12 +62,14 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 	const activeIndexRef = useRef(activeIndex);
 	const resultsLengthRef = useRef(0);
 
-	// Keep refs in sync
 	queryRef.current = query;
 	isFocusedRef.current = isFocused;
 	activeIndexRef.current = activeIndex;
 
-	const miniSearch = useMemo(() => {
+	const initSearch = useCallback(async () => {
+		if (miniSearchRef.current) return;
+		const { MiniSearch, pinyin } = await loadSearchDeps();
+		const documents = buildDocuments(pinyin);
 		const index = new MiniSearch({
 			fields: ['name', 'shortName', 'keywords', 'pinyin', 'description', 'category'],
 			storeFields: ['id', 'name', 'description', 'category', 'href'],
@@ -64,22 +80,23 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 			},
 		});
 		index.addAll(documents);
-		return index;
+		miniSearchRef.current = index;
+		setSearchReady(true);
 	}, []);
 
 	const normalizedQuery = query.trim();
-	const results = normalizedQuery
-		? miniSearch.search(normalizedQuery).slice(0, 8)
-		: [];
+	const results = useMemo(() => {
+		if (!searchReady || !miniSearchRef.current || !normalizedQuery) return [];
+		return miniSearchRef.current.search(normalizedQuery).slice(0, 8);
+	}, [searchReady, normalizedQuery]);
+
 	const showResults = isFocused && normalizedQuery.length > 0;
 	resultsLengthRef.current = results.length;
 
-	// Reset activeIndex when search query changes
 	useEffect(() => {
 		setActiveIndex(-1);
 	}, [normalizedQuery]);
 
-	// Auto-select first result when results appear
 	useEffect(() => {
 		if (showResults && results.length > 0 && activeIndex === -1) {
 			setActiveIndex(0);
@@ -88,31 +105,25 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 
 	const selectTool = useCallback((href: string) => {
 		const toolId = getToolIdFromPathname(href);
-
 		if (isToolPath(window.location.pathname) && toolId) {
 			window.dispatchEvent(new CustomEvent('bytekit:select-tool', { detail: { toolId } }));
 			return;
 		}
-
-		window.location.href = import.meta.env.BASE_URL + href;
+		window.location.href = import.meta.env.BASE_URL.replace(/\/?$/, '/') + href;
 	}, []);
 
-	// Scroll active item into view
 	useEffect(() => {
 		if (activeIndex < 0 || !resultsRef.current) return;
 		const items = resultsRef.current.querySelectorAll('[role="option"]');
 		items[activeIndex]?.scrollIntoView({ block: 'nearest' });
 	}, [activeIndex]);
 
-	// Native keydown listener — bypasses React event delegation issues
 	useEffect(() => {
 		const input = inputRef.current;
 		if (!input) return;
-
 		function handleKeyDown(e: KeyboardEvent) {
 			const hasResults = isFocusedRef.current && resultsLengthRef.current > 0;
 			if (!hasResults) return;
-
 			switch (e.key) {
 				case 'ArrowDown': {
 					e.preventDefault();
@@ -127,10 +138,9 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 				case 'Enter': {
 					if (activeIndexRef.current >= 0 && activeIndexRef.current < resultsLengthRef.current) {
 						e.preventDefault();
-						// Get the href from results using current activeIndex
 						const normalizedQ = queryRef.current.trim();
-						if (normalizedQ) {
-							const currentResults = miniSearch.search(normalizedQ).slice(0, 8);
+						if (normalizedQ && miniSearchRef.current) {
+							const currentResults = miniSearchRef.current.search(normalizedQ).slice(0, 8);
 							const selected = currentResults[activeIndexRef.current];
 							if (selected) {
 								selectTool(String(selected.href));
@@ -149,12 +159,10 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 				}
 			}
 		}
-
 		input.addEventListener('keydown', handleKeyDown);
 		return () => input.removeEventListener('keydown', handleKeyDown);
-	}, [miniSearch, selectTool]);
+	}, [selectTool]);
 
-	// Global Cmd+K / Ctrl+K shortcut to focus search
 	useEffect(() => {
 		function handleGlobalKeyDown(e: KeyboardEvent) {
 			if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -163,15 +171,12 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 				inputRef.current?.select();
 			}
 		}
-
 		document.addEventListener('keydown', handleGlobalKeyDown);
 		return () => document.removeEventListener('keydown', handleGlobalKeyDown);
 	}, []);
 
-	// Detect Mac for shortcut display
 	const isMac = typeof navigator !== 'undefined' && (navigator.platform?.includes('Mac') || navigator.userAgentData?.platform === 'macOS');
 	const shortcutHint = isMac ? '⌘K' : 'Ctrl+K';
-
 	const listId = `tool-search-list-${variant}`;
 	const activeId = activeIndex >= 0 && activeIndex < results.length
 		? `tool-search-option-${results[activeIndex]?.id}`
@@ -186,7 +191,7 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 					type="text"
 					value={query}
 					onChange={(event) => setQuery(event.target.value)}
-					onFocus={() => setIsFocused(true)}
+					onFocus={() => { initSearch(); setIsFocused(true); }}
 					onBlur={() => setTimeout(() => setIsFocused(false), 150)}
 					placeholder={variant === 'hero' ? `搜索工具（${shortcutHint}）` : '搜索工具...'}
 					aria-label="搜索工具"

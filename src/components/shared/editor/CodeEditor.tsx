@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import type { Extension } from '@codemirror/state';
-import { css } from '@codemirror/lang-css';
-import { html } from '@codemirror/lang-html';
-import { javascript } from '@codemirror/lang-javascript';
-import { json } from '@codemirror/lang-json';
 import { EditorView } from '@codemirror/view';
 import Badge, { type BadgeTone } from '../ui/Badge';
 import { useTheme } from '../../../themes/ThemeContext';
@@ -37,12 +33,12 @@ const label = {
 	chars: '字符',
 };
 
-const languageExtensions: Record<CodeEditorLanguage, Extension[]> = {
-	text: [],
-	json: [json()],
-	javascript: [javascript()],
-	html: [html()],
-	css: [css()],
+const languageLoaders: Record<CodeEditorLanguage, () => Promise<Extension[]>> = {
+	text: () => Promise.resolve([]),
+	json: () => import('@codemirror/lang-json').then((m) => [m.json()]),
+	javascript: () => import('@codemirror/lang-javascript').then((m) => [m.javascript()]),
+	html: () => import('@codemirror/lang-html').then((m) => [m.html()]),
+	css: () => import('@codemirror/lang-css').then((m) => [m.css()]),
 };
 
 const basicSetup = {
@@ -84,7 +80,17 @@ export default function CodeEditor({
 }: CodeEditorProps) {
 	const [notice, setNotice] = useState('');
 	const { Button } = useTheme();
-	const extensions = useMemo(() => [EditorView.lineWrapping, ...languageExtensions[language]], [language]);
+	const [extensions, setExtensions] = useState<Extension[]>([]);
+
+	useEffect(() => {
+		let cancelled = false;
+		languageLoaders[language]().then((exts) => {
+			if (!cancelled) setExtensions(exts);
+		});
+		return () => { cancelled = true; };
+	}, [language]);
+
+	const allExtensions = useMemo(() => [EditorView.lineWrapping, ...extensions], [extensions]);
 	const isEmpty = value.length === 0;
 	const editorMessage = error ?? message;
 	const editorMessageTone = error ? 'error' : messageTone;
@@ -131,7 +137,7 @@ export default function CodeEditor({
 				className="code-editor__surface"
 				value={value}
 				basicSetup={basicSetup}
-				extensions={extensions}
+				extensions={allExtensions}
 				onChange={onChange}
 			/>
 		</div>
