@@ -23,5 +23,12 @@ export const toolComponents: Record<string, React.LazyExoticComponent<any>> = {
 	cron: lazy(() => import('./developer/cron/component')),
 	password: lazy(() => import('./crypto/password/component')),
 	'css-unit': lazy(() => import('./css/unit-converter/component')),
+	'color-palette': lazy(() => import('./css/color-palette/component')),
 	'word-count': lazy(() => import('./text/word-count/component')),
+	nanoid: lazy(() => import('./developer/nanoid/component')),
+	jsonpath: lazy(() => import('./json/jsonpath/component')),
+	xml: lazy(() => import('./format/xml/component')),
+	lorem: lazy(() => import('./text/lorem/component')),
+	'html-format': lazy(() => import('./format/html/component')),
+	'jwt-create': lazy(() => import('./crypto/jwt-create/component')),
 };
