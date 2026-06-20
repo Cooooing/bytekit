@@ -18,5 +18,10 @@ export const toolComponents: Record<string, React.LazyExoticComponent<any>> = {
 	json: lazy(() => import('./json/format/component')),
 	jwt: lazy(() => import('./crypto/jwt/component')),
 	base64: lazy(() => import('./encoding/base64/component')),
+	'html-entity': lazy(() => import('./encoding/html-entity/component')),
+	'js-escape': lazy(() => import('./encoding/js-escape/component')),
+	cron: lazy(() => import('./developer/cron/component')),
 	password: lazy(() => import('./crypto/password/component')),
+	'css-unit': lazy(() => import('./css/unit-converter/component')),
+	'word-count': lazy(() => import('./text/word-count/component')),
 };

@@ -17,12 +17,18 @@ import { definition as cssMinifyDef } from './css/minify/definition';
 import { definition as jsonDef } from './json/format/definition';
 import { definition as jwtDef } from './crypto/jwt/definition';
 import { definition as base64Def } from './encoding/base64/definition';
+import { definition as htmlEntityDef } from './encoding/html-entity/definition';
+import { definition as jsEscapeDef } from './encoding/js-escape/definition';
 import { definition as passwordDef } from './crypto/password/definition';
+import { definition as cronDef } from './developer/cron/definition';
+import { definition as cssUnitDef } from './css/unit-converter/definition';
+import { definition as wordCountDef } from './text/word-count/definition';
 
 export const tools: ToolDefinition[] = [
 	timestampDef,
 	uuidDef,
 	hashDef,
+	cronDef,
 	colorDef,
 	urlDef,
 	regexDef,
@@ -35,7 +41,11 @@ export const tools: ToolDefinition[] = [
 	jsonDef,
 	jwtDef,
 	base64Def,
+	htmlEntityDef,
+	jsEscapeDef,
 	passwordDef,
+	cssUnitDef,
+	wordCountDef,
 ];
 
 // ── Categories (imported from the first tool in each category) ──
