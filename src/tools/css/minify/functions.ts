@@ -1,10 +1,12 @@
+import { fail, ok, requireTrimmedInput } from '../../format/result';
+
 export type CssResult =
 	| { ok: true; output: string }
 	| { ok: false; error: string };
 
 export function minifyCss(input: string): CssResult {
-	const trimmed = input.trim();
-	if (!trimmed) return { ok: false, error: '请输入 CSS 代码。' };
+	const trimmed = requireTrimmedInput(input, '请输入 CSS 代码。');
+	if (typeof trimmed !== 'string') return trimmed;
 
 	try {
 		let result = trimmed;
@@ -20,15 +22,15 @@ export function minifyCss(input: string): CssResult {
 		result = result.replace(/;}/g, '}');
 		result = result.replace(/___CSS_BANG_COMMENT_(\d+)___/g, (_, index: string) => bangComments[Number(index)] ?? '');
 		result = result.trim();
-		return { ok: true, output: result };
+		return ok(result);
 	} catch (error) {
-		return { ok: false, error: error instanceof Error ? error.message : 'CSS 压缩失败。' };
+		return fail(error instanceof Error ? error.message : 'CSS 压缩失败。');
 	}
 }
 
 export function beautifyCss(input: string): CssResult {
-	const trimmed = input.trim();
-	if (!trimmed) return { ok: false, error: '请输入 CSS 代码。' };
+	const trimmed = requireTrimmedInput(input, '请输入 CSS 代码。');
+	if (typeof trimmed !== 'string') return trimmed;
 
 	try {
 		let result = '';
@@ -60,8 +62,8 @@ export function beautifyCss(input: string): CssResult {
 			}
 		}
 
-		return { ok: true, output: result.trim() };
+		return ok(result.trim());
 	} catch (error) {
-		return { ok: false, error: error instanceof Error ? error.message : 'CSS 美化失败。' };
+		return fail(error instanceof Error ? error.message : 'CSS 美化失败。');
 	}
 }

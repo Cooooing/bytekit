@@ -1,12 +1,13 @@
 import { formatCode, minifyCode } from '../shared-formatter';
+import { fail, ok } from '../result';
 
 export function formatXml(xml: string): { ok: true; output: string } | { ok: false; error: string } {
 	const validation = validateXml(xml);
 	if (!validation.ok) return validation;
 	try {
-		return { ok: true, output: formatCode(xml.trim(), { mode: 'xml' }) };
+		return ok(formatCode(xml.trim(), { mode: 'xml' }));
 	} catch (e) {
-		return { ok: false, error: 'XML 格式化失败：' + String(e) };
+		return fail('XML 格式化失败：' + String(e));
 	}
 }
 
@@ -14,23 +15,23 @@ export function minifyXml(xml: string): { ok: true; output: string } | { ok: fal
 	const validation = validateXml(xml);
 	if (!validation.ok) return validation;
 	try {
-		return { ok: true, output: minifyCode(xml) };
+		return ok(minifyCode(xml));
 	} catch (e) {
-		return { ok: false, error: 'XML 压缩失败：' + String(e) };
+		return fail('XML 压缩失败：' + String(e));
 	}
 }
 
 export function validateXml(xml: string): { ok: true } | { ok: false; error: string } {
 	try {
-		if (!xml.trim()) return { ok: false, error: '请输入 XML 内容。' };
+		if (!xml.trim()) return fail('请输入 XML 内容。');
 		if (typeof DOMParser === 'undefined') return { ok: true };
 		const parser = new DOMParser();
 		const doc = parser.parseFromString(xml, 'text/xml');
 		const error = doc.querySelector('parsererror');
-		if (error) return { ok: false, error: normalizeXmlError(error.textContent || '') };
+		if (error) return fail(normalizeXmlError(error.textContent || ''));
 		return { ok: true };
 	} catch (e) {
-		return { ok: false, error: 'XML 校验失败：' + String(e) };
+		return fail('XML 校验失败：' + String(e));
 	}
 }
 

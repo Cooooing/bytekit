@@ -3,6 +3,7 @@ import { useToolStorage } from '../../../hooks/useToolStorage';
 import { diffLines, type DiffCell } from './functions';
 import { diffReference } from './references';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
+import { useMessageOnError } from '../../../components/shared/ui/AppMessage';
 
 export default function DiffViewer() {
 	const [state, setState] = useToolStorage('bytekit:tool:diff:v1', {
@@ -13,7 +14,15 @@ export default function DiffViewer() {
 	const setTextA = (v: string) => setState((c) => ({ ...c, textA: v }));
 	const setTextB = (v: string) => setState((c) => ({ ...c, textB: v }));
 
-	const diff = useMemo(() => diffLines(textA, textB), [textA, textB]);
+	const diffResult = useMemo(() => {
+		try {
+			return { ok: true as const, rows: diffLines(textA, textB) };
+		} catch (error) {
+			return { ok: false as const, error: error instanceof Error ? error.message : '差异对比失败。' };
+		}
+	}, [textA, textB]);
+	const diff = diffResult.ok ? diffResult.rows : [];
+	useMessageOnError(diffResult.ok ? undefined : diffResult.error);
 
 	const stats = useMemo(() => {
 		const added = diff.filter((row) => row.right.type === 'added').length;
@@ -56,7 +65,7 @@ export default function DiffViewer() {
 					<span className="diff-stat diff-stat--removed">-{stats.removed} 行删除</span>
 				</div>
 				<div style={{ overflow: 'auto' }}>
-					<table style={{ width: '100%', minWidth: 0, borderCollapse: 'collapse', tableLayout: 'fixed' }}>
+					{diffResult.ok ? <table style={{ width: '100%', minWidth: 0, borderCollapse: 'collapse', tableLayout: 'fixed' }}>
 						<thead>
 							<tr>
 								<th className="diff-viewer__col-header" style={{ width: '50%', textAlign: 'left' }}>原始</th>
@@ -71,7 +80,11 @@ export default function DiffViewer() {
 								</tr>
 							))}
 						</tbody>
-					</table>
+					</table> : (
+						<div style={{ color: 'var(--muted)', fontSize: '0.875rem', padding: '12px' }}>
+							文本过大，已暂停差异计算。
+						</div>
+					)}
 				</div>
 			</div>
 		</div>

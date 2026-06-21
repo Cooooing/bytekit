@@ -5,8 +5,11 @@ export type RegexMatch = {
 };
 
 export type RegexResult =
-	| { ok: true; matches: RegexMatch[]; count: number }
+	| { ok: true; matches: RegexMatch[]; count: number; truncated: boolean }
 	| { ok: false; error: string };
+
+const MAX_REGEX_INPUT_LENGTH = 100000;
+const MAX_REGEX_MATCHES = 1000;
 
 function localizeRegexError(error: unknown): string {
 	if (!(error instanceof Error)) return '正则表达式无效。';
@@ -18,13 +21,17 @@ function localizeRegexError(error: unknown): string {
 }
 
 export function testRegex(pattern: string, flags: string, input: string): RegexResult {
-	if (!pattern) return { ok: true, matches: [], count: 0 };
-	if (!input) return { ok: true, matches: [], count: 0 };
+	if (!pattern) return { ok: true, matches: [], count: 0, truncated: false };
+	if (!input) return { ok: true, matches: [], count: 0, truncated: false };
+	if (input.length > MAX_REGEX_INPUT_LENGTH) {
+		return { ok: false, error: `输入过长，正则测试最多支持 ${MAX_REGEX_INPUT_LENGTH.toLocaleString('zh-CN')} 个字符。` };
+	}
 
 	try {
 		const regex = new RegExp(pattern, flags);
 		const matches: RegexMatch[] = [];
 		let match: RegExpExecArray | null;
+		let truncated = false;
 
 		if (flags.includes('g') || flags.includes('y')) {
 			while ((match = regex.exec(input)) !== null) {
@@ -33,6 +40,10 @@ export function testRegex(pattern: string, flags: string, input: string): RegexR
 					index: match.index,
 					groups: match.slice(1),
 				});
+				if (matches.length >= MAX_REGEX_MATCHES) {
+					truncated = true;
+					break;
+				}
 				if (match[0].length === 0) regex.lastIndex++;
 			}
 		} else {
@@ -46,7 +57,7 @@ export function testRegex(pattern: string, flags: string, input: string): RegexR
 			}
 		}
 
-		return { ok: true, matches, count: matches.length };
+		return { ok: true, matches, count: matches.length, truncated };
 	} catch (error) {
 		return { ok: false, error: localizeRegexError(error) };
 	}

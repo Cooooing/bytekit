@@ -6,7 +6,7 @@ import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { tags } from '@lezer/highlight';
 import Badge, { type BadgeTone } from '../ui/Badge';
 import { useTheme } from '../../../themes/ThemeContext';
-import { useTransientNotice } from '../../../hooks/useTransientNotice';
+import { useClipboardCopy } from '../../../hooks/useClipboardCopy';
 
 export type CodeEditorLanguage = 'text' | 'json' | 'javascript' | 'html' | 'css';
 export type CodeEditorStatus = 'neutral' | 'success' | 'error';
@@ -45,6 +45,16 @@ const languageLoaders: Record<CodeEditorLanguage, () => Promise<Extension[]>> = 
 	css: () => import('@codemirror/lang-css').then((m) => [m.css()]),
 };
 
+const languageExtensionCache = new Map<CodeEditorLanguage, Promise<Extension[]>>();
+
+function loadLanguageExtensions(language: CodeEditorLanguage) {
+	const cached = languageExtensionCache.get(language);
+	if (cached) return cached;
+	const promise = languageLoaders[language]();
+	languageExtensionCache.set(language, promise);
+	return promise;
+}
+
 const basicSetup = {
 	lineNumbers: true,
 	foldGutter: true,
@@ -64,7 +74,10 @@ const themeHighlightStyle = HighlightStyle.define([
 ]);
 
 function meta(value: string) {
-	const lines = value === '' ? 0 : value.split('\n').length;
+	let lines = value === '' ? 0 : 1;
+	for (let index = 0; index < value.length; index++) {
+		if (value.charCodeAt(index) === 10) lines += 1;
+	}
 	return String(lines) + ' ' + label.lines + ' / ' + String(value.length) + ' ' + label.chars;
 }
 
@@ -94,13 +107,13 @@ export default function CodeEditor({
 	className,
 	readOnly,
 }: CodeEditorProps) {
-	const [notice, showNotice] = useTransientNotice();
+	const { notice, copyText, showNotice } = useClipboardCopy({ successText: label.copied, errorText: label.copyFailed });
 	const { Button } = useTheme();
 	const [extensions, setExtensions] = useState<Extension[]>([]);
 
 	useEffect(() => {
 		let cancelled = false;
-		languageLoaders[language]().then((exts) => {
+		loadLanguageExtensions(language).then((exts) => {
 			if (!cancelled) setExtensions(exts);
 		});
 		return () => { cancelled = true; };
@@ -113,15 +126,10 @@ export default function CodeEditor({
 	const editorMessageTone = error ? 'error' : messageTone;
 	const editorMessageClassName = 'code-editor__message code-editor__message--' + editorMessageTone;
 	const editorStyle = { '--code-editor-min-height': editorHeight(minHeight) } as CSSProperties;
+	const metaText = useMemo(() => meta(value), [value]);
 
 	async function copyValue() {
-		if (isEmpty) return;
-		try {
-			await navigator.clipboard.writeText(value);
-			showNotice(label.copied);
-		} catch {
-			showNotice(label.copyFailed);
-		}
+		await copyText(value);
 	}
 
 	function clearValue() {
@@ -135,7 +143,7 @@ export default function CodeEditor({
 			<div className="code-editor__toolbar">
 				<div className="code-editor__title-group">
 					<span className="code-editor__title">{title}</span>
-					<span className="code-editor__meta">{meta(value)}</span>
+					<span className="code-editor__meta">{metaText}</span>
 				</div>
 				<div className="code-editor__actions">
 					{statusText ? <Badge tone={statusTone(status)}>{statusText}</Badge> : null}

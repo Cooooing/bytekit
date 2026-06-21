@@ -93,7 +93,7 @@ export default function RegexTester() {
 					/>
 					<span style={{ color: 'var(--muted)', fontFamily: 'monospace', fontSize: '1.1rem' }}>/</span>
 					<span style={{ color: 'var(--muted)', fontFamily: 'monospace', fontSize: '0.875rem', minWidth: '2rem' }}>{flags}</span>
-					{result.ok ? <Badge tone="success">{result.count} 个匹配</Badge> : <Badge tone="neutral">待修正</Badge>}
+					{result.ok ? <Badge tone={result.truncated ? 'warning' : 'success'}>{result.count} 个匹配{result.truncated ? '，已截断' : ''}</Badge> : <Badge tone="neutral">待修正</Badge>}
 				</div>
 				<div className="regex-flags">
 					{flagOptions.map((opt) => {
@@ -142,6 +142,11 @@ export default function RegexTester() {
 			{result.ok && result.matches.length > 0 && (
 				<div className="regex-tester__results">
 					<h2 className="tool-card__title">匹配详情</h2>
+					{result.truncated ? (
+						<div style={{ color: 'var(--semantic-warning)', fontSize: '0.875rem', marginBottom: '8px' }}>
+							匹配结果较多，仅展示前 1000 项。
+						</div>
+					) : null}
 					<div style={{ display: 'grid', gap: '6px' }}>
 						{result.matches.map((m, i) => (
 							<div key={`${m.index}-${i}`}>

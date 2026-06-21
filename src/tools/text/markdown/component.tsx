@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { marked } from 'marked';
 import CodeEditor from '../../../components/shared/editor/CodeEditor';
 import { useToolStorage } from '../../../hooks/useToolStorage';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import IoWorkbench from '../../../components/shared/layouts/IoWorkbench';
 import { markdownReference } from './references';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
@@ -19,14 +20,15 @@ export default function MarkdownPreview() {
 	});
 	const { input } = state;
 	const setInput = (v: string) => setState((c) => ({ ...c, input: v }));
+	const previewInput = useDebouncedValue(input, 250);
 
 	const renderResult = useMemo(() => {
 		try {
-			return { ok: true as const, html: renderMarkdown(input) };
+			return { ok: true as const, html: renderMarkdown(previewInput) };
 		} catch {
 			return { ok: false as const, error: 'Markdown 解析错误。' };
 		}
-	}, [input]);
+	}, [previewInput]);
 	const [lastHtml, setLastHtml] = useState(renderResult.ok ? renderResult.html : '');
 	const html = renderResult.ok ? renderResult.html : lastHtml;
 

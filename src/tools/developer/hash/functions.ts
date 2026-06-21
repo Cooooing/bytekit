@@ -11,13 +11,14 @@ export async function computeHashes(input: string): Promise<HashResult> {
 	const data = encoder.encode(input);
 	const algorithms: HashAlgorithm[] = ['SHA-1', 'SHA-256', 'SHA-384', 'SHA-512'];
 
-	const hashes: Record<string, string> = {};
-	for (const algo of algorithms) {
+	const entries = await Promise.all(algorithms.map(async (algo) => {
 		const buffer = await crypto.subtle.digest(algo, data);
-		hashes[algo] = Array.from(new Uint8Array(buffer))
+		const value = Array.from(new Uint8Array(buffer))
 			.map((b) => b.toString(16).padStart(2, '0'))
 			.join('');
-	}
+		return [algo, value] as const;
+	}));
 
+	const hashes = Object.fromEntries(entries);
 	return { ok: true, hashes: hashes as Record<HashAlgorithm, string> };
 }

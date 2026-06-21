@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import CopyRow from '../../../components/shared/ui/CopyRow';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { useToolStorage } from '../../../hooks/useToolStorage';
+import { useDebouncedValue } from '../../../hooks/useDebouncedValue';
 import { computeHashes, type HashAlgorithm } from './functions';
 import { hashReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
@@ -19,11 +20,12 @@ export default function HashGenerator() {
 	const message = useAppMessage();
 	const [state, setState] = useToolStorage('bytekit:tool:hash:v1', { input: 'Bytekit' });
 	const { input } = state;
+	const debouncedInput = useDebouncedValue(input, 250);
 	const setInput = useCallback((value: string) => setState((current) => ({ ...current, input: value })), [setState]);
 	const [hashState, setHashState] = useState<HashViewState>({ status: 'idle', hashes: {} });
 
 	useEffect(() => {
-		if (!input) {
+		if (!debouncedInput) {
 			setHashState({ status: 'idle', hashes: {} });
 			return;
 		}
@@ -31,7 +33,7 @@ export default function HashGenerator() {
 		let cancelled = false;
 		setHashState({ status: 'loading', hashes: {} });
 
-		computeHashes(input).then((result) => {
+		computeHashes(debouncedInput).then((result) => {
 			if (cancelled) return;
 			if (result.ok) setHashState({ status: 'ready', hashes: result.hashes });
 			else {
@@ -48,7 +50,7 @@ export default function HashGenerator() {
 		return () => {
 			cancelled = true;
 		};
-	}, [input, message]);
+	}, [debouncedInput, message]);
 
 	const controls = useMemo(() => (
 		<div className="tool-card tool-card--controls">

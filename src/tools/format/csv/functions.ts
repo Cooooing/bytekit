@@ -1,15 +1,17 @@
+import { fail, ok, requireTrimmedInput } from '../result';
+
 export type CsvResult =
 	| { ok: true; output: string }
 	| { ok: false; error: string };
 
 export function jsonToCsv(input: string): CsvResult {
-	const trimmed = input.trim();
-	if (!trimmed) return { ok: false, error: '请输入 JSON 数据。' };
+	const trimmed = requireTrimmedInput(input, '请输入 JSON 数据。');
+	if (typeof trimmed !== 'string') return trimmed;
 
 	try {
 		const data = JSON.parse(trimmed);
-		if (!Array.isArray(data)) return { ok: false, error: 'JSON 必须是数组。' };
-		if (data.length === 0) return { ok: true, output: '' };
+		if (!Array.isArray(data)) return fail('JSON 必须是数组。');
+		if (data.length === 0) return ok('');
 
 		const headers = Object.keys(data[0]);
 		const rows = data.map((row: Record<string, unknown>) =>
@@ -21,19 +23,19 @@ export function jsonToCsv(input: string): CsvResult {
 			}).join(',')
 		);
 
-		return { ok: true, output: [headers.join(','), ...rows].join('\n') };
+		return ok([headers.join(','), ...rows].join('\n'));
 	} catch (error) {
-		return { ok: false, error: error instanceof Error ? error.message : 'JSON 解析失败。' };
+		return fail(error instanceof Error ? error.message : 'JSON 解析失败。');
 	}
 }
 
 export function csvToJson(input: string): CsvResult {
-	const trimmed = input.trim();
-	if (!trimmed) return { ok: false, error: '请输入 CSV 数据。' };
+	const trimmed = requireTrimmedInput(input, '请输入 CSV 数据。');
+	if (typeof trimmed !== 'string') return trimmed;
 
 	try {
 		const lines = trimmed.split('\n');
-		if (lines.length < 2) return { ok: false, error: 'CSV 至少需要表头和一行数据。' };
+		if (lines.length < 2) return fail('CSV 至少需要表头和一行数据。');
 
 		const headers = parseCsvLine(lines[0]);
 		const result = lines.slice(1).map((line) => {
@@ -43,9 +45,9 @@ export function csvToJson(input: string): CsvResult {
 			return obj;
 		});
 
-		return { ok: true, output: JSON.stringify(result, null, 2) };
+		return ok(JSON.stringify(result, null, 2));
 	} catch (error) {
-		return { ok: false, error: error instanceof Error ? error.message : 'CSV 解析失败。' };
+		return fail(error instanceof Error ? error.message : 'CSV 解析失败。');
 	}
 }
 

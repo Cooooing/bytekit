@@ -25,14 +25,6 @@ export default defineConfig({
 		plugins: [tailwindcss()],
 		build: {
 			rollupOptions: {
-				...(!isVercel ? {
-					output: {
-						manualChunks: {
-							'react-vendor': ['react', 'react-dom'],
-							'codemirror-core': ['@codemirror/view', '@codemirror/state'],
-						},
-					},
-				} : {}),
 				...(isVercel ? { external: ['cloudflare:workers'] } : {}),
 			},
 		},

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, memo } from 'react';
 import { useTheme } from '../../../themes/ThemeContext';
-import { useTransientNotice } from '../../../hooks/useTransientNotice';
+import { useClipboardCopy } from '../../../hooks/useClipboardCopy';
 
 interface CopyRowProps {
 	label: string;
@@ -9,7 +9,7 @@ interface CopyRowProps {
 }
 
 const CopyRow = memo(function CopyRow({ label, value, density = 'default' }: CopyRowProps) {
-	const [notice, showNotice] = useTransientNotice();
+	const { notice, copyText, showNotice } = useClipboardCopy();
 	const { Button } = useTheme();
 	const isEmpty = value.length === 0;
 
@@ -18,14 +18,8 @@ const CopyRow = memo(function CopyRow({ label, value, density = 'default' }: Cop
 	}, [showNotice, value]);
 
 	const handleCopy = useCallback(async () => {
-		if (isEmpty) return;
-		try {
-			await navigator.clipboard.writeText(value);
-			showNotice('已复制');
-		} catch {
-			showNotice('复制失败');
-		}
-	}, [isEmpty, showNotice, value]);
+		if (!isEmpty) await copyText(value);
+	}, [copyText, isEmpty, value]);
 
 	return (
 		<div className={`copy-row copy-row--${density}`}>

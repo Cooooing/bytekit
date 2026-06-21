@@ -9,6 +9,9 @@ export type DiffRow = {
 	right: DiffCell;
 };
 
+const MAX_DIFF_LINES = 1200;
+const MAX_DIFF_CELLS = 600000;
+
 function emptyCell(): DiffCell {
 	return { type: 'empty', content: '', lineNum: null };
 }
@@ -16,6 +19,9 @@ function emptyCell(): DiffCell {
 export function diffLines(textA: string, textB: string): DiffRow[] {
 	const linesA = textA.split('\n');
 	const linesB = textB.split('\n');
+	if (linesA.length > MAX_DIFF_LINES || linesB.length > MAX_DIFF_LINES || linesA.length * linesB.length > MAX_DIFF_CELLS) {
+		throw new Error(`文本过大，当前差异算法最多支持 ${MAX_DIFF_LINES} 行且对比矩阵不超过 ${MAX_DIFF_CELLS.toLocaleString('zh-CN')} 个单元。`);
+	}
 	const dp = Array.from({ length: linesA.length + 1 }, () => Array(linesB.length + 1).fill(0) as number[]);
 
 	for (let i = linesA.length - 1; i >= 0; i--) {
