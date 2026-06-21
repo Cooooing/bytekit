@@ -68,9 +68,11 @@ export default function AppShell({ initialToolId }: AppShellProps) {
 					</div>
 				</header>
 				<RefPanelProvider value={refPanelValue}>
-					<Suspense fallback={<div className="state-box">加载中...</div>}>
-						{ToolComponent ? <ToolComponent /> : <div className="state-box">工具组件未注册。</div>}
-					</Suspense>
+					<div className="tool-app-body">
+						<Suspense fallback={<div className="state-box">加载中...</div>}>
+							{ToolComponent ? <ToolComponent /> : <div className="state-box">工具组件未注册。</div>}
+						</Suspense>
+					</div>
 				</RefPanelProvider>
 			</section>
 			{refContent ? (

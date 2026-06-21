@@ -134,7 +134,7 @@ textarea:focus-visible {
 
 .ui-button--primary {
 	background: var(--accent-primary);
-	color: var(--text-inverse);
+	color: var(--button-primary-text);
 }
 
 .ui-button--primary:hover {
@@ -530,6 +530,12 @@ textarea:focus-visible {
 	padding: var(--layout-page-block) var(--layout-page-inline) clamp(1.75rem, 3vw, 2.5rem);
 }
 
+.site-main--tool {
+	width: 100%;
+	max-width: none;
+	padding: var(--space-2) 0 clamp(1.25rem, 2vw, 2rem);
+}
+
 .home-shell {
 	display: grid;
 	grid-template-columns: clamp(12rem, 14vw, 15rem) minmax(0, 1fr);
@@ -812,13 +818,13 @@ textarea:focus-visible {
 .tool-app-shell {
 	display: grid;
 	grid-template-columns: auto 1fr auto;
-	gap: var(--space-4);
+	gap: 0;
 	min-width: 0;
 }
 
 .tool-ref-sidebar {
 	position: sticky;
-	top: calc(3.75rem + var(--layout-page-block));
+	top: calc(3.75rem + var(--space-2));
 	display: flex;
 	flex-direction: column;
 	gap: 0;
@@ -839,23 +845,41 @@ textarea:focus-visible {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	height: 100%;
 	width: 100%;
 }
 
 .tool-app-content {
+	--tool-content-max: 78rem;
 	min-width: 0;
 	display: grid;
-	gap: var(--space-4);
+	gap: var(--space-3);
 	align-content: start;
+	padding: 0 var(--space-3);
 }
 
 .tool-app-head {
 	display: flex;
 	align-items: end;
 	justify-content: space-between;
-	gap: var(--space-4);
-	padding-bottom: var(--space-2);
+	gap: var(--space-3);
+	width: min(100%, var(--tool-content-max));
+	justify-self: center;
+	padding-bottom: var(--space-1);
 	border-bottom: 1px solid var(--border);
+}
+
+.tool-app-body {
+	display: grid;
+	justify-items: center;
+	width: 100%;
+	min-width: 0;
+}
+
+.tool-app-body > * {
+	width: min(100%, var(--tool-content-max));
+	min-width: 0;
+	justify-self: center;
 }
 
 /* ─── FloatingPanel (unified sidebar + reference panel) ─── */
@@ -956,14 +980,14 @@ textarea:focus-visible {
 
 .tool-sidebar {
 	position: sticky;
-	top: calc(3.75rem + var(--layout-page-block));
+	top: calc(3.75rem + var(--space-2));
 	display: flex;
 	flex-direction: column;
-	gap: var(--space-2);
+	gap: var(--space-1);
 	width: var(--size-sidebar);
 	max-height: calc(100vh - 5.5rem);
 	overflow: hidden;
-	padding: var(--space-3);
+	padding: var(--space-2);
 	border-right: 1px solid var(--border);
 	scrollbar-width: thin;
 	transition: width var(--motion-normal) var(--ease-standard);
@@ -979,7 +1003,7 @@ textarea:focus-visible {
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
-	min-height: 2rem;
+	min-height: 2.25rem;
 	padding: 0 var(--space-2);
 	border-radius: var(--radius-sm);
 	background: transparent;
@@ -993,12 +1017,11 @@ textarea:focus-visible {
 }
 
 .tool-sidebar--collapsed .tool-sidebar__head {
-	writing-mode: vertical-rl;
 	justify-content: center;
 	align-items: center;
-	min-height: 5rem;
-	padding: var(--space-2) 0;
-	gap: var(--space-2);
+	min-height: 2.25rem;
+	padding: 0;
+	gap: 0;
 }
 
 .tool-sidebar__head:hover {
@@ -1013,11 +1036,11 @@ textarea:focus-visible {
 
 .tool-sidebar__groups {
 	display: grid;
-	gap: var(--space-2);
+	gap: var(--space-1);
 	opacity: 1;
 	transition: opacity var(--motion-normal) var(--ease-standard);
-	min-width: var(--size-sidebar);
-	padding-right: var(--space-3);
+	min-width: calc(var(--size-sidebar) - var(--space-4));
+	padding-right: 0;
 }
 
 .tool-sidebar--collapsed .tool-sidebar__groups {

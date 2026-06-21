@@ -6,9 +6,11 @@ import ThemeManager from '../themes/ThemeManager';
 interface Props {
 	title: string;
 	description?: string;
+	mainClass?: string;
 }
 
-const { title, description = 'Bytekit 开发工具站' } = Astro.props;
+const { title, description = 'Bytekit 开发工具站', mainClass = '' } = Astro.props;
+const mainClassName = ['site-main', mainClass].filter(Boolean).join(' ');
 ---
 
 <!doctype html>
@@ -38,7 +40,7 @@ const { title, description = 'Bytekit 开发工具站' } = Astro.props;
 	<body>
 		<ThemeManager client:load>
 			<AppHeader />
-			<main class="site-main">
+			<main class={mainClassName}>
 				<slot />
 			</main>
 		</ThemeManager>

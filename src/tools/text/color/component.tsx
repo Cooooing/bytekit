@@ -57,29 +57,21 @@ export default function ColorConverter() {
 						}}
 					/>
 					<div style={{ display: 'grid', gap: '6px' }}>
-						<CopyRow label="HEX" value={displayResult.hex} />
-						<CopyRow label="RGB" value={displayResult.rgba} />
-						<CopyRow label="HSL" value={displayResult.hsla} />
-						<CopyRow label="Alpha" value={displayResult.alpha.toString()} />
+						<CopyRow label="HEX" value={displayResult.hex} density="compact" />
+						<CopyRow label="RGB" value={displayResult.rgba} density="compact" />
+						<CopyRow label="HSL" value={displayResult.hsla} density="compact" />
+						<CopyRow label="Alpha" value={displayResult.alpha.toString()} density="compact" />
 					</div>
 					{palette && (
-						<div style={{ display: 'grid', gap: '6px' }}>
-							<div style={{ fontSize: '0.875rem', color: 'var(--muted)', marginTop: '4px' }}>调色板</div>
-							<div style={{ display: 'flex', gap: '8px' }}>
+						<div className="tool-card__section color-palette">
+							<div className="tool-card__title-row">
+								<h3 className="tool-card__title">调色板</h3>
+							</div>
+							<div className="color-palette__grid">
 								{palette.map((color, i) => (
-									<div key={color} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', minWidth: 0 }}>
-										<div
-											style={{
-												width: '100%',
-												height: '2rem',
-												borderRadius: 'var(--radius-sm)',
-												background: color,
-												border: '1px solid var(--border)',
-											}}
-										/>
-										<span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)', color: 'var(--text-secondary)', wordBreak: 'break-all' }}>
-											{PALETTE_LABELS[i]} {color}
-										</span>
+									<div key={color} className="color-palette__item">
+										<div className="color-palette__swatch" style={{ background: color }} />
+										<CopyRow label={PALETTE_LABELS[i]} value={color} density="compact" />
 									</div>
 								))}
 							</div>

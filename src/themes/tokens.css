@@ -53,6 +53,7 @@ html[data-theme="light"] {
 	--text-secondary: #647089;
 	--text-tertiary: #8a94aa;
 	--text-inverse: #ffffff;
+	--button-primary-text: var(--text-inverse);
 	--accent-primary: #1468d8;
 	--accent-primary-hover: #0f54b8;
 	--accent-primary-soft: #e4efff;
@@ -98,6 +99,7 @@ html[data-theme="dark"] {
 	--text-secondary: #aebbd2;
 	--text-tertiary: #8190aa;
 	--text-inverse: #ffffff;
+	--button-primary-text: #08111f;
 	--accent-primary: #5b9dff;
 	--accent-primary-hover: #8ab8ff;
 	--accent-primary-soft: #18345f;

@@ -74,11 +74,11 @@ export default function RegexTester() {
 	return (
 		<div className="regex-tester">
 			<div className="regex-tester__pattern">
-				<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', marginBottom: '12px' }}>
+				<div className="regex-tester__head">
 					<h2 className="tool-card__title" style={{ margin: 0 }}>正则表达式</h2>
-					<div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-						{copyNotice ? <span className="code-editor__action-status" role="status" aria-live="polite">{copyNotice}</span> : null}
-						<Button variant="secondary" size="sm" onClick={copyRegex} disabled={!canCopy}>复制正则</Button>
+					<div className="copy-action-group" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+						{copyNotice ? <span className="copy-feedback code-editor__action-status" role="status" aria-live="polite">{copyNotice}</span> : null}
+						<Button variant="secondary" size="sm" onClick={copyRegex} disabled={!canCopy}>复制 JS RegExp</Button>
 					</div>
 				</div>
 				<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>

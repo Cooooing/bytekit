@@ -113,39 +113,34 @@ export default function JwtDecoder() {
 	useToolRefPanel('JWT', jwtReference);
 
 	const decodeActions = (
-		<>
-			<Button variant="primary" onClick={() => handleModeChange('decode')}>{text.decodeMode}</Button>
-			<Button variant="secondary" onClick={() => handleModeChange('create')}>{text.createMode}</Button>
-			<span style={{ fontSize: '0.8125rem', color: 'var(--muted)' }}>{text.autoDecode}</span>
+		<div className="jwt-action-bar">
+			<div className="jwt-action-bar__modes">
+				<Button variant="primary" onClick={() => handleModeChange('decode')}>{text.decodeMode}</Button>
+				<Button variant="secondary" onClick={() => handleModeChange('create')}>{text.createMode}</Button>
+			</div>
+			<span className="jwt-action-bar__hint">{text.autoDecode}</span>
 			<Badge tone={isDecodeEmpty ? 'neutral' : decodeResult.ok ? 'success' : 'danger'}>{isDecodeEmpty ? text.empty : decodeResult.ok ? text.success : text.fail}</Badge>
-		</>
+		</div>
 	);
 
 	const createActions = (
-		<>
-			<Button variant="secondary" onClick={() => handleModeChange('decode')}>{text.decodeMode}</Button>
-			<Button variant="primary" onClick={() => handleModeChange('create')}>{text.createMode}</Button>
+		<div className="jwt-action-bar jwt-action-bar--create">
+			<div className="jwt-action-bar__modes">
+				<Button variant="secondary" onClick={() => handleModeChange('decode')}>{text.decodeMode}</Button>
+				<Button variant="primary" onClick={() => handleModeChange('create')}>{text.createMode}</Button>
+			</div>
 			<Button variant="primary" onClick={handleGenerate}>{text.generate}</Button>
-			<div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '8px', minWidth: 0 }}>
-				<label style={{ fontSize: '0.8125rem', color: 'var(--muted)' }}>{text.secretLabel}</label>
+			<div className="jwt-action-bar__secret">
+				<label>{text.secretLabel}</label>
 				<input
 					type="text"
 					value={secret}
 					onChange={(e) => setSecret(e.target.value)}
 					placeholder={text.secretPlaceholder}
-					style={{
-						background: 'var(--surface)',
-						border: '1px solid var(--border)',
-						borderRadius: '6px',
-						padding: '4px 8px',
-						fontSize: '0.8125rem',
-						color: 'var(--text)',
-						width: 'min(140px, 100%)',
-					}}
 					aria-label={text.secretLabel}
 				/>
 			</div>
-		</>
+		</div>
 	);
 
 	if (mode === 'decode') {

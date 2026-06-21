@@ -16,6 +16,6 @@ const { tool: toolSlug, category } = Astro.params;
 const tool = tools.find((t) => t.href === `tools/${category}/${toolSlug}`);
 ---
 
-<BaseLayout title={`${tool?.name ?? '工具'} - Bytekit`} description={tool?.description ?? ''}>
+<BaseLayout title={`${tool?.name ?? '工具'} - Bytekit`} description={tool?.description ?? ''} mainClass="site-main--tool">
 	<AppShell client:load initialToolId={tool?.id ?? 'json'} />
 </BaseLayout>

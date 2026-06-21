@@ -5,6 +5,7 @@ import { cssUnitReference } from './references';
 import GeneratorPanel from '../../../components/shared/layouts/GeneratorPanel';
 import { useToolRefPanel } from '../../../components/shared/layouts/RefPanelContext';
 import { useMessageOnError } from '../../../components/shared/ui/AppMessage';
+import CopyRow from '../../../components/shared/ui/CopyRow';
 
 const unitOptions: CssUnit[] = ['px', 'rem', 'em', 'vw', 'vh', 'percent'];
 
@@ -167,8 +168,8 @@ export default function CssUnitConverter() {
 		<div className="tool-card tool-card--result">
 			<h2 className="tool-card__title">换算结果</h2>
 			{display ? (
-				<div style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '16px', color: 'var(--primary)', overflowWrap: 'anywhere', lineHeight: 1.25 }}>
-					{display.directText}
+				<div className="tool-card__section">
+					<CopyRow label="目标结果" value={display.directText} />
 				</div>
 			) : (
 				<div className="tool-empty-state">输入数值和基准后显示换算结果。</div>
@@ -178,22 +179,15 @@ export default function CssUnitConverter() {
 					<div
 						key={r.unit}
 						style={{
-							display: 'flex',
-							justifyContent: 'space-between',
-							alignItems: 'center',
-							gap: '12px',
+							display: 'grid',
 							minWidth: 0,
-							padding: '8px 12px',
+							padding: r.unit === to ? '2px' : 0,
 							borderRadius: '6px',
-							background: r.unit === to ? 'var(--primary-soft)' : 'var(--surface)',
+							background: r.unit === to ? 'var(--primary-soft)' : 'transparent',
 							border: r.unit === to ? '1px solid var(--primary)' : '1px solid transparent',
-							fontSize: '0.875rem',
 						}}
 					>
-						<span style={{ color: 'var(--muted)' }}>{r.label}</span>
-						<span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, minWidth: 0, overflowWrap: 'anywhere', textAlign: 'right' }}>
-							{r.value} {unitSuffix(r.unit)}
-						</span>
+						<CopyRow label={r.label} value={`${r.value} ${unitSuffix(r.unit)}`} />
 					</div>
 				))}
 			</div>

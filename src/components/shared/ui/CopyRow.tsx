@@ -5,9 +5,10 @@ import { useTransientNotice } from '../../../hooks/useTransientNotice';
 interface CopyRowProps {
 	label: string;
 	value: string;
+	density?: 'default' | 'compact' | 'long';
 }
 
-const CopyRow = memo(function CopyRow({ label, value }: CopyRowProps) {
+const CopyRow = memo(function CopyRow({ label, value, density = 'default' }: CopyRowProps) {
 	const [notice, showNotice] = useTransientNotice();
 	const { Button } = useTheme();
 	const isEmpty = value.length === 0;
@@ -27,13 +28,15 @@ const CopyRow = memo(function CopyRow({ label, value }: CopyRowProps) {
 	}, [isEmpty, showNotice, value]);
 
 	return (
-		<div className="copy-row">
+		<div className={`copy-row copy-row--${density}`}>
 			<span className="copy-row__label">{label}</span>
-			<code className="copy-row__value">{value}</code>
-			{notice ? <span className="copy-row__notice" role="status" aria-live="polite">{notice}</span> : null}
-			<Button variant="ghost" size="sm" disabled={isEmpty} onClick={handleCopy}>
-				复制
-			</Button>
+			<code className="copy-row__value" title={value}>{value}</code>
+			<span className="copy-row__action">
+				{notice ? <span className="copy-feedback copy-row__notice" role="status" aria-live="polite">{notice}</span> : null}
+				<Button variant="ghost" size="sm" disabled={isEmpty} onClick={handleCopy}>
+					复制
+				</Button>
+			</span>
 		</div>
 	);
 });

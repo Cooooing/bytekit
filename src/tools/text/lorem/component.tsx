@@ -75,9 +75,9 @@ export default function LoremGenerator() {
 
 	const resultPanel = (
 		<div className="tool-card tool-card--result" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-			<div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+			<div className="copy-action-group" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
 				<h2 className="tool-card__title">生成结果</h2>
-				{copyNotice ? <span className="code-editor__action-status" role="status" aria-live="polite">{copyNotice}</span> : null}
+				{copyNotice ? <span className="copy-feedback code-editor__action-status" role="status" aria-live="polite">{copyNotice}</span> : null}
 				<Button variant="ghost" size="sm" onClick={handleCopy} disabled={!output || isPending}>
 					复制
 				</Button>

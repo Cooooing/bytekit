@@ -174,7 +174,6 @@ export default function PasswordGenerator() {
 		<div className="tool-card tool-card--result">
 			<div className="tool-card__title-row">
 				<h2 className="tool-card__title">生成密码</h2>
-				{notice ? <span className="password-notice" role="status" aria-live="polite">{notice}</span> : null}
 			</div>
 			<div className="password-output">
 				{displayPassword ? renderPassword(displayPassword) : <span className="tool-empty-state">调整设置后生成密码。</span>}
@@ -191,17 +190,18 @@ export default function PasswordGenerator() {
 				</div>
 			) : null}
 		</div>
-	), [result, displayPassword, notice, entropy]);
+	), [result, displayPassword, entropy]);
 
 	const actions = useMemo(() => (
-		<div className="tool-card__actions">
+		<div className="tool-card__actions copy-action-group">
+			{notice ? <span className="copy-feedback password-notice" role="status" aria-live="polite">{notice}</span> : null}
 			<Button disabled={!result.ok || !output} onClick={copyPassword}>复制密码</Button>
 			<Button variant="secondary" onClick={() => setNonce((value) => value + 1)}>
 				<RotateCw size={17} strokeWidth={2} aria-hidden="true" />
 				刷新密码
 			</Button>
 		</div>
-	), [result, output, copyPassword]);
+	), [result, output, notice, copyPassword]);
 
 	useToolRefPanel('密码安全参考', passwordReference);
 

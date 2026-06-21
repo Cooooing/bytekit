@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronDown } from 'lucide-react';
+import { ChevronDown, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getToolsByCategory, toolCategories, tools } from '../../../tools/registry';
 
@@ -71,13 +71,12 @@ export default function ToolSidebar({ activeToolId, onSelectTool }: ToolSidebarP
 				aria-label={collapsed ? '展开工具目录' : '收起工具目录'}
 				title={collapsed ? '展开工具目录' : '收起工具目录'}
 			>
-				<span className="tool-sidebar__title">工具目录</span>
-				<ChevronLeft
-					size={14}
-					strokeWidth={2.5}
-					className="tool-sidebar__chevron"
-					style={{ transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform 0.25s ease' }}
-				/>
+				{collapsed ? null : <span className="tool-sidebar__title">工具目录</span>}
+				{collapsed ? (
+					<PanelLeftOpen size={17} strokeWidth={2.2} className="tool-sidebar__chevron" aria-hidden="true" />
+				) : (
+					<PanelLeftClose size={17} strokeWidth={2.2} className="tool-sidebar__chevron" aria-hidden="true" />
+				)}
 			</button>
 
 			<div className="tool-sidebar__groups">

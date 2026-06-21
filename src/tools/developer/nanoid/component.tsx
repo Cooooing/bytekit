@@ -117,10 +117,10 @@ export default function NanoidGenerator() {
 						style={{ width: '100%', padding: '8px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-md)', background: 'var(--surface-subtle)', color: 'var(--text)' }}
 					/>
 				</div>
-				<div style={{ display: 'flex', gap: '8px' }}>
+				<div className="copy-action-group" style={{ display: 'flex', gap: '8px' }}>
 					<Button variant="primary" onClick={generate}>生成</Button>
 					<Button variant="secondary" disabled={results.length === 0 || isDirty} onClick={copyAll}>复制全部</Button>
-					{copyNotice ? <span className="code-editor__action-status" role="status" aria-live="polite">{copyNotice}</span> : null}
+					{copyNotice ? <span className="copy-feedback code-editor__action-status" role="status" aria-live="polite">{copyNotice}</span> : null}
 				</div>
 			</div>
 		</div>

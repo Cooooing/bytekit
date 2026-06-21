@@ -67,21 +67,21 @@ export default function UrlCodec() {
 			<h2 className="tool-card__title">转换结果</h2>
 			{displayResult ? (
 				<div style={{ display: 'grid', gap: '8px' }}>
-					<CopyRow label={displayResult.action === 'encode' ? '编码' : '解码'} value={displayResult.action === 'encode' ? displayResult.encoded : displayResult.decoded} />
+					<CopyRow label={displayResult.action === 'encode' ? '编码' : '解码'} value={displayResult.action === 'encode' ? displayResult.encoded : displayResult.decoded} density="long" />
 					{displayResult.components.hostname && (
 						<>
 							<div style={{ fontSize: '0.8125rem', fontWeight: 650, color: 'var(--muted)', marginTop: '4px' }}>URL 组件</div>
-							<CopyRow label="协议" value={displayResult.components.protocol} />
-							<CopyRow label="主机" value={displayResult.components.hostname} />
-							{displayResult.components.port && <CopyRow label="端口" value={displayResult.components.port} />}
-							<CopyRow label="路径" value={displayResult.components.pathname} />
-							{displayResult.components.search && <CopyRow label="查询" value={displayResult.components.search} />}
-							{displayResult.components.hash && <CopyRow label="哈希" value={displayResult.components.hash} />}
+							<CopyRow label="协议" value={displayResult.components.protocol} density="compact" />
+							<CopyRow label="主机" value={displayResult.components.hostname} density="compact" />
+							{displayResult.components.port && <CopyRow label="端口" value={displayResult.components.port} density="compact" />}
+							<CopyRow label="路径" value={displayResult.components.pathname} density="compact" />
+							{displayResult.components.search && <CopyRow label="查询" value={displayResult.components.search} density="long" />}
+							{displayResult.components.hash && <CopyRow label="哈希" value={displayResult.components.hash} density="compact" />}
 							{displayResult.components.params.length > 0 && (
 								<>
 									<div style={{ fontSize: '0.8125rem', fontWeight: 650, color: 'var(--muted)', marginTop: '4px' }}>查询参数</div>
 									{displayResult.components.params.map((p, i) => (
-										<CopyRow key={i} label={p.key} value={p.value} />
+										<CopyRow key={i} label={p.key} value={p.value} density="compact" />
 									))}
 								</>
 							)}

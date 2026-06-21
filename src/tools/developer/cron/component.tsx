@@ -60,9 +60,7 @@ export default function CronParser() {
 						<div style={{ fontSize: '1rem', fontWeight: 650, lineHeight: 1.5 }}>
 							{lastResult.dialect}
 						</div>
-						<div style={{ marginTop: 'var(--space-2)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: 'var(--muted)', overflowWrap: 'anywhere' }}>
-							{lastResult.expression}
-						</div>
+						<CopyRow label="表达式" value={lastResult.expression} />
 					</div>
 
 					<div className="tool-card__section">

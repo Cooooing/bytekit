@@ -69,10 +69,10 @@ export default function UuidGenerator() {
 						aria-label="UUID 数量"
 					/>
 				</div>
-				<div style={{ display: 'flex', gap: '8px' }}>
+				<div className="copy-action-group" style={{ display: 'flex', gap: '8px' }}>
 					<Button variant="primary" onClick={generate}>生成</Button>
 					<Button variant="secondary" disabled={results.length === 0 || isDirty} onClick={copyAll}>复制全部</Button>
-					{copyNotice ? <span className="code-editor__action-status" role="status" aria-live="polite">{copyNotice}</span> : null}
+					{copyNotice ? <span className="copy-feedback code-editor__action-status" role="status" aria-live="polite">{copyNotice}</span> : null}
 				</div>
 			</div>
 		</div>

@@ -139,7 +139,7 @@ export default function CodeEditor({
 				</div>
 				<div className="code-editor__actions">
 					{statusText ? <Badge tone={statusTone(status)}>{statusText}</Badge> : null}
-					{notice ? <span className="code-editor__action-status" role="status" aria-live="polite">{notice}</span> : null}
+					{notice ? <span className="copy-feedback code-editor__action-status" role="status" aria-live="polite">{notice}</span> : null}
 					<Button variant="secondary" size="sm" disabled={isEmpty} onClick={copyValue}>{label.copy}</Button>
 					{!isReadOnly ? <Button variant="ghost" size="sm" disabled={isEmpty} onClick={clearValue}>{label.clear}</Button> : null}
 				</div>
