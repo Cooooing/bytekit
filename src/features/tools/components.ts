@@ -4,6 +4,7 @@ export const toolComponents: Record<string, React.LazyExoticComponent<any>> = {
 	timestamp: lazy(() => import('../../tools/developer/timestamp/component')),
 	uuid: lazy(() => import('../../tools/developer/uuid/component')),
 	hash: lazy(() => import('../../tools/developer/hash/component')),
+	binary: lazy(() => import('../../tools/developer/binary/component')),
 	color: lazy(() => import('../../tools/text/color/component')),
 	url: lazy(() => import('../../tools/encoding/url/component')),
 	regex: lazy(() => import('../../tools/text/regex/component')),
