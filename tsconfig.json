@@ -10,6 +10,14 @@
   ],
   "compilerOptions": {
     "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@app/*": ["src/app/*"],
+      "@features/*": ["src/features/*"],
+      "@shared/*": ["src/shared/*"],
+      "@themes/*": ["src/themes/*"]
+    },
     "types": [
       "./worker-configuration.d.ts"
     ]

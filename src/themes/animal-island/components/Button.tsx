@@ -1,22 +1,24 @@
 import { Button as AnimalButton } from 'animal-island-ui';
-import type { ButtonProps } from '../../types';
+import type { ButtonProps } from '@shared/ui/Button';
 
-const typeMap: Record<string, string> = {
+const typeMap: Record<NonNullable<ButtonProps['variant']>, string> = {
 	primary: 'primary',
 	secondary: 'default',
 	ghost: 'text',
+	danger: 'primary',
 };
 
-const sizeMap: Record<string, string> = {
+const sizeMap: Record<NonNullable<ButtonProps['size']>, string> = {
 	sm: 'small',
 	md: 'middle',
+	icon: 'small',
 };
 
 export default function Button({ variant = 'primary', size = 'md', className, children, ...props }: ButtonProps) {
 	return (
 		<AnimalButton
-			type={typeMap[variant] as any}
-			size={sizeMap[size] as any}
+			type={typeMap[variant]}
+			size={sizeMap[size]}
 			className={className}
 			{...props}
 		>

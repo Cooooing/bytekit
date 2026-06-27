@@ -1,4 +1,4 @@
----
+﻿---
 import {
 	Braces,
 	Code2,
@@ -8,9 +8,9 @@ import {
 	Palette,
 	Settings,
 } from 'lucide-react';
-import HomeToolCatalog from '../components/home/HomeToolCatalog';
+import HomeToolCatalog from '@features/home/HomeToolCatalog';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getToolsByCategory, toolCategories } from '../tools/registry';
+import { getToolsByCategory, toolCategories } from '@features/tools/core/registry';
 
 const iconByName = {
 	braces: Braces,

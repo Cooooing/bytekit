@@ -8,7 +8,7 @@ export const THEME_KEY = 'bytekit-theme-id';
  * This is separate from THEME_KEY — THEME_KEY controls which component set
  * is loaded (default vs animal-island), while THEME_KEY_VISUAL controls
  * light vs dark appearance within that component set.
- * Managed by ThemeToggle (src/components/shell/ThemeToggle.tsx).
+ * Managed by ThemeToggle (src/app/shell/ThemeToggle.tsx).
  */
 export const THEME_KEY_VISUAL = 'bytekit-theme';
 

@@ -23,6 +23,14 @@
 
 * {
 	box-sizing: border-box;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	display: none;
 }
 
 html,
@@ -32,6 +40,8 @@ body {
 	background: var(--bg);
 	color: var(--text);
 	overflow-x: clip;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
 }
 
 body {
@@ -455,6 +465,7 @@ textarea:focus-visible {
 	width: min(36rem, max(100%, 18rem));
 	max-height: 22rem;
 	overflow: auto;
+	scrollbar-width: none;
 	padding: var(--space-2);
 	border: 1px solid var(--border);
 	border-radius: var(--radius-md);
@@ -631,7 +642,7 @@ textarea:focus-visible {
 	overflow-x: auto;
 	overscroll-behavior-inline: contain;
 	scroll-padding-inline: var(--space-2);
-	scrollbar-width: thin;
+	scrollbar-width: none;
 }
 
 .home-tabs__item {
@@ -833,7 +844,7 @@ textarea:focus-visible {
 	width: var(--size-ref-panel);
 	max-height: calc(100vh - 5.5rem);
 	overflow: hidden;
-	scrollbar-width: thin;
+	scrollbar-width: none;
 	transition: width var(--motion-normal) var(--ease-standard);
 	flex-shrink: 0;
 }
@@ -884,114 +895,21 @@ textarea:focus-visible {
 	justify-self: center;
 }
 
-/* ─── FloatingPanel (unified sidebar + reference panel) ─── */
-
-.fp {
-	position: sticky;
-	top: calc(3.75rem + var(--layout-page-block));
-	display: grid;
-	grid-template-rows: auto 1fr;
-	gap: var(--space-1);
-	align-content: start;
-	width: var(--size-sidebar);
-	max-height: calc(100vh - 5.5rem);
-	overflow: hidden;
-	background: color-mix(in srgb, var(--surface) 90%, transparent);
-	backdrop-filter: blur(12px);
-	-webkit-backdrop-filter: blur(12px);
-	border: 1px solid var(--border);
-	border-radius: var(--radius-md);
-	box-shadow: var(--shadow-panel);
-}
-
-.fp--right {
-	position: fixed;
-	right: var(--space-3);
-	top: calc(3.75rem + var(--layout-page-block) + var(--space-3));
-	width: var(--size-ref-panel);
-	max-height: calc(100vh - 6rem);
-}
-
-.fp__head {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	width: 100%;
-	min-height: 2.25rem;
-	padding: 0 var(--space-3);
-	border-bottom: 1px solid var(--border);
-	background: transparent;
-	color: var(--muted-strong);
-	font-size: 0.8125rem;
-	font-weight: 700;
-	text-align: left;
-	cursor: pointer;
-	transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.fp__head:hover {
-	background: var(--surface-muted);
-	color: var(--text);
-}
-
-.fp__title {
-	white-space: nowrap;
-	overflow: hidden;
-}
-
-.fp__body {
-	display: grid;
-	gap: var(--space-2);
-	padding: var(--space-2) var(--space-3);
-	overflow-y: auto;
-	overflow-x: hidden;
-}
-
-.fp__float {
-	position: fixed;
-	z-index: 25;
-	display: grid;
-	place-items: center;
-	width: 2rem;
-	height: 2rem;
-	border-radius: 50%;
-	background: var(--surface);
-	border: 1px solid var(--border);
-	color: var(--muted);
-	cursor: pointer;
-	box-shadow: var(--shadow-panel);
-	transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.fp__float--left {
-	top: calc(3.75rem + var(--layout-page-block) + var(--space-3));
-	left: var(--space-3);
-}
-
-.fp__float--right {
-	top: calc(3.75rem + var(--layout-page-block) + var(--space-3));
-	right: var(--space-3);
-}
-
-.fp__float:hover {
-	background: var(--surface-muted);
-	color: var(--text);
-}
-
 /* ─── Sidebar-specific styles ─── */
 
 .tool-sidebar {
 	position: sticky;
 	top: calc(3.75rem + var(--space-2));
-	display: flex;
-	flex-direction: column;
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	align-content: start;
 	gap: var(--space-1);
 	width: var(--size-sidebar);
 	max-height: calc(100vh - 5.5rem);
+	min-height: 0;
 	overflow: hidden;
 	padding: var(--space-2);
 	border-right: 1px solid var(--border);
-	scrollbar-width: thin;
 	transition: width var(--motion-normal) var(--ease-standard);
 }
 
@@ -1039,14 +957,34 @@ textarea:focus-visible {
 .tool-sidebar__groups {
 	display: grid;
 	gap: var(--space-1);
+	min-height: 0;
+	overflow-x: hidden;
+	overflow-y: auto;
 	opacity: 1;
+	scrollbar-width: none;
 	transition: opacity var(--motion-normal) var(--ease-standard);
 	min-width: calc(var(--size-sidebar) - var(--space-4));
 	padding-right: 0;
 }
 
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+.app-shell::-webkit-scrollbar,
+.app-shell__main::-webkit-scrollbar,
+.tool-sidebar::-webkit-scrollbar,
+.tool-sidebar__groups::-webkit-scrollbar,
+.tool-ref-sidebar::-webkit-scrollbar,
+.home-tabs::-webkit-scrollbar,
+.home-category-nav::-webkit-scrollbar,
+.tool-search__results::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	display: none;
+}
+
 .tool-sidebar--collapsed .tool-sidebar__groups {
 	opacity: 0;
+	overflow: hidden;
 	pointer-events: none;
 	position: absolute;
 	left: 0;
@@ -1138,7 +1076,7 @@ textarea:focus-visible {
 		display: flex;
 		overflow-x: auto;
 		width: 100%;
-		scrollbar-width: thin;
+		scrollbar-width: none;
 	}
 
 	.home-category-nav__item {
@@ -1237,4 +1175,15 @@ textarea:focus-visible {
 	.page-title {
 		font-size: 1.75rem;
 	}
+}
+
+.scrollbar-hidden {
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+	width: 0;
+	height: 0;
+	display: none;
 }

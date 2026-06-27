@@ -1,16 +1,15 @@
 // @ts-check
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'astro/config';
 
 import react from '@astrojs/react';
 import tailwindcss from '@tailwindcss/vite';
 
-const isVercel = !!process.env.VERCEL;
 const isGitHub = !!process.env.GITHUB_ACTIONS;
+const sourceRoot = fileURLToPath(new URL('./src', import.meta.url));
 
-// Use Vercel adapter when building on Vercel, Cloudflare otherwise
-const adapter = isVercel
-	? (await import('@astrojs/vercel')).default()
-	: (await import('@astrojs/cloudflare')).default();
+// This project deploys through Cloudflare Workers.
+const adapter = (await import('@astrojs/cloudflare')).default();
 
 // GitHub Pages deploys under /bytekit/ subpath; others serve from root
 const base = isGitHub ? '/bytekit' : '/';
@@ -23,10 +22,36 @@ export default defineConfig({
 	adapter,
 	vite: {
 		plugins: [tailwindcss()],
-		build: {
-			rollupOptions: {
-				...(isVercel ? { external: ['cloudflare:workers'] } : {}),
+		resolve: {
+			alias: {
+				'@app': fileURLToPath(new URL('./src/app', import.meta.url)),
+				'@features': fileURLToPath(new URL('./src/features', import.meta.url)),
+				'@shared': fileURLToPath(new URL('./src/shared', import.meta.url)),
+				'@themes': fileURLToPath(new URL('./src/themes', import.meta.url)),
+				'@': sourceRoot,
 			},
+		},
+		optimizeDeps: {
+			include: [
+				'@codemirror/lang-css',
+				'@codemirror/lang-html',
+				'@codemirror/lang-javascript',
+				'@codemirror/lang-json',
+				'@codemirror/language',
+				'@codemirror/state',
+				'@codemirror/view',
+				'@lezer/highlight',
+				'@radix-ui/react-toast',
+				'@uiw/react-codemirror',
+				'animal-island-ui',
+				'js-yaml',
+				'jsqr',
+				'lucide-react',
+				'marked',
+				'minisearch',
+				'pinyin-pro',
+				'qrcode',
+			],
 		},
 	},
 });

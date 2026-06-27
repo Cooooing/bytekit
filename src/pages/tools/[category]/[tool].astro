@@ -1,19 +1,19 @@
 ---
 import AppShell from '../../../features/tools/shell/AppShell';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { tools } from '../../../features/tools/registry';
+import { tools } from '@features/tools/core/registry';
 
 export const prerender = true;
 
 export function getStaticPaths() {
 	return tools.map((tool) => {
-		const [_, category, slug] = tool.href.split('/');
+		const [, category, slug] = tool.href.split('/');
 		return { params: { category, tool: slug } };
 	});
 }
 
 const { tool: toolSlug, category } = Astro.params;
-const tool = tools.find((t) => t.href === `tools/${category}/${toolSlug}`);
+const tool = tools.find((item) => item.href === `tools/${category}/${toolSlug}`);
 ---
 
 <BaseLayout title={`${tool?.name ?? '工具'} - Bytekit`} description={tool?.description ?? ''} mainClass="site-main--tool">

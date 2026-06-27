@@ -1,6 +1,8 @@
 import { Search } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getCategoryById, getToolIdFromPathname, isToolPath, tools } from '../registry';
+import type MiniSearch from 'minisearch';
+import type { SearchResult } from 'minisearch';
+import { getCategoryById, getToolIdFromPathname, isToolPath, tools } from '../core/registry';
 
 interface ToolSearchProps {
 	variant?: 'header' | 'hero' | 'sidebar';
@@ -17,8 +19,12 @@ interface SearchDocument {
 	href: string;
 }
 
-let depsPromise: Promise<{ MiniSearch: any; pinyin: (text: string, options: any) => string[] }> | null = null;
-let searchIndexPromise: Promise<any> | null = null;
+type PinyinArrayFn = typeof import('pinyin-pro').pinyin;
+type ToolSearchIndex = MiniSearch<SearchDocument>;
+type ToolSearchResult = SearchResult & Pick<SearchDocument, 'id' | 'name' | 'description' | 'category' | 'href'>;
+
+let depsPromise: Promise<{ MiniSearch: typeof MiniSearch; pinyin: PinyinArrayFn }> | null = null;
+let searchIndexPromise: Promise<ToolSearchIndex> | null = null;
 
 function loadSearchDeps() {
 	if (!depsPromise) {
@@ -33,7 +39,7 @@ function loadSearchDeps() {
 	return depsPromise;
 }
 
-function toPinyinSearchText(pinyinFn: (text: string, options: any) => string[], value: string) {
+function toPinyinSearchText(pinyinFn: PinyinArrayFn, value: string) {
 	const chineseSegments = value.match(/[㐀-鿿]+/g) ?? [];
 	const pinyinTokens = chineseSegments.flatMap((segment) => {
 		const full = pinyinFn(segment, { toneType: 'none', type: 'array' });
@@ -43,7 +49,7 @@ function toPinyinSearchText(pinyinFn: (text: string, options: any) => string[], 
 	return pinyinTokens.filter(Boolean).join(' ');
 }
 
-function buildDocuments(pinyinFn: (text: string, options: any) => string[]): SearchDocument[] {
+function buildDocuments(pinyinFn: PinyinArrayFn): SearchDocument[] {
 	return tools.map((tool) => {
 		const category = getCategoryById(tool.category)?.name ?? '';
 		const keywords = tool.keywords.join(' ');
@@ -85,7 +91,7 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 	const [isFocused, setIsFocused] = useState(false);
 	const [activeIndex, setActiveIndex] = useState(-1);
 	const [searchReady, setSearchReady] = useState(false);
-	const miniSearchRef = useRef<any>(null);
+	const miniSearchRef = useRef<ToolSearchIndex | null>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const resultsRef = useRef<HTMLDivElement>(null);
 	const queryRef = useRef(query);
@@ -226,7 +232,7 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 			</label>
 			{showResults ? (
 				<div ref={resultsRef} className="tool-search__results" id={listId} role="listbox">
-					{results.length > 0 ? results.map((result: any, index: number) => (
+					{results.length > 0 ? (results as ToolSearchResult[]).map((result, index) => (
 						<button
 							key={result.id}
 							id={`tool-search-option-${result.id}`}

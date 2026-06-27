@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+﻿import type { ReactNode } from 'react';
 import { ThemeProvider } from './ThemeContext';
-import { AppMessageProvider } from '../components/shared/ui/AppMessage';
+import { AppMessageProvider } from '@shared/ui/AppMessage';
 
 interface ThemeManagerProps {
 	children: ReactNode;
