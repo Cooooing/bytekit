@@ -7,6 +7,8 @@ import { definition as hashDef } from '../catalog/developer/hash/definition';
 import { definition as binaryDef } from '../catalog/developer/binary/definition';
 import { definition as checksumDef } from '../catalog/developer/checksum/definition';
 import { definition as baseConverterDef } from '../catalog/developer/base-converter/definition';
+import { definition as ipNetworkDef } from '../catalog/developer/ip-network/definition';
+import { definition as ipInfoDef } from '../catalog/developer/ip-info/definition';
 import { definition as cronDef } from '../catalog/developer/cron/definition';
 import { definition as colorDef, category as textCat } from '../catalog/text/color/definition';
 import { definition as urlDef } from '../catalog/encoding/url/definition';
@@ -54,6 +56,8 @@ export const toolEntries: ToolManifestEntry[] = [
 	{ definition: binaryDef, loadComponent: () => import('../catalog/developer/binary/component') },
 	{ definition: checksumDef, loadComponent: () => import('../catalog/developer/checksum/component') },
 	{ definition: baseConverterDef, loadComponent: () => import('../catalog/developer/base-converter/component') },
+	{ definition: ipNetworkDef, loadComponent: () => import('../catalog/developer/ip-network/component') },
+	{ definition: ipInfoDef, loadComponent: () => import('../catalog/developer/ip-info/component') },
 	{ definition: cronDef, loadComponent: () => import('../catalog/developer/cron/component') },
 	{ definition: colorDef, loadComponent: () => import('../catalog/text/color/component') },
 	{ definition: urlDef, loadComponent: () => import('../catalog/encoding/url/component') },
