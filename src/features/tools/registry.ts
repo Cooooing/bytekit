@@ -4,6 +4,7 @@ import { definition as timestampDef } from '../../tools/developer/timestamp/defi
 import { definition as uuidDef } from '../../tools/developer/uuid/definition';
 import { definition as hashDef } from '../../tools/developer/hash/definition';
 import { definition as binaryDef } from '../../tools/developer/binary/definition';
+import { definition as checksumDef } from '../../tools/developer/checksum/definition';
 import { definition as colorDef } from '../../tools/text/color/definition';
 import { definition as urlDef } from '../../tools/encoding/url/definition';
 import { definition as regexDef } from '../../tools/text/regex/definition';
@@ -41,6 +42,7 @@ export const tools: ToolDefinition[] = [
 	uuidDef,
 	hashDef,
 	binaryDef,
+	checksumDef,
 	cronDef,
 	colorDef,
 	urlDef,
