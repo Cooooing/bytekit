@@ -659,11 +659,13 @@ textarea:focus-visible {
 .home-tool-sections {
 	display: grid;
 	gap: clamp(2rem, 4vw, 3rem);
+	padding-bottom: max(18rem, 55vh);
 }
 
 .home-tool-section {
 	display: grid;
 	gap: var(--space-4);
+	scroll-margin-top: calc(3.75rem + var(--layout-page-block) + var(--space-4));
 }
 
 .home-tool-section__head {
@@ -1226,6 +1228,10 @@ textarea:focus-visible {
 
 	.home-tool-grid {
 		grid-template-columns: 1fr;
+	}
+
+	.home-tool-section {
+		scroll-margin-top: 8.5rem;
 	}
 
 	.page-title {
