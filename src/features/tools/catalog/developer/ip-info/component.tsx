@@ -4,7 +4,7 @@ import CopyRow from '@features/tools/shared/CopyRow';
 import { useToolRefPanel } from '@features/tools/shared/RefPanelContext';
 import { useAppMessage } from '@shared/ui/AppMessage';
 import { useTheme } from '@themes/ThemeContext';
-import type { IpInfoResponse } from './functions';
+import type { IpInfoResponse, IpInfoSource } from './functions';
 import { ipInfoReference } from './references';
 
 export default function IpInfoLookup() {
@@ -22,15 +22,22 @@ export default function IpInfoLookup() {
 				headers: { accept: 'application/json' },
 				cache: 'no-store',
 			});
+			if (response.status === 404) {
+				setResult(unavailableResult('当前部署环境没有可用的 IP 信息 API。'));
+				message.warning('当前部署环境没有可用的 IP 信息 API。');
+				return;
+			}
 			if (!response.ok) throw new Error(`查询失败：HTTP ${response.status}`);
 			const data = await response.json() as IpInfoResponse;
 			if (!data.ok) throw new Error('查询失败。');
 			setResult(data);
 			if (!data.available) {
-				message.warning(data.message ?? '当前环境未提供 Cloudflare 请求信息。');
+				message.warning(data.message ?? '当前部署环境未提供服务端 IP 请求信息。');
 			}
 		} catch (error) {
-			message.error(error instanceof Error ? error.message : 'IP 信息查询失败。');
+			const fallback = unavailableResult('当前部署环境暂时无法查询 IP 信息。');
+			setResult(fallback);
+			message.error(error instanceof Error ? error.message : fallback.message ?? 'IP 信息查询失败。');
 		} finally {
 			setLoading(false);
 		}
@@ -41,7 +48,7 @@ export default function IpInfoLookup() {
 			<div className="tool-card__section">
 				<h2 className="tool-card__title">当前访问 IP</h2>
 				<p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.875rem', lineHeight: 1.6 }}>
-					查询当前请求在 Cloudflare Worker 中可见的 IP、地理位置、ASN、机房和连接信息。
+					查询当前部署环境可见的访问者 IP。Cloudflare、Vercel 和通用服务端环境会返回不同字段。
 				</p>
 				<Button variant="primary" onClick={handleLookup} disabled={loading}>
 					{loading ? '查询中' : '查询当前 IP'}
@@ -50,7 +57,7 @@ export default function IpInfoLookup() {
 			<div className="tool-card__section">
 				<h2 className="tool-card__title">说明</h2>
 				<p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.875rem', lineHeight: 1.6 }}>
-					此工具只依赖 Cloudflare 请求信息，不支持输入任意 IP 查询归属地，也不会保存查询结果。
+					此工具只读取当前请求信息，不支持输入任意 IP 查询归属地，也不会保存查询结果。
 				</p>
 			</div>
 		</div>
@@ -70,35 +77,36 @@ function IpInfoResult({ result }: { result: IpInfoResponse }) {
 	if (!result.available) {
 		return (
 			<div className="state-box" style={{ minHeight: 'auto', padding: 'var(--space-4)' }}>
-				{result.message ?? '当前环境未提供 Cloudflare 请求信息。'}
+				{result.message ?? '当前部署环境未提供服务端 IP 请求信息。'}
 			</div>
 		);
 	}
 
 	const rows = [
+		['数据来源', sourceLabel(result.source)],
 		['IP 地址', result.ip],
-		['国家/地区', result.cf.country],
-		['城市', result.cf.city],
-		['地区', result.cf.region],
-		['地区代码', result.cf.regionCode],
-		['大洲', result.cf.continent],
-		['时区', result.cf.timezone],
-		['经纬度', formatCoordinates(result.cf.latitude, result.cf.longitude)],
-		['邮政编码', result.cf.postalCode],
-		['ASN', result.cf.asn],
-		['组织', result.cf.asOrganization],
-		['Cloudflare 机房', result.cf.colo],
-		['HTTP 协议', result.cf.httpProtocol],
-		['TCP RTT', result.cf.clientTcpRtt],
-		['QUIC RTT', result.cf.clientQuicRtt],
-		['TLS 版本', result.cf.tlsVersion],
-		['TLS 加密套件', result.cf.tlsCipher],
+		['国家/地区', result.info.country],
+		['城市', result.info.city],
+		['地区', result.info.region],
+		['地区代码', result.info.regionCode],
+		['大洲', result.info.continent],
+		['时区', result.info.timezone],
+		['经纬度', formatCoordinates(result.info.latitude, result.info.longitude)],
+		['邮政编码', result.info.postalCode],
+		['ASN', result.info.asn],
+		['组织', result.info.asOrganization],
+		['Cloudflare 机房', result.info.colo],
+		['HTTP 协议', result.info.httpProtocol],
+		['TCP RTT', result.info.clientTcpRtt],
+		['QUIC RTT', result.info.clientQuicRtt],
+		['TLS 版本', result.info.tlsVersion],
+		['TLS 加密套件', result.info.tlsCipher],
 	].filter(([, value]) => Boolean(value)) as Array<[string, string]>;
 
 	if (rows.length === 0) {
 		return (
 			<div className="state-box" style={{ minHeight: 'auto', padding: 'var(--space-4)' }}>
-				Cloudflare 请求信息为空。
+				当前请求信息为空。
 			</div>
 		);
 	}
@@ -108,6 +116,23 @@ function IpInfoResult({ result }: { result: IpInfoResponse }) {
 			{rows.map(([label, value]) => <CopyRow key={label} label={label} value={value} density="long" />)}
 		</div>
 	);
+}
+
+function sourceLabel(source: IpInfoSource): string {
+	if (source === 'cloudflare') return 'Cloudflare';
+	if (source === 'vercel') return 'Vercel';
+	if (source === 'generic') return '通用请求头';
+	return '不可用';
+}
+
+function unavailableResult(message: string): IpInfoResponse {
+	return {
+		ok: true,
+		available: false,
+		source: 'unavailable',
+		info: {},
+		message,
+	};
 }
 
 function formatCoordinates(latitude?: string, longitude?: string): string | undefined {
