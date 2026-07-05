@@ -24,4 +24,13 @@ export const ipInfoReference = [
 			{ syntax: 'TLS', desc: '连接加密信息，仅平台提供时显示。' },
 		],
 	},
+	{
+		title: '浏览器环境',
+		items: [
+			{ syntax: 'userAgentData', desc: 'Chrome 等浏览器提供的浏览器、系统和架构信息。' },
+			{ syntax: 'navigator.platform', desc: '浏览器平台标识，例如 Win32；不等价于系统位数。' },
+			{ syntax: 'screen / viewport', desc: '屏幕尺寸、可用屏幕、视口尺寸和设备像素比。' },
+			{ syntax: 'connection', desc: '浏览器估算的网络类型、下行速率和 RTT；并非所有浏览器支持。' },
+		],
+	},
 ];

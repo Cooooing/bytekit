@@ -2,13 +2,13 @@
 import CodeMirror from '@uiw/react-codemirror';
 import type { Extension } from '@codemirror/state';
 import { EditorView } from '@codemirror/view';
-import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { HighlightStyle, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { tags } from '@lezer/highlight';
 import Badge, { type BadgeTone } from './Badge';
 import { useTheme } from '@themes/ThemeContext';
 import { useClipboardCopy } from '@shared/hooks/useClipboardCopy';
 
-export type CodeEditorLanguage = 'text' | 'json' | 'javascript' | 'html' | 'css';
+export type CodeEditorLanguage = 'text' | 'json' | 'javascript' | 'html' | 'css' | 'proto';
 export type CodeEditorStatus = 'neutral' | 'success' | 'error';
 export type CodeEditorMessageTone = 'neutral' | 'error';
 
@@ -37,12 +37,32 @@ const label = {
 	chars: '字符',
 };
 
+const protoLanguageExtension = StreamLanguage.define({
+	token(stream) {
+		if (stream.match('//')) {
+			stream.skipToEnd();
+			return 'comment';
+		}
+		if (stream.match(/\/\*.*?\*\//)) return 'comment';
+		if (stream.match(/"(?:[^"\\]|\\.)*"?/)) return 'string';
+		if (stream.match(/\b\d+\b/)) return 'number';
+		if (stream.match(/\b(?:syntax|package|import|option|message|enum|oneof|map|repeated|optional|required|reserved|service|rpc|returns|extend|extensions|public)\b/)) return 'keyword';
+		if (stream.match(/\b(?:double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/)) return 'typeName';
+		if (stream.match(/[{}[\]();,=<>]/)) return 'punctuation';
+		if (stream.match(/[A-Z][A-Za-z0-9_]*/)) return 'typeName';
+		if (stream.match(/[a-z_][A-Za-z0-9_]*/)) return 'propertyName';
+		stream.next();
+		return null;
+	},
+});
+
 const languageLoaders: Record<CodeEditorLanguage, () => Promise<Extension[]>> = {
 	text: () => Promise.resolve([]),
 	json: () => import('@codemirror/lang-json').then((m) => [m.json()]),
 	javascript: () => import('@codemirror/lang-javascript').then((m) => [m.javascript()]),
 	html: () => import('@codemirror/lang-html').then((m) => [m.html()]),
 	css: () => import('@codemirror/lang-css').then((m) => [m.css()]),
+	proto: () => Promise.resolve([protoLanguageExtension]),
 };
 
 const languageExtensionCache = new Map<CodeEditorLanguage, Promise<Extension[]>>();
@@ -68,6 +88,8 @@ const themeHighlightStyle = HighlightStyle.define([
 	{ tag: tags.bool, color: 'var(--code-token-bool, #7a3db8)' },
 	{ tag: tags.null, color: 'var(--code-token-null, #7a3db8)' },
 	{ tag: tags.keyword, color: 'var(--code-token-keyword, #7a3db8)', fontWeight: '600' },
+	{ tag: tags.typeName, color: 'var(--code-token-type, #8f4e00)', fontWeight: '600' },
+	{ tag: tags.variableName, color: 'var(--code-token-property, #0f54b8)' },
 	{ tag: tags.propertyName, color: 'var(--code-token-property, #0f54b8)' },
 	{ tag: tags.comment, color: 'var(--code-token-comment, #647089)', fontStyle: 'italic' },
 	{ tag: tags.punctuation, color: 'var(--code-token-punctuation, var(--text-secondary))' },

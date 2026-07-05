@@ -9,6 +9,8 @@ import { definition as checksumDef } from '../catalog/developer/checksum/definit
 import { definition as baseConverterDef } from '../catalog/developer/base-converter/definition';
 import { definition as ipNetworkDef } from '../catalog/developer/ip-network/definition';
 import { definition as ipInfoDef } from '../catalog/developer/ip-info/definition';
+import { definition as jsonToProtoDef } from '../catalog/developer/json-to-proto/definition';
+import { definition as protoToJsonDef } from '../catalog/developer/proto-to-json/definition';
 import { definition as cronDef } from '../catalog/developer/cron/definition';
 import { definition as colorDef, category as textCat } from '../catalog/text/color/definition';
 import { definition as urlDef } from '../catalog/encoding/url/definition';
@@ -58,6 +60,8 @@ export const toolEntries: ToolManifestEntry[] = [
 	{ definition: baseConverterDef, loadComponent: () => import('../catalog/developer/base-converter/component') },
 	{ definition: ipNetworkDef, loadComponent: () => import('../catalog/developer/ip-network/component') },
 	{ definition: ipInfoDef, loadComponent: () => import('../catalog/developer/ip-info/component') },
+	{ definition: jsonToProtoDef, loadComponent: () => import('../catalog/developer/json-to-proto/component') },
+	{ definition: protoToJsonDef, loadComponent: () => import('../catalog/developer/proto-to-json/component') },
 	{ definition: cronDef, loadComponent: () => import('../catalog/developer/cron/component') },
 	{ definition: colorDef, loadComponent: () => import('../catalog/text/color/component') },
 	{ definition: urlDef, loadComponent: () => import('../catalog/encoding/url/component') },
