@@ -10,7 +10,10 @@ export const protoToJsonReference = [
 	{
 		title: '字段映射',
 		items: [
-			{ syntax: 'snake_case', desc: '输出 JSON 字段名会转换为 camelCase。' },
+			{ syntax: 'camelCase', desc: '默认输出 JSON 常用的小驼峰字段名。' },
+			{ syntax: 'PascalCase', desc: '字段名首字母大写，例如 CronSpec。' },
+			{ syntax: 'snake_case', desc: '字段名使用下划线形式，例如 cron_spec。' },
+			{ syntax: '原始字段名', desc: '尽量保留 proto 字段原名。' },
 			{ syntax: 'repeated', desc: '输出单元素数组。' },
 			{ syntax: 'map', desc: '输出包含一个示例键的对象。' },
 			{ syntax: 'oneof', desc: '默认选择 oneof 中的第一个字段。' },

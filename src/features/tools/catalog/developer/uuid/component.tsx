@@ -72,6 +72,7 @@ export default function UuidGenerator() {
 				<div className="copy-action-group" style={{ display: 'flex', gap: '8px' }}>
 					<Button variant="primary" onClick={generate}>生成</Button>
 					<Button variant="secondary" disabled={results.length === 0 || isDirty} onClick={copyAll}>复制全部</Button>
+					{isDirty ? <span style={{ alignSelf: 'center', color: 'var(--muted)', fontSize: '0.8125rem' }}>数量已调整</span> : null}
 					{copyNotice ? <span className="copy-feedback code-editor__action-status" role="status" aria-live="polite">{copyNotice}</span> : null}
 				</div>
 			</div>
@@ -81,7 +82,6 @@ export default function UuidGenerator() {
 	const resultPanel = useMemo(() => (
 		<div className="tool-card tool-card--result">
 			<h2 className="tool-card__title">结果</h2>
-			{isDirty ? <div className="code-editor__message code-editor__message--neutral">数量已变化，请重新生成。</div> : null}
 			<div style={{ display: 'grid', gap: '4px' }}>
 				{results.map((uuid, i) => (
 					<CopyRow key={i} label={`#${i + 1}`} value={uuid} />

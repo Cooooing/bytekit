@@ -1,5 +1,7 @@
-﻿import CodeEditor from '@features/tools/shared/CodeEditor';
+import { useEffect, useRef } from 'react';
+import CodeEditor from '@features/tools/shared/CodeEditor';
 import { useToolStorage } from '@features/tools/shared/useToolStorage';
+import { useDebouncedValue } from '@shared/hooks/useDebouncedValue';
 import { escapeJsString, unescapeJsString } from './functions';
 import { jsEscapeReference } from './references';
 import IoWorkbench from '@features/tools/shared/IoWorkbench';
@@ -13,15 +15,16 @@ const text = {
 	output: '输出',
 	escape: '转义',
 	unescape: '反转义',
-	success: '已转换',
-	fail: '转换失败',
-	pending: '待执行',
-	dirty: '输入已变化，点击操作按钮更新输出。',
+	success: '已同步',
+	fail: '输入无效',
+	waiting: '等待输入',
+	syncing: '更新中',
 };
 
 export default function JsEscapeCodec() {
 	const { Button } = useTheme();
 	const message = useAppMessage();
+	const lastAutoError = useRef('');
 	const [state, setState] = useToolStorage('bytekit:tool:js-escape:v1', {
 		input: 'const msg = "Hello\nWorld\tTab\\Backslash"',
 		output: '',
@@ -30,37 +33,48 @@ export default function JsEscapeCodec() {
 		error: '',
 	});
 	const { input, output, lastAction, lastInput } = state;
+	const debouncedInput = useDebouncedValue(input, 250);
 	const setInput = (value: string) => setState((current) => ({ ...current, input: value }));
 
-	function runAction(action: 'escape' | 'unescape') {
-		const result = action === 'escape' ? escapeJsString(input) : unescapeJsString(input);
+	function runAction(action: 'escape' | 'unescape', value = input, auto = false) {
+		const result = action === 'escape' ? escapeJsString(value) : unescapeJsString(value);
 		if (!result.ok) {
-			message.error(result.error);
+			if (!auto || result.error !== lastAutoError.current) message.error(result.error);
+			if (auto) lastAutoError.current = result.error;
+			setState((current) => ({ ...current, lastAction: action, error: result.error }));
 			return;
 		}
-		setState((current) => ({ ...current, lastAction: action, lastInput: input, output: result.output, error: '' }));
+		lastAutoError.current = '';
+		setState((current) => ({ ...current, lastAction: action, lastInput: value, output: result.output, error: '' }));
 	}
 
+	useEffect(() => {
+		if (!debouncedInput.trim()) {
+			lastAutoError.current = '';
+			setState((current) => ({ ...current, error: '' }));
+			return;
+		}
+		runAction(lastAction, debouncedInput, true);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [debouncedInput, lastAction]);
+
 	const isDirty = input !== (lastInput ?? '');
-	const hasExecuted = !isDirty && lastInput !== '';
-	const outputStatus = !hasExecuted ? 'neutral' : 'success';
-	const outputStatusText = !hasExecuted ? text.pending : text.success;
+	const outputStatus = state.error ? 'error' : isDirty || !output ? 'neutral' : 'success';
+	const outputStatusText = !input.trim() ? text.waiting : state.error ? text.fail : isDirty ? text.syncing : output ? text.success : text.waiting;
 
 	useToolRefPanel('JavaScript 转义参考', jsEscapeReference);
 
 	return (
-		<>
-			<IoWorkbench
-				ariaLabel={text.tool}
-				actions={(
-					<>
-						<Button variant={lastAction === 'escape' ? 'primary' : 'secondary'} onClick={() => runAction('escape')}>{text.escape}</Button>
-						<Button variant={lastAction === 'unescape' ? 'primary' : 'secondary'} onClick={() => runAction('unescape')}>{text.unescape}</Button>
-					</>
-				)}
-				input={<CodeEditor title={text.input} value={input} onChange={setInput} language="text" />}
-				output={<CodeEditor title={text.output} value={output} language="text" status={outputStatus} statusText={outputStatusText} message={isDirty ? text.dirty : undefined} />}
-			/>
-		</>
+		<IoWorkbench
+			ariaLabel={text.tool}
+			actions={(
+				<>
+					<Button variant={lastAction === 'escape' ? 'primary' : 'secondary'} onClick={() => runAction('escape')}>{text.escape}</Button>
+					<Button variant={lastAction === 'unescape' ? 'primary' : 'secondary'} onClick={() => runAction('unescape')}>{text.unescape}</Button>
+				</>
+			)}
+			input={<CodeEditor title={text.input} value={input} onChange={setInput} language="text" />}
+			output={<CodeEditor title={text.output} value={output} language="text" status={outputStatus} statusText={outputStatusText} />}
+		/>
 	);
 }

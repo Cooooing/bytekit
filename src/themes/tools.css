@@ -50,7 +50,8 @@
 	line-height: 1;
 }
 
-.proto-message-control input {
+.proto-message-control input,
+.proto-message-control select {
 	width: min(14rem, 42vw);
 	min-width: 8rem;
 	border: 0;
@@ -59,6 +60,16 @@
 	font-family: var(--font-mono);
 	font-size: 0.875rem;
 	outline: none;
+}
+
+.proto-message-control select {
+	width: min(18rem, 52vw);
+	cursor: pointer;
+}
+
+.proto-message-control--compact select {
+	width: min(10rem, 42vw);
+	min-width: 7rem;
 }
 
 .proto-message-control:focus-within {

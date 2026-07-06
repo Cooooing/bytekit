@@ -4,15 +4,19 @@ import { createMockValue, type MockScalarKind } from '../../../shared/mockValues
 export interface ProtoMessageOption {
 	name: string;
 	fullName: string;
+	fieldCount: number;
 }
 
 export interface JsonToProtoOptions {
 	rootMessageName: string;
 }
 
+export type ProtoJsonFieldNameStyle = 'camelCase' | 'PascalCase' | 'snake_case' | 'original';
+
 export interface ProtoJsonOptions {
 	schema: string;
 	messageName: string;
+	fieldNameStyle?: ProtoJsonFieldNameStyle;
 }
 
 export type ToolResult<T> = { ok: true; result: T } | { ok: false; error: string };
@@ -54,6 +58,7 @@ interface InferredMessage {
 interface GenerateContext {
 	maxDepth: number;
 	random: boolean;
+	fieldNameStyle: ProtoJsonFieldNameStyle;
 }
 
 const protoScalars = new Set<string>([
@@ -152,6 +157,7 @@ export function listProtoMessages(schema: string): ToolResult<ProtoMessageOption
 			messages.push({
 				name: object.name,
 				fullName: trimLeadingDot(object.fullName),
+				fieldCount: object.fieldsArray.length,
 			});
 		}
 	});
@@ -162,14 +168,14 @@ export function listProtoMessages(schema: string): ToolResult<ProtoMessageOption
 export function protoToJsonSample(options: ProtoJsonOptions): ToolResult<string> {
 	const typeResult = lookupMessage(options.schema, options.messageName);
 	if (!typeResult.ok) return typeResult;
-	const value = generateMessageSample(typeResult.result, { maxDepth: 8, random: false }, 0, []);
+	const value = generateMessageSample(typeResult.result, { maxDepth: 8, random: false, fieldNameStyle: options.fieldNameStyle ?? 'camelCase' }, 0, []);
 	return { ok: true, result: JSON.stringify(value, null, 2) };
 }
 
 export function protoToRandomJsonSample(options: ProtoJsonOptions): ToolResult<string> {
 	const typeResult = lookupMessage(options.schema, options.messageName);
 	if (!typeResult.ok) return typeResult;
-	const value = generateMessageSample(typeResult.result, { maxDepth: 8, random: true }, 0, []);
+	const value = generateMessageSample(typeResult.result, { maxDepth: 8, random: true, fieldNameStyle: options.fieldNameStyle ?? 'camelCase' }, 0, []);
 	return { ok: true, result: JSON.stringify(value, null, 2) };
 }
 
@@ -336,7 +342,7 @@ function generateMessageSample(type: protobuf.Type, context: GenerateContext, de
 	const oneofChoices = chooseOneofFields(type, context);
 	for (const field of type.fieldsArray) {
 		if (field.partOf && oneofChoices.get(field.partOf.name) !== field.name) continue;
-		output[toJsonFieldName(field)] = generateFieldValue(field, context, depth, [...stack, type.fullName]);
+		output[toJsonFieldName(field, context.fieldNameStyle)] = generateFieldValue(field, context, depth, [...stack, type.fullName]);
 	}
 	return output;
 }
@@ -404,7 +410,10 @@ function mapKey(field: protobuf.Field): string {
 	return 'key_1';
 }
 
-function toJsonFieldName(field: protobuf.Field): string {
+function toJsonFieldName(field: protobuf.Field, style: ProtoJsonFieldNameStyle): string {
+	if (style === 'original') return field.name;
+	if (style === 'snake_case') return toFieldName(field.name);
+	if (style === 'PascalCase') return upperFirst(snakeToCamel(field.name));
 	const jsonName = (field.options as Record<string, unknown> | undefined)?.json_name;
 	if (typeof jsonName === 'string' && jsonName) return jsonName;
 	return snakeToCamel(field.name);
@@ -412,6 +421,10 @@ function toJsonFieldName(field: protobuf.Field): string {
 
 function snakeToCamel(value: string): string {
 	return value.replace(/_([a-zA-Z0-9])/g, (_, char: string) => char.toUpperCase());
+}
+
+function upperFirst(value: string): string {
+	return value ? value.charAt(0).toUpperCase() + value.slice(1) : value;
 }
 
 function toFieldName(value: string): string {

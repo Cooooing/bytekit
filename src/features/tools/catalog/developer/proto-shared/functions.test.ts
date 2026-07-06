@@ -30,6 +30,21 @@ message AuditLog {
   string id = 1;
 }`;
 
+const nestedRequestSchema = `message UpsertSchedulerTask {
+  message Request {
+    int64 id = 1;
+    string name = 2;
+    string title = 3;
+    string description = 4;
+    bool enabled = 5;
+    string cron_spec = 6;
+    string payload = 7;
+    int32 timeout_seconds = 8;
+    bool allow_overlap = 9;
+    optional bool alert_enabled = 10;
+  }
+}`;
+
 describe('Proto / JSON 共享转换函数', () => {
 	afterEach(() => {
 		vi.restoreAllMocks();
@@ -107,6 +122,53 @@ describe('Proto / JSON 共享转换函数', () => {
 			expect(json.address).toMatchObject({ city: '北京', zipCode: '100000' });
 			expect(json.phone).toBe('13800138000');
 			expect(json.backupEmail).toBeUndefined();
+		}
+	});
+
+	it('支持选择嵌套 request message 生成 JSON 样例', () => {
+		const messages = listProtoMessages(nestedRequestSchema);
+		expect(messages.ok).toBe(true);
+		if (messages.ok) {
+			expect(messages.result).toEqual([
+				expect.objectContaining({ fullName: 'UpsertSchedulerTask', fieldCount: 0 }),
+				expect.objectContaining({ fullName: 'UpsertSchedulerTask.Request', fieldCount: 10 }),
+			]);
+		}
+
+		const result = protoToJsonSample({ schema: nestedRequestSchema, messageName: 'UpsertSchedulerTask.Request' });
+		expect(result.ok).toBe(true);
+		if (result.ok) {
+			const json = JSON.parse(result.result);
+			expect(json).toMatchObject({
+				id: '1234567890123',
+				name: '测试用户001',
+				title: '测试标题001',
+				description: '测试内容',
+				enabled: true,
+				cronSpec: '示例文本',
+				payload: '示例文本',
+				timeoutSeconds: 30,
+				allowOverlap: true,
+				alertEnabled: true,
+			});
+		}
+	});
+
+	it('支持配置 Proto 转 JSON 的字段命名风格', () => {
+		const snake = protoToJsonSample({ schema: nestedRequestSchema, messageName: 'UpsertSchedulerTask.Request', fieldNameStyle: 'snake_case' });
+		const pascal = protoToJsonSample({ schema: nestedRequestSchema, messageName: 'UpsertSchedulerTask.Request', fieldNameStyle: 'PascalCase' });
+		const original = protoToJsonSample({ schema: nestedRequestSchema, messageName: 'UpsertSchedulerTask.Request', fieldNameStyle: 'original' });
+
+		expect(snake.ok).toBe(true);
+		expect(pascal.ok).toBe(true);
+		expect(original.ok).toBe(true);
+		if (snake.ok && pascal.ok && original.ok) {
+			expect(JSON.parse(snake.result)).toHaveProperty('cron_spec');
+			expect(JSON.parse(snake.result)).toHaveProperty('timeout_seconds');
+			expect(JSON.parse(pascal.result)).toHaveProperty('CronSpec');
+			expect(JSON.parse(pascal.result)).toHaveProperty('TimeoutSeconds');
+			expect(JSON.parse(original.result)).toHaveProperty('cron_spec');
+			expect(JSON.parse(original.result)).toHaveProperty('timeout_seconds');
 		}
 	});
 
