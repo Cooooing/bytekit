@@ -1,4 +1,5 @@
 import { fail, ok, requireTrimmedInput, type ToolResult } from '../../format/result';
+import { parseJsonLossless, stringifyJsonLossless } from '../../../shared/losslessJson';
 
 export type JsonFormatResult =
 	| { ok: true; output: string }
@@ -41,7 +42,7 @@ function parseJsonDocuments(input: string): JsonDocumentsResult {
 		if (!scanned.ok) return fail(scanned.error);
 
 		try {
-			documents.push(JSON.parse(input.slice(position, scanned.end)) as unknown);
+			documents.push(parseJsonLossless(input.slice(position, scanned.end)));
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'JSON 解析失败。';
 			return fail(`第 ${index} 个 JSON 在第 ${position + 1} 个字符附近解析失败：${message}`);
@@ -59,8 +60,7 @@ function parseJsonDocuments(input: string): JsonDocumentsResult {
 }
 
 function stringifyJsonDocument(document: unknown, indent?: number): string {
-	const output = JSON.stringify(document, null, indent);
-	return typeof output === 'string' ? output : '';
+	return stringifyJsonLossless(document, indent);
 }
 
 function skipJsonWhitespace(input: string, position: number): number {

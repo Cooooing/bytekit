@@ -191,7 +191,7 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 	useEffect(() => {
 		if (variant !== 'header') return;
 		function handleGlobalKeyDown(event: KeyboardEvent) {
-			if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+			if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
 				event.preventDefault();
 				inputRef.current?.focus();
 				inputRef.current?.select();

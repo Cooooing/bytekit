@@ -8,6 +8,7 @@ import IoWorkbench from '@features/tools/shared/IoWorkbench';
 import { useTheme } from '@themes/ThemeContext';
 import { useToolRefPanel } from '@features/tools/shared/RefPanelContext';
 import { useAppMessage } from '@shared/ui/AppMessage';
+import { stringifyJsonLossless } from '@features/tools/shared/losslessJson';
 
 const text = {
 	tool: 'JSONPath 测试工具',
@@ -52,7 +53,7 @@ export default function JsonPathTester() {
 	function run(value = input, path = expression, auto = false) {
 		const result = evaluateJsonPath(value, path);
 		if (result.ok) {
-			const formatted = JSON.stringify(result.results, null, 2);
+			const formatted = stringifyJsonLossless(result.results, 2);
 			lastAutoError.current = '';
 			setState((current) => ({ ...current, output: formatted, error: '', lastInput: value, lastExpression: path, resultCount: result.results.length }));
 		} else {
@@ -90,7 +91,9 @@ export default function JsonPathTester() {
 						className="tool-input"
 						style={{ flex: '1 1 16rem', minWidth: 0 }}
 						onChange={(event) => setState((current) => ({ ...current, expression: event.target.value }))}
-						onKeyDown={(event) => { if (event.key === 'Enter') run(); }}
+						onKeyDown={(event) => {
+							if (event.key === 'Enter' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) run();
+						}}
 					/>
 					<Button variant="primary" onClick={() => run()}>{text.run}</Button>
 					{output && !isDirty && !state.error ? <span style={{ color: 'var(--muted)', fontSize: '0.8rem', whiteSpace: 'nowrap' }}>{resultCount} 个结果</span> : null}

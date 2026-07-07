@@ -94,7 +94,9 @@ export default function JsonToProtoTool() {
 							aria-label="Message 名称"
 							spellCheck={false}
 							onChange={(event) => setState((current) => ({ ...current, rootMessageName: event.target.value }))}
-							onKeyDown={(event) => { if (event.key === 'Enter') runAction(); }}
+							onKeyDown={(event) => {
+								if (event.key === 'Enter' && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) runAction();
+							}}
 						/>
 					</label>
 					<Button variant="primary" onClick={() => runAction()}>{text.generate}</Button>

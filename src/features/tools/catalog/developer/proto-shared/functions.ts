@@ -1,5 +1,6 @@
 import protobuf from 'protobufjs';
 import { createMockValue, type MockScalarKind } from '../../../shared/mockValues';
+import { getJsonNumberText, isLosslessJsonNumber, parseJsonLossless, stringifyJsonLossless } from '../../../shared/losslessJson';
 
 export interface ProtoMessageOption {
 	name: string;
@@ -169,14 +170,14 @@ export function protoToJsonSample(options: ProtoJsonOptions): ToolResult<string>
 	const typeResult = lookupMessage(options.schema, options.messageName);
 	if (!typeResult.ok) return typeResult;
 	const value = generateMessageSample(typeResult.result, { maxDepth: 8, random: false, fieldNameStyle: options.fieldNameStyle ?? 'camelCase' }, 0, []);
-	return { ok: true, result: JSON.stringify(value, null, 2) };
+	return { ok: true, result: stringifyJsonLossless(value, 2) };
 }
 
 export function protoToRandomJsonSample(options: ProtoJsonOptions): ToolResult<string> {
 	const typeResult = lookupMessage(options.schema, options.messageName);
 	if (!typeResult.ok) return typeResult;
 	const value = generateMessageSample(typeResult.result, { maxDepth: 8, random: true, fieldNameStyle: options.fieldNameStyle ?? 'camelCase' }, 0, []);
-	return { ok: true, result: JSON.stringify(value, null, 2) };
+	return { ok: true, result: stringifyJsonLossless(value, 2) };
 }
 
 export function jsonSampleToProto(input: string, options: JsonToProtoOptions): ToolResult<string> {
@@ -186,7 +187,7 @@ export function jsonSampleToProto(input: string, options: JsonToProtoOptions): T
 
 	let parsed: unknown;
 	try {
-		parsed = JSON.parse(input);
+		parsed = parseJsonLossless(input);
 	} catch (error) {
 		return { ok: false, error: `JSON 解析失败：${error instanceof Error ? error.message : '格式不合法。'}` };
 	}
@@ -285,10 +286,10 @@ function inferValue(values: unknown[], messageName: string): InferredValue {
 
 	if (nonNull.every((value) => typeof value === 'boolean')) return { kind: 'scalar', protoType: 'bool' };
 	if (nonNull.every((value) => typeof value === 'string')) return { kind: 'scalar', protoType: 'string' };
-	if (nonNull.every((value) => typeof value === 'number' && Number.isFinite(value))) {
-		const numbers = nonNull as number[];
-		if (numbers.some((value) => !Number.isInteger(value))) return { kind: 'scalar', protoType: 'double' };
-		if (numbers.some((value) => value > int32Max || value < int32Min)) return { kind: 'scalar', protoType: 'int64' };
+	if (nonNull.every(isJsonNumberValue)) {
+		const numbers = nonNull.map((value) => getJsonNumberText(value) ?? String(value));
+		if (numbers.some((value) => !isIntegerText(value))) return { kind: 'scalar', protoType: 'double' };
+		if (numbers.some(isOutsideInt32)) return { kind: 'scalar', protoType: 'int64' };
 		return { kind: 'scalar', protoType: 'int32' };
 	}
 
@@ -452,7 +453,21 @@ function isProtoMessageName(value: string): boolean {
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
-	return typeof value === 'object' && value !== null && !Array.isArray(value);
+	return typeof value === 'object' && value !== null && !Array.isArray(value) && !isLosslessJsonNumber(value);
+}
+
+function isJsonNumberValue(value: unknown): boolean {
+	if (isLosslessJsonNumber(value)) return true;
+	return typeof value === 'number' && Number.isFinite(value);
+}
+
+function isIntegerText(value: string): boolean {
+	return /^-?(?:0|[1-9]\d*)$/.test(value);
+}
+
+function isOutsideInt32(value: string): boolean {
+	const integer = BigInt(value);
+	return integer > BigInt(int32Max) || integer < BigInt(int32Min);
 }
 
 function indent(depth: number): string {

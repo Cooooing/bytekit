@@ -29,4 +29,11 @@ export const yamlReference = [
 			{ syntax: '混合缩进', desc: '同一层级缩进必须保持一致' },
 		],
 	},
+	{
+		title: '数字精度',
+		items: [
+			{ syntax: 'JSON → YAML', desc: '超出 JavaScript 安全范围的 JSON 数字会作为字符串输出，避免精度丢失。' },
+			{ syntax: 'YAML → JSON', desc: 'YAML 解析器已经损坏的超大数字无法恢复原值，会转成字符串以避免继续误用。' },
+		],
+	},
 ];

@@ -1,6 +1,8 @@
+import { isLosslessJsonNumber, parseJsonLossless } from '../../../shared/losslessJson';
+
 export function evaluateJsonPath(data: unknown, path: string): { ok: true; results: unknown[] } | { ok: false; error: string } {
 	try {
-		if (typeof data === 'string') data = JSON.parse(data);
+		if (typeof data === 'string') data = parseJsonLossless(data);
 		const results = queryJsonPath(data, path);
 		return { ok: true, results };
 	} catch (e) {
@@ -22,7 +24,7 @@ function queryJsonPath(obj: unknown, path: string): unknown[] {
 		for (const item of current) {
 			if (part === '*') {
 				if (Array.isArray(item)) next.push(...item);
-				else if (typeof item === 'object' && item !== null) next.push(...Object.values(item));
+				else if (typeof item === 'object' && item !== null && !isLosslessJsonNumber(item)) next.push(...Object.values(item));
 			} else if (Array.isArray(item)) {
 				const idx = parseInt(part, 10);
 				if (!isNaN(idx) && idx >= 0 && idx < item.length) next.push(item[idx]);

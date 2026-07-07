@@ -1,7 +1,8 @@
 ﻿import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
-import type { Extension } from '@codemirror/state';
-import { EditorView } from '@codemirror/view';
+import { Prec, type Extension } from '@codemirror/state';
+import { EditorView, keymap } from '@codemirror/view';
+import { redo, undo } from '@codemirror/commands';
 import { HighlightStyle, StreamLanguage, syntaxHighlighting } from '@codemirror/language';
 import { tags } from '@lezer/highlight';
 import Badge, { type BadgeTone } from './Badge';
@@ -82,6 +83,12 @@ const basicSetup = {
 	bracketMatching: true,
 };
 
+const editingShortcutKeymap = Prec.highest(keymap.of([
+	{ key: 'Mod-z', run: undo, preventDefault: true },
+	{ key: 'Mod-y', mac: 'Mod-Shift-z', run: redo, preventDefault: true },
+	{ win: 'Ctrl-Shift-z', linux: 'Ctrl-Shift-z', run: redo, preventDefault: true },
+]));
+
 const themeHighlightStyle = HighlightStyle.define([
 	{ tag: tags.string, color: 'var(--code-token-string, #116329)' },
 	{ tag: tags.number, color: 'var(--code-token-number, #175cd3)' },
@@ -141,7 +148,12 @@ export default function CodeEditor({
 		return () => { cancelled = true; };
 	}, [language]);
 
-	const allExtensions = useMemo(() => [EditorView.lineWrapping, syntaxHighlighting(themeHighlightStyle, { fallback: true }), ...extensions], [extensions]);
+	const allExtensions = useMemo(() => [
+		editingShortcutKeymap,
+		EditorView.lineWrapping,
+		syntaxHighlighting(themeHighlightStyle, { fallback: true }),
+		...extensions,
+	], [extensions]);
 	const isReadOnly = readOnly ?? !onChange;
 	const isEmpty = value.length === 0;
 	const editorMessage = error ?? message;

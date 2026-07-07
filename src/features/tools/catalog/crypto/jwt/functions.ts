@@ -1,12 +1,14 @@
+import { parseJsonLossless, stringifyJsonLossless } from '../../../shared/losslessJson';
+
 export async function createJwt(
 	header: Record<string, unknown>,
-	payload: Record<string, unknown>,
+	payload: unknown,
 	secret?: string,
 ): Promise<{ ok: true; token: string } | { ok: false; error: string }> {
 	try {
 		const enc = new TextEncoder();
-		const headerB64 = encodeBase64Url(enc.encode(JSON.stringify(header)));
-		const payloadB64 = encodeBase64Url(enc.encode(JSON.stringify(payload)));
+		const headerB64 = encodeBase64Url(enc.encode(stringifyJsonLossless(header)));
+		const payloadB64 = encodeBase64Url(enc.encode(stringifyJsonLossless(payload)));
 
 		if (!secret || header.alg === 'none') {
 			return { ok: true, token: `${headerB64}.${payloadB64}` };
@@ -53,14 +55,14 @@ function decodeBase64Url(segment: string): string {
 
 function parseJsonSegment(segment: string, name: string): unknown {
 	try {
-		return JSON.parse(decodeBase64Url(segment)) as unknown;
+		return parseJsonLossless(decodeBase64Url(segment));
 	} catch {
 		throw new Error(`${name} 不是合法的 JSON。`);
 	}
 }
 
 export function decodeJwt(token: string): DecodedJwt {
-	const parts = token.trim().split('.');
+	const parts = token.trim().replace(/\s+/g, '').split('.');
 
 	if (parts.length < 2 || parts.length > 3 || !parts[0] || !parts[1]) {
 		return { ok: false, error: 'JWT 应包含 header、payload 和可选 signature。' };

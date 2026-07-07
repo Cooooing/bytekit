@@ -8,6 +8,7 @@ import IoWorkbench from '@features/tools/shared/IoWorkbench';
 import { useTheme } from '@themes/ThemeContext';
 import { useToolRefPanel } from '@features/tools/shared/RefPanelContext';
 import { useAppMessage, useMessageOnError } from '@shared/ui/AppMessage';
+import { containsUnsafeJsonNumber, parseJsonLossless, stringifyJsonLossless } from '../../../shared/losslessJson';
 
 const DEFAULT_HEADER = JSON.stringify({ alg: 'HS256', typ: 'JWT' }, null, 2);
 const DEFAULT_PAYLOAD = JSON.stringify({ sub: '1001', name: 'Test User', iat: Math.floor(Date.now() / 1000) }, null, 2);
@@ -39,7 +40,11 @@ const text = {
 
 function formatResult(result: ReturnType<typeof decodeJwt>) {
 	if (!result.ok) return '';
-	return JSON.stringify({ header: result.header, payload: result.payload, hasSignature: result.hasSignature }, null, 2);
+	return stringifyJsonLossless({ header: result.header, payload: result.payload, hasSignature: result.hasSignature }, 2);
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+	return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 export default function JwtDecoder() {
@@ -76,19 +81,26 @@ export default function JwtDecoder() {
 	const setSecret = useCallback((value: string) => setState((current) => ({ ...current, secret: value, createResult: '' })), [setState]);
 
 	const handleGenerate = useCallback(async () => {
-		let parsedHeader: Record<string, unknown>;
-		let parsedPayload: Record<string, unknown>;
+		let parsedHeader: unknown;
+		let parsedPayload: unknown;
 		try {
-			parsedHeader = JSON.parse(header);
+			parsedHeader = parseJsonLossless(header);
 		} catch {
 			message.error('Header: 无效的 JSON');
 			return;
 		}
 		try {
-			parsedPayload = JSON.parse(payload);
+			parsedPayload = parseJsonLossless(payload);
 		} catch {
 			message.error('Payload: 无效的 JSON');
 			return;
+		}
+		if (!isRecord(parsedHeader)) {
+			message.error('Header 必须是 JSON 对象');
+			return;
+		}
+		if (containsUnsafeJsonNumber(parsedHeader) || containsUnsafeJsonNumber(parsedPayload)) {
+			message.warning('检测到超出 JavaScript 安全范围的数字，已按原始 JSON 数字生成。');
 		}
 		const result = await createJwt(parsedHeader, parsedPayload, secret || undefined);
 		if (!result.ok) {

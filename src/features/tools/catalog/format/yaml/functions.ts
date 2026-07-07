@@ -1,5 +1,6 @@
 import yaml from 'js-yaml';
 import { fail, ok, requireTrimmedInput } from '../result';
+import { parseJsonLossless, stringifyJsonLossless, toPlainJsonValue } from '../../../shared/losslessJson';
 
 export type YamlResult =
 	| { ok: true; output: string }
@@ -10,8 +11,8 @@ export function jsonToYaml(input: string): YamlResult {
 	if (typeof trimmed !== 'string') return trimmed;
 
 	try {
-		const data = JSON.parse(trimmed);
-		return ok(yaml.dump(data, { indent: 2, lineWidth: -1 }));
+		const data = parseJsonLossless(trimmed);
+		return ok(yaml.dump(toPlainJsonValue(data), { indent: 2, lineWidth: -1 }));
 	} catch (error) {
 		return fail(error instanceof Error ? error.message : 'JSON 解析失败。');
 	}
@@ -23,7 +24,7 @@ export function yamlToJson(input: string): YamlResult {
 
 	try {
 		const data = yaml.load(trimmed);
-		return ok(JSON.stringify(data, null, 2));
+		return ok(stringifyJsonLossless(toPlainJsonValue(data), 2));
 	} catch (error) {
 		return fail(error instanceof Error ? error.message : 'YAML 解析失败。');
 	}

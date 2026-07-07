@@ -26,4 +26,11 @@ export const jwtReference = [
 			{ syntax: 'nbf', desc: '生效时间' },
 		],
 	},
+	{
+		title: '数字精度',
+		items: [
+			{ syntax: 'int64 / uint64', desc: '解析 payload 时保留超出 JavaScript 安全范围的数字，不会把用户 ID 等字段四舍五入。' },
+			{ syntax: '生成 JWT', desc: 'Header 和 Payload 中的大数字按原始 JSON 数字参与签名。' },
+		],
+	},
 ];

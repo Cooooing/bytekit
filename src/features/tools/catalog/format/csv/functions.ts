@@ -1,4 +1,5 @@
 import { fail, ok, requireTrimmedInput } from '../result';
+import { parseJsonLossless, stringifyJsonLossless } from '../../../shared/losslessJson';
 
 export type CsvResult =
 	| { ok: true; output: string }
@@ -9,7 +10,7 @@ export function jsonToCsv(input: string): CsvResult {
 	if (typeof trimmed !== 'string') return trimmed;
 
 	try {
-		const data = JSON.parse(trimmed);
+		const data = parseJsonLossless(trimmed);
 		if (!Array.isArray(data)) return fail('JSON 必须是数组。');
 		if (data.length === 0) return ok('');
 
@@ -45,7 +46,7 @@ export function csvToJson(input: string): CsvResult {
 			return obj;
 		});
 
-		return ok(JSON.stringify(result, null, 2));
+		return ok(stringifyJsonLossless(result, 2));
 	} catch (error) {
 		return fail(error instanceof Error ? error.message : 'CSV 解析失败。');
 	}

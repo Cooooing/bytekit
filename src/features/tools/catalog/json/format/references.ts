@@ -19,4 +19,11 @@ export const jsonReference = [
 			{ syntax: '无引号键', desc: '{key:"val"} 必须写成 {"key":"val"}' },
 		],
 	},
+	{
+		title: '数字精度',
+		items: [
+			{ syntax: '9007199254740991', desc: '超过 JavaScript 安全整数范围的数字会按原始 JSON 字面量保留。' },
+			{ syntax: '1.234567890123456789', desc: '高精度小数格式化和压缩时不会被转换成近似 number。' },
+		],
+	},
 ];
