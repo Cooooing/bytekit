@@ -1,4 +1,4 @@
-export type ToolCategoryId = 'encoding' | 'crypto' | 'json' | 'developer' | 'text' | 'format' | 'css';
+export type ToolCategoryId = 'encoding' | 'crypto' | 'json' | 'developer' | 'file' | 'text' | 'format' | 'css';
 
 export interface ToolCategory {
 	id: ToolCategoryId;

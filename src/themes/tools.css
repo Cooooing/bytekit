@@ -1844,3 +1844,94 @@
 	height: 0;
 	display: none;
 }
+
+.file-preview-workbench {
+	display: grid;
+	grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+	min-height: min(46rem, calc(100vh - 11rem));
+	border: 1px solid var(--border);
+	background: var(--surface);
+}
+
+.local-file-picker {
+	display: grid;
+	align-content: start;
+	gap: var(--space-3);
+	padding: var(--space-3);
+	border-right: 1px solid var(--border);
+	background: var(--surface-subtle);
+}
+
+.local-file-picker__drop {
+	display: grid;
+	justify-items: center;
+	gap: var(--space-2);
+	padding: var(--space-4) var(--space-2);
+	border: 1px dashed var(--border-strong);
+	color: var(--muted);
+	text-align: center;
+}
+
+.local-file-picker__drop strong { color: var(--text); }
+.local-file-picker__drop span { font-size: 0.75rem; overflow-wrap: anywhere; }
+.local-file-picker__drop--dragging { border-color: var(--primary); background: var(--primary-soft); }
+.local-file-picker__heading { display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; font-weight: 700; }
+.local-file-picker__list { display: grid; gap: var(--space-1); max-height: 28rem; overflow: auto; }
+.local-file-picker__empty { margin: 0; color: var(--muted); font-size: 0.78rem; line-height: 1.55; }
+.local-file-picker__item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-1); border: 1px solid transparent; }
+.local-file-picker__item--active { border-color: var(--primary); background: var(--primary-soft); }
+.local-file-picker__select { display: grid; min-width: 0; gap: 0.2rem; padding: 0.55rem; border: 0; background: transparent; color: var(--muted); text-align: left; cursor: pointer; }
+.local-file-picker__name { overflow: hidden; color: var(--text); font-size: 0.82rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.local-file-picker__select span:last-child { overflow: hidden; font-size: 0.72rem; text-overflow: ellipsis; white-space: nowrap; }
+
+.file-preview-workbench__main { display: grid; min-width: 0; grid-template-rows: auto minmax(0, 1fr); }
+.file-preview-workbench__toolbar { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border); }
+.file-preview-workbench__toolbar > div:first-child { display: grid; min-width: 0; gap: 0.15rem; }
+.file-preview-workbench__toolbar strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-preview-workbench__toolbar span { color: var(--muted); font-size: 0.78rem; }
+.file-preview-workbench__controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--space-2); }
+.file-preview-workbench__controls select,
+.file-preview-workbench__search input { min-height: 2rem; border: 1px solid var(--border); background: var(--surface); color: var(--text); }
+.file-preview-workbench__search { display: flex; align-items: center; gap: 0.35rem; padding: 0 0.45rem; border: 1px solid var(--border); }
+.file-preview-workbench__search input { width: 9rem; border: 0; outline: 0; }
+.file-preview-workbench__empty { display: grid; place-content: center; justify-items: center; min-height: 22rem; gap: var(--space-2); color: var(--muted); text-align: center; }
+.file-preview-workbench__empty strong { color: var(--text); }
+
+.document-preview { min-width: 0; min-height: 0; overflow: auto; background: color-mix(in srgb, var(--surface-subtle) 74%, #000 4%); }
+.document-preview--pdf { display: grid; justify-content: center; padding: var(--space-5); }
+.document-preview--pdf canvas { max-width: 100%; height: auto; box-shadow: var(--shadow-lg); }
+.document-preview--docx { padding: var(--space-4); }
+.document-preview--docx .docx-wrapper { padding: 0; background: transparent; }
+.document-preview--docx .docx { margin: 0 auto var(--space-4); box-shadow: var(--shadow-md); }
+.document-preview--pptx { padding: var(--space-3); }
+.document-preview--epub { display: grid; grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr); padding: 0; }
+.epub-preview__chapters { display: grid; align-content: start; max-height: 100%; overflow: auto; border-right: 1px solid var(--border); background: var(--surface-subtle); }
+.epub-preview__chapter { overflow: hidden; padding: 0.6rem 0.75rem; border: 0; border-bottom: 1px solid var(--border); background: transparent; color: var(--text); cursor: pointer; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+.epub-preview__chapter--active { background: var(--primary-soft); color: var(--primary-strong); font-weight: 700; }
+.document-preview--epub iframe { width: 100%; min-height: 38rem; border: 0; background: #fff; }
+
+.spreadsheet-preview__tabs { display: flex; gap: var(--space-2); overflow: auto; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border); }
+.spreadsheet-preview { min-height: 0; overflow: auto; }
+.spreadsheet-preview table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.82rem; }
+.spreadsheet-preview th { position: sticky; top: 0; z-index: 1; background: var(--surface-subtle); color: var(--text); font-weight: 700; }
+.spreadsheet-preview th, .spreadsheet-preview td { max-width: 18rem; min-width: 7rem; padding: 0; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.spreadsheet-preview td button { display: flex; width: 100%; min-height: 2.25rem; align-items: center; justify-content: space-between; gap: var(--space-2); padding: 0.45rem 0.55rem; border: 0; background: transparent; color: var(--text); cursor: copy; text-align: left; }
+.spreadsheet-preview td button:hover { background: var(--primary-soft); }
+.spreadsheet-preview td button svg { flex: none; color: var(--muted); opacity: 0; }
+.spreadsheet-preview td button:hover svg { opacity: 1; }
+
+.local-file-picker__list::-webkit-scrollbar,
+.document-preview::-webkit-scrollbar,
+.spreadsheet-preview::-webkit-scrollbar,
+.spreadsheet-preview__tabs::-webkit-scrollbar { width: 0; height: 0; display: none; }
+
+@media (max-width: 900px) {
+	.file-preview-workbench { grid-template-columns: 1fr; }
+	.local-file-picker { border-right: 0; border-bottom: 1px solid var(--border); }
+	.local-file-picker__list { max-height: 11rem; }
+	.file-preview-workbench__toolbar { align-items: flex-start; flex-direction: column; }
+	.file-preview-workbench__controls { justify-content: flex-start; }
+	.document-preview--epub { grid-template-columns: 1fr; }
+	.epub-preview__chapters { display: flex; max-height: 3rem; overflow: auto; border-right: 0; border-bottom: 1px solid var(--border); }
+	.epub-preview__chapter { min-width: 10rem; border-bottom: 0; border-right: 1px solid var(--border); }
+}

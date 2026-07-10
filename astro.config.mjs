@@ -23,6 +23,7 @@ export default defineConfig({
 	vite: {
 		plugins: [tailwindcss()],
 		resolve: {
+			dedupe: ['react', 'react-dom'],
 			alias: {
 				'@app': fileURLToPath(new URL('./src/app', import.meta.url)),
 				'@features': fileURLToPath(new URL('./src/features', import.meta.url)),

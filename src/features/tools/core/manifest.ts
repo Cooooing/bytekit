@@ -12,6 +12,8 @@ import { definition as ipInfoDef } from '../catalog/developer/ip-info/definition
 import { definition as jsonToProtoDef } from '../catalog/developer/json-to-proto/definition';
 import { definition as protoToJsonDef } from '../catalog/developer/proto-to-json/definition';
 import { definition as cronDef } from '../catalog/developer/cron/definition';
+import { definition as documentPreviewDef, category as fileCat } from '../catalog/file/document-preview/definition';
+import { definition as spreadsheetPreviewDef } from '../catalog/file/spreadsheet-preview/definition';
 import { definition as colorDef, category as textCat } from '../catalog/text/color/definition';
 import { definition as urlDef } from '../catalog/encoding/url/definition';
 import { definition as qrcodeDef } from '../catalog/encoding/qrcode/definition';
@@ -43,6 +45,7 @@ export interface ToolManifestEntry {
 
 export const toolCategories: ToolCategory[] = [
 	developerCat,
+	fileCat,
 	encodingCat,
 	cryptoCat,
 	jsonCat,
@@ -63,6 +66,8 @@ export const toolEntries: ToolManifestEntry[] = [
 	{ definition: jsonToProtoDef, loadComponent: () => import('../catalog/developer/json-to-proto/component') },
 	{ definition: protoToJsonDef, loadComponent: () => import('../catalog/developer/proto-to-json/component') },
 	{ definition: cronDef, loadComponent: () => import('../catalog/developer/cron/component') },
+	{ definition: documentPreviewDef, loadComponent: () => import('../catalog/file/document-preview/component') },
+	{ definition: spreadsheetPreviewDef, loadComponent: () => import('../catalog/file/spreadsheet-preview/component') },
 	{ definition: colorDef, loadComponent: () => import('../catalog/text/color/component') },
 	{ definition: urlDef, loadComponent: () => import('../catalog/encoding/url/component') },
 	{ definition: qrcodeDef, loadComponent: () => import('../catalog/encoding/qrcode/component') },
