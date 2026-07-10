@@ -36,6 +36,8 @@
 		"astro": "^6.4.8",
 		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
+		"codex-cli": "^0.1.3",
+		"hash-wasm": "^4.12.0",
 		"js-yaml": "^4.2.0",
 		"jsqr": "^1.4.0",
 		"lossless-json": "^4.3.0",

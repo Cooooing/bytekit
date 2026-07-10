@@ -1239,6 +1239,138 @@
 	color: var(--text);
 }
 
+.hash-tool {
+	align-content: start;
+}
+
+.hash-mode-tabs {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--space-1);
+	padding: var(--space-1);
+	border-radius: var(--radius-md);
+	background: var(--surface-subtle);
+}
+
+.hash-mode-tabs__item {
+	min-height: 2.5rem;
+	border: 0;
+	border-radius: var(--radius-sm);
+	background: transparent;
+	color: var(--muted-strong);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.hash-mode-tabs__item--active {
+	background: var(--surface);
+	box-shadow: 0 0.5rem 1rem rgba(16, 24, 24, 0.08);
+	color: var(--text);
+}
+
+.hash-algorithm-grid,
+.hash-file-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+}
+
+.hash-muted {
+	margin: 0;
+	color: var(--muted);
+	font-size: 0.8125rem;
+	line-height: 1.55;
+}
+
+.hash-result {
+	gap: var(--space-4);
+}
+
+.hash-result__stack,
+.hash-copy-list,
+.hash-file-list {
+	display: grid;
+	gap: var(--space-2);
+	min-width: 0;
+}
+
+.hash-file-card {
+	display: grid;
+	gap: var(--space-3);
+	padding: var(--space-3);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-md);
+	background: var(--surface);
+	min-width: 0;
+}
+
+.hash-file-card__head {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--space-2);
+	min-width: 0;
+}
+
+.hash-file-card__meta {
+	display: grid;
+	gap: 0.2rem;
+	min-width: 0;
+}
+
+.hash-file-card__meta strong,
+.hash-file-card__meta span {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.hash-file-card__meta strong {
+	color: var(--text);
+	font-size: 0.9375rem;
+}
+
+.hash-file-card__meta span {
+	color: var(--muted);
+	font-size: 0.8125rem;
+}
+
+.hash-file-card__actions {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: var(--space-1);
+}
+
+.hash-progress {
+	display: grid;
+	gap: var(--space-1);
+	color: var(--muted);
+	font-size: 0.8125rem;
+}
+
+.hash-progress__bar {
+	height: 0.5rem;
+	border-radius: var(--radius-pill);
+	background: var(--surface-subtle);
+	overflow: hidden;
+}
+
+.hash-progress__bar span {
+	display: block;
+	height: 100%;
+	border-radius: inherit;
+	background: var(--primary);
+	transition: width var(--motion-fast) var(--ease-standard);
+}
+
+.hash-error {
+	margin: 0;
+	color: var(--semantic-danger);
+	font-size: 0.8125rem;
+}
+
 .css-unit-option {
 	min-height: 2rem;
 	padding: 0 var(--space-3);

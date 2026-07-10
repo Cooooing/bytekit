@@ -2,7 +2,8 @@ import { Search } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type MiniSearch from 'minisearch';
 import type { SearchResult } from 'minisearch';
-import { getCategoryById, getToolIdFromPathname, isToolPath, tools } from '../core/registry';
+import { getCategoryById, getToolById, tools } from '../core/registry';
+import ToolLink from '../shared/ToolLink';
 
 interface ToolSearchProps {
 	variant?: 'header' | 'hero' | 'sidebar';
@@ -128,15 +129,6 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 		}
 	}, [showResults, results.length, activeIndex]);
 
-	const selectTool = useCallback((href: string) => {
-		const toolId = getToolIdFromPathname(href);
-		if (isToolPath(window.location.pathname) && toolId) {
-			window.dispatchEvent(new CustomEvent('bytekit:select-tool', { detail: { toolId } }));
-			return;
-		}
-		window.location.href = import.meta.env.BASE_URL.replace(/\/?$/, '/') + href;
-	}, []);
-
 	useEffect(() => {
 		if (activeIndex < 0 || !resultsRef.current) return;
 		const items = resultsRef.current.querySelectorAll('[role="option"]');
@@ -167,12 +159,7 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 						if (normalizedQ && miniSearchRef.current) {
 							const currentResults = miniSearchRef.current.search(normalizedQ).slice(0, 8);
 							const selected = currentResults[activeIndexRef.current];
-							if (selected) {
-								selectTool(String(selected.href));
-								setQuery('');
-								setActiveIndex(-1);
-								input.blur();
-							}
+							if (selected) document.getElementById(`tool-search-option-${selected.id}`)?.click();
 						}
 					}
 					break;
@@ -186,7 +173,7 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 		}
 		input.addEventListener('keydown', handleKeyDown);
 		return () => input.removeEventListener('keydown', handleKeyDown);
-	}, [selectTool]);
+	}, []);
 
 	useEffect(() => {
 		if (variant !== 'header') return;
@@ -217,7 +204,11 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 					ref={inputRef}
 					type="text"
 					value={query}
-					onChange={(event) => setQuery(event.target.value)}
+					onChange={(event) => {
+						void initSearch();
+						setIsFocused(true);
+						setQuery(event.target.value);
+					}}
 					onFocus={() => { initSearch(); setIsFocused(true); }}
 					onBlur={() => setTimeout(() => setIsFocused(false), 150)}
 					placeholder={variant === 'hero' ? `搜索工具（${shortcutHint}）` : '搜索工具...'}
@@ -232,24 +223,28 @@ export default function ToolSearch({ variant = 'header' }: ToolSearchProps) {
 			</label>
 			{showResults ? (
 				<div ref={resultsRef} className="tool-search__results" id={listId} role="listbox">
-					{results.length > 0 ? (results as ToolSearchResult[]).map((result, index) => (
-						<button
-							key={result.id}
-							id={`tool-search-option-${result.id}`}
-							className={`tool-search__result${index === activeIndex ? ' tool-search__result--active' : ''}`}
-							type="button"
-							role="option"
-							aria-selected={index === activeIndex}
-							onMouseDown={(event) => {
-								event.preventDefault();
-								selectTool(String(result.href));
-								setQuery('');
-							}}
-						>
-							<span className="tool-search__result-main">{String(result.name)}</span>
-							<span className="tool-search__result-meta">{String(result.category)} · {String(result.description)}</span>
-						</button>
-					)) : <div className="tool-search__empty">没有匹配的工具</div>}
+					{results.length > 0 ? (results as ToolSearchResult[]).map((result, index) => {
+						const tool = getToolById(String(result.id));
+						if (!tool) return null;
+
+						return (
+							<ToolLink
+								key={result.id}
+								id={`tool-search-option-${result.id}`}
+								className={`tool-search__result${index === activeIndex ? ' tool-search__result--active' : ''}`}
+								tool={tool}
+								role="option"
+								aria-selected={index === activeIndex}
+								onClick={() => {
+									setQuery('');
+									setActiveIndex(-1);
+								}}
+							>
+								<span className="tool-search__result-main">{String(result.name)}</span>
+								<span className="tool-search__result-meta">{String(result.category)} · {String(result.description)}</span>
+							</ToolLink>
+						);
+					}) : <div className="tool-search__empty">没有匹配的工具</div>}
 				</div>
 			) : null}
 		</div>

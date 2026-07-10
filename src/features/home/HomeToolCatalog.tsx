@@ -1,6 +1,7 @@
 ﻿import { Star } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useFavorites } from './useFavorites';
+import ToolLink from '@features/tools/shared/ToolLink';
 import { getToolsByCategory, toolCategories, tools, type ToolCategoryId, type ToolDefinition } from '@features/tools/core/registry';
 
 type ActiveTab = 'all' | 'favorites' | ToolCategoryId;
@@ -47,10 +48,13 @@ function ToolCard({ tool, isFavorite, onToggleFavorite }: { tool: ToolDefinition
 	return (
 		<article className="home-tool-card">
 			<FavoriteButton active={isFavorite} toolName={tool.name} onClick={onToggleFavorite} />
-			<a className="home-tool-card__link" href={tool.href}>
+			<ToolLink
+				className="home-tool-card__link"
+				tool={tool}
+			>
 				<h3 className="home-tool-card__name">{tool.name}</h3>
 				<p className="home-tool-card__desc">{tool.description}</p>
-			</a>
+			</ToolLink>
 		</article>
 	);
 }

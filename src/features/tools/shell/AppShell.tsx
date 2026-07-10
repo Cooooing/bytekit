@@ -1,6 +1,6 @@
-﻿import { Component, useCallback, useEffect, useMemo, useRef, useState, Suspense, type ReactNode } from 'react';
-import { getToolById, getToolHref, getToolIdFromPathname, getToolsByCategory, tools } from '../core/registry';
-import { preloadToolComponent, toolComponents } from '../core/components';
+﻿import { Component, useEffect, useMemo, useState, type ComponentType, type ReactNode } from 'react';
+import { getToolById, getToolsByCategory, tools } from '../core/registry';
+import { loadToolComponent, preloadToolComponent } from '../core/components';
 import { RefPanelProvider, type RefContent } from '../shared/RefPanelContext';
 import ReferencePanel from '@features/tools/shared/ReferencePanel';
 import ToolSidebar from './ToolSidebar';
@@ -43,10 +43,10 @@ class ToolErrorBoundary extends Component<ToolErrorBoundaryProps, ToolErrorBound
 }
 
 export default function AppShell({ initialToolId }: AppShellProps) {
-	const [activeToolId, setActiveToolId] = useState(initialToolId);
-	const activeToolIdRef = useRef(activeToolId);
+	const [activeToolId] = useState(initialToolId);
 	const activeTool = useMemo(() => getToolById(activeToolId) ?? tools[0], [activeToolId]);
-	const ToolComponent = toolComponents[activeTool.id];
+	const [ToolComponent, setToolComponent] = useState<ComponentType | null>(null);
+	const [hasLoadError, setHasLoadError] = useState(false);
 	const [refContent, setRefContent] = useState<RefContent | null>(null);
 	const refPanelValue = useMemo(() => ({ setRefContent }), [setRefContent]);
 	const [refCollapsed, setRefCollapsed] = useState(false);
@@ -64,20 +64,25 @@ export default function AppShell({ initialToolId }: AppShellProps) {
 	}, [refCollapsed]);
 
 	useEffect(() => {
-		activeToolIdRef.current = activeToolId;
-	}, [activeToolId]);
-
-	const selectTool = useCallback((toolId: string) => {
-		const nextTool = getToolById(toolId);
-		if (!nextTool || toolId === activeToolIdRef.current) return;
-		setActiveToolId(toolId);
-		window.history.pushState({ toolId }, '', getToolHref(nextTool));
-		document.title = `${nextTool.name} - Bytekit`;
-	}, []);
-
-	const previewTool = useCallback((toolId: string) => {
-		preloadToolComponent(toolId);
-	}, []);
+		let cancelled = false;
+		setToolComponent(null);
+		setHasLoadError(false);
+		const module = loadToolComponent(activeTool.id);
+		if (!module) {
+			setHasLoadError(true);
+			return;
+		}
+		module
+			.then((loaded) => {
+				if (!cancelled) setToolComponent(() => loaded.default);
+			})
+			.catch(() => {
+				if (!cancelled) setHasLoadError(true);
+			});
+		return () => {
+			cancelled = true;
+		};
+	}, [activeTool.id]);
 
 	useEffect(() => {
 		const relatedTools = getToolsByCategory(activeTool.category)
@@ -92,26 +97,9 @@ export default function AppShell({ initialToolId }: AppShellProps) {
 		return () => window.clearTimeout(timer);
 	}, [activeTool.category, activeTool.id]);
 
-	useEffect(() => {
-		function handlePopState() {
-			const nextToolId = getToolIdFromPathname(window.location.pathname);
-			if (getToolById(nextToolId)) setActiveToolId(nextToolId);
-		}
-		function handleSelectTool(event: Event) {
-			const customEvent = event as CustomEvent<{ toolId: string }>;
-			selectTool(customEvent.detail.toolId);
-		}
-		window.addEventListener('popstate', handlePopState);
-		window.addEventListener('bytekit:select-tool', handleSelectTool);
-		return () => {
-			window.removeEventListener('popstate', handlePopState);
-			window.removeEventListener('bytekit:select-tool', handleSelectTool);
-		};
-	}, [selectTool]);
-
 	return (
 		<div className="tool-app-shell">
-			<ToolSidebar activeToolId={activeTool.id} onSelectTool={selectTool} onPreviewTool={previewTool} />
+			<ToolSidebar activeToolId={activeTool.id} />
 			<section className="tool-app-content">
 				<header className="tool-app-head">
 					<div>
@@ -122,9 +110,9 @@ export default function AppShell({ initialToolId }: AppShellProps) {
 				<RefPanelProvider value={refPanelValue}>
 					<div className="tool-app-body">
 						<ToolErrorBoundary key={activeTool.id}>
-							<Suspense fallback={<div className="state-box">加载中...</div>}>
-								{ToolComponent ? <ToolComponent /> : <div className="state-box">工具组件未注册。</div>}
-							</Suspense>
+							{hasLoadError ? (
+								<div className="state-box state-box--error" role="alert">工具资源加载失败。</div>
+							) : ToolComponent ? <ToolComponent /> : <div className="state-box" role="status" aria-live="polite">加载中...</div>}
 						</ToolErrorBoundary>
 					</div>
 				</RefPanelProvider>

@@ -1,11 +1,10 @@
 import { ChevronDown, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { getToolsByCategory, toolCategories, tools } from '../core/registry';
+import ToolLink from '../shared/ToolLink';
 
 interface ToolSidebarProps {
 	activeToolId: string;
-	onSelectTool: (toolId: string) => void;
-	onPreviewTool?: (toolId: string) => void;
 }
 
 type OpenState = Record<string, boolean>;
@@ -18,7 +17,7 @@ function readCollapsed() {
 	return false;
 }
 
-export default function ToolSidebar({ activeToolId, onSelectTool, onPreviewTool }: ToolSidebarProps) {
+export default function ToolSidebar({ activeToolId }: ToolSidebarProps) {
 	const [openState, setOpenState] = useState<OpenState>(readOpenState);
 	const [collapsed, setCollapsed] = useState(readCollapsed);
 	const sidebarRef = useRef<HTMLElement | null>(null);
@@ -105,16 +104,13 @@ export default function ToolSidebar({ activeToolId, onSelectTool, onPreviewTool 
 							{isOpen ? (
 								<div className="tool-sidebar__links">
 									{categoryTools.map((tool) => (
-										<button
+										<ToolLink
 											key={tool.id}
 											className={tool.id === activeToolId ? 'tool-sidebar__link tool-sidebar__link--active' : 'tool-sidebar__link'}
-											type="button"
-											onClick={() => onSelectTool(tool.id)}
-											onFocus={() => onPreviewTool?.(tool.id)}
-											onMouseEnter={() => onPreviewTool?.(tool.id)}
+											tool={tool}
 										>
 											{tool.name}
-										</button>
+										</ToolLink>
 									))}
 								</div>
 							) : null}

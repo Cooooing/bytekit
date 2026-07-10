@@ -1,0 +1,24 @@
+<div class="site-navigation-progress" aria-hidden="true"></div>
+
+<script is:inline>
+	(() => {
+		if (window.__bytekitNavigationProgressBound) return;
+		window.__bytekitNavigationProgressBound = true;
+
+		const finish = () => {
+			delete document.documentElement.dataset.navigation;
+		};
+
+		document.addEventListener('astro:before-preparation', () => {
+			document.documentElement.dataset.navigation = 'loading';
+		});
+		document.addEventListener('astro:before-swap', (event) => {
+			const currentTheme = document.documentElement.dataset.theme;
+			const currentThemeId = document.documentElement.dataset.themeId;
+			if (currentTheme) event.newDocument.documentElement.dataset.theme = currentTheme;
+			if (currentThemeId) event.newDocument.documentElement.dataset.themeId = currentThemeId;
+		});
+		document.addEventListener('astro:after-swap', finish);
+		document.addEventListener('astro:page-load', finish);
+	})();
+</script>

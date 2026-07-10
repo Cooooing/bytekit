@@ -3,9 +3,9 @@ import type { ToolDefinition } from '../../types';
 export const definition: ToolDefinition = {
 	id: 'hash',
 	href: 'tools/developer/hash',
-	name: 'Hash 生成器',
+	name: 'Hash 计算与校验',
 	shortName: 'Hash',
-	description: '计算 MD5、SHA-1、SHA-256、SHA-512 哈希值。',
+	description: '计算文本和文件的 SHA、CRC32 摘要，并支持校验值比对。',
 	category: 'developer',
-	keywords: ['hash', 'md5', 'sha', 'sha256', 'sha512', '哈希', '摘要', 'digest'],
+	keywords: ['hash', 'sha', 'sha1', 'sha256', 'sha512', 'crc32', '哈希', '摘要', '校验', 'digest'],
 };

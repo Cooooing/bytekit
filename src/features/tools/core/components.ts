@@ -1,4 +1,4 @@
-import { lazy, type ComponentType, type LazyExoticComponent } from 'react';
+import type { ComponentType } from 'react';
 import { toolEntries } from './manifest';
 
 type ToolComponent = ComponentType;
@@ -17,12 +17,7 @@ function loadToolComponent(toolId: string): ToolComponentModule | undefined {
 	return promise;
 }
 
-export const toolComponents = Object.fromEntries(
-	toolEntries.map((entry) => [
-		entry.definition.id,
-		lazy(() => loadToolComponent(entry.definition.id) ?? Promise.reject(new Error(`工具组件未注册：${entry.definition.id}`))),
-	]),
-) as Record<string, LazyExoticComponent<ToolComponent>>;
+export { loadToolComponent };
 
 export function preloadToolComponent(toolId: string) {
 	void loadToolComponent(toolId);

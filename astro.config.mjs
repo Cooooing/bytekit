@@ -50,6 +50,7 @@ export default defineConfig({
 				'marked',
 				'minisearch',
 				'pinyin-pro',
+				'protobufjs',
 				'qrcode',
 			],
 		},

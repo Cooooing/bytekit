@@ -1,6 +1,8 @@
 ﻿---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import AppHeader from '../app/shell/AppHeader.astro';
+import NavigationProgress from '../app/shell/NavigationProgress.astro';
 import ThemeManager from '../themes/ThemeManager';
 
 interface Props {
@@ -36,8 +38,10 @@ const mainClassName = ['site-main', mainClass].filter(Boolean).join(' ');
 		<meta name="description" content={description} />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<ClientRouter />
 	</head>
 	<body>
+		<NavigationProgress />
 		<ThemeManager client:load>
 			<AppHeader />
 			<main class={mainClassName}>
