@@ -1,6 +1,6 @@
 ﻿import { Component, useEffect, useMemo, useState, type ComponentType, type ReactNode } from 'react';
-import { getToolById, getToolsByCategory, tools } from '../core/registry';
-import { loadToolComponent, preloadToolComponent } from '../core/components';
+import { getToolById, tools } from '../core/registry';
+import { loadToolComponent } from '../core/components';
 import { RefPanelProvider, type RefContent } from '../shared/RefPanelContext';
 import ReferencePanel from '@features/tools/shared/ReferencePanel';
 import ToolSidebar from './ToolSidebar';
@@ -83,19 +83,6 @@ export default function AppShell({ initialToolId }: AppShellProps) {
 			cancelled = true;
 		};
 	}, [activeTool.id]);
-
-	useEffect(() => {
-		const relatedTools = getToolsByCategory(activeTool.category)
-			.filter((tool) => tool.id !== activeTool.id)
-			.slice(0, 3);
-		const preload = () => relatedTools.forEach((tool) => preloadToolComponent(tool.id));
-		if ('requestIdleCallback' in window) {
-			const id = window.requestIdleCallback(preload, { timeout: 1200 });
-			return () => window.cancelIdleCallback(id);
-		}
-		const timer = window.setTimeout(preload, 600);
-		return () => window.clearTimeout(timer);
-	}, [activeTool.category, activeTool.id]);
 
 	return (
 		<div className="tool-app-shell">

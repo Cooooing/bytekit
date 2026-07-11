@@ -3,6 +3,7 @@ import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import AppHeader from '../app/shell/AppHeader.astro';
 import NavigationProgress from '../app/shell/NavigationProgress.astro';
+import PwaUpdatePrompt from '../app/shell/PwaUpdatePrompt';
 import ThemeManager from '../themes/ThemeManager';
 
 interface Props {
@@ -48,5 +49,6 @@ const mainClassName = ['site-main', mainClass].filter(Boolean).join(' ');
 				<slot />
 			</main>
 		</ThemeManager>
+		<PwaUpdatePrompt client:load />
 	</body>
 </html>

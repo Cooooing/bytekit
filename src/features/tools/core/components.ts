@@ -1,5 +1,6 @@
 import type { ComponentType } from 'react';
 import { toolEntries } from './manifest';
+import { preloadCodeEditor } from '../shared/CodeEditor';
 
 type ToolComponent = ComponentType;
 type ToolComponentModule = Promise<{ default: ToolComponent }>;
@@ -21,4 +22,14 @@ export { loadToolComponent };
 
 export function preloadToolComponent(toolId: string) {
 	void loadToolComponent(toolId);
+}
+
+const codeEditorToolIds = new Set([
+	'base64', 'css-minify', 'csv', 'html-entity', 'html-format', 'javascript-escape', 'json', 'jsonpath',
+	'json-to-proto', 'jwt', 'markdown', 'proto-to-json', 'word-count', 'xml', 'yaml',
+]);
+
+export function preloadToolResources(toolId: string) {
+	preloadToolComponent(toolId);
+	if (codeEditorToolIds.has(toolId)) preloadCodeEditor();
 }
