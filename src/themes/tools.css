@@ -304,6 +304,55 @@
 	background: repeating-linear-gradient(180deg, var(--surface-subtle) 0 2.1rem, var(--border-subtle) 2.1rem 2.15rem);
 }
 
+.mathjax-actions,
+.mathjax-actions__commands {
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+.mathjax-actions {
+	width: 100%;
+	justify-content: flex-end;
+}
+
+.mathjax-preview {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	height: 100%;
+	min-height: 0;
+	border: 1px solid var(--border);
+	background: var(--surface);
+}
+
+.mathjax-preview__toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-2);
+	padding: 0.625rem 0.75rem;
+	border-bottom: 1px solid var(--border);
+}
+
+.mathjax-preview__formula {
+	display: flex;
+	align-items: center;
+	min-width: 0;
+	min-height: 0;
+	padding: var(--space-4);
+	overflow: auto;
+	scrollbar-width: none;
+}
+
+.mathjax-preview__formula::-webkit-scrollbar { display: none; }
+.mathjax-preview__formula--block { justify-content: center; }
+.mathjax-preview__svg { display: flex; flex: none; color: var(--text); }
+.mathjax-preview__svg svg { display: block; max-width: none; height: auto; }
+
+@media (max-width: 40rem) {
+	.mathjax-actions__commands { width: 100%; flex-wrap: wrap; }
+}
+
 .pwa-update-prompt {
 	position: fixed;
 	left: 50%;
@@ -1595,7 +1644,7 @@
 	accent-color: var(--primary);
 }
 
-@media (max-width: 64rem) {
+@media (max-width: 80rem) {
 	.io-workbench {
 		height: auto;
 	}
@@ -1648,6 +1697,7 @@
 		width: auto;
 		max-width: 100%;
 		min-width: 0;
+		height: auto;
 		max-height: none;
 		border-right: 0;
 		border-bottom: 1px solid var(--border);
@@ -1883,7 +1933,9 @@
 .file-preview-workbench {
 	display: grid;
 	grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
-	min-height: min(46rem, calc(100vh - 11rem));
+	height: min(46rem, calc(100vh - 11rem));
+	min-height: 32rem;
+	overflow: hidden;
 	border: 1px solid var(--border);
 	background: var(--surface);
 }
@@ -1892,6 +1944,8 @@
 	display: grid;
 	align-content: start;
 	gap: var(--space-3);
+	min-height: 0;
+	overflow: hidden;
 	padding: var(--space-3);
 	border-right: 1px solid var(--border);
 	background: var(--surface-subtle);
@@ -1911,7 +1965,7 @@
 .local-file-picker__drop span { font-size: 0.75rem; overflow-wrap: anywhere; }
 .local-file-picker__drop--dragging { border-color: var(--primary); background: var(--primary-soft); }
 .local-file-picker__heading { display: flex; align-items: center; justify-content: space-between; font-size: 0.82rem; font-weight: 700; }
-.local-file-picker__list { display: grid; gap: var(--space-1); max-height: 28rem; overflow: auto; }
+.local-file-picker__list { display: grid; gap: var(--space-1); min-height: 0; overflow: auto; }
 .local-file-picker__empty { margin: 0; color: var(--muted); font-size: 0.78rem; line-height: 1.55; }
 .local-file-picker__item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-1); border: 1px solid transparent; }
 .local-file-picker__item--active { border-color: var(--primary); background: var(--primary-soft); }
@@ -1919,7 +1973,7 @@
 .local-file-picker__name { overflow: hidden; color: var(--text); font-size: 0.82rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .local-file-picker__select span:last-child { overflow: hidden; font-size: 0.72rem; text-overflow: ellipsis; white-space: nowrap; }
 
-.file-preview-workbench__main { display: grid; min-width: 0; grid-template-rows: auto minmax(0, 1fr); }
+.file-preview-workbench__main { display: grid; min-width: 0; min-height: 0; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
 .file-preview-workbench__toolbar { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border); }
 .file-preview-workbench__toolbar > div:first-child { display: grid; min-width: 0; gap: 0.15rem; }
 .file-preview-workbench__toolbar strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1945,7 +1999,9 @@
 .epub-preview__chapter--active { background: var(--primary-soft); color: var(--primary-strong); font-weight: 700; }
 .document-preview--epub iframe { width: 100%; min-height: 38rem; border: 0; background: #fff; }
 
-.spreadsheet-preview__tabs { display: flex; gap: var(--space-2); overflow: auto; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border); }
+.spreadsheet-preview__body { display: grid; min-height: 0; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
+.spreadsheet-preview__tabs { display: flex; align-items: center; gap: var(--space-2); overflow: auto; padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border); }
+.spreadsheet-preview__tabs > * { flex: none; }
 .spreadsheet-preview { min-height: 0; overflow: auto; }
 .spreadsheet-preview table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: 0.82rem; }
 .spreadsheet-preview th { position: sticky; top: 0; z-index: 1; background: var(--surface-subtle); color: var(--text); font-weight: 700; }

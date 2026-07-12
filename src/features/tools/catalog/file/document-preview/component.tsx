@@ -95,12 +95,14 @@ export default function DocumentPreviewTool() {
 	useEffect(() => {
 		if (!active || active.extension !== 'pdf') return;
 		let cancelled = false;
+		let pdfDocument: { destroy?: () => Promise<void> | void } | null = null;
 		(async () => {
 			try {
 				const pdfjs = await import('pdfjs-dist/build/pdf.mjs');
 				pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.mjs', import.meta.url).toString();
 				const document = await pdfjs.getDocument({ data: new Uint8Array(await active.file.arrayBuffer()) }).promise;
-				if (cancelled) { document.destroy(); return; }
+				pdfDocument = document;
+				if (cancelled) return;
 				setPageCount(document.numPages);
 				const pdfPage = await document.getPage(page);
 				const viewport = pdfPage.getViewport({ scale: zoom });
@@ -109,8 +111,15 @@ export default function DocumentPreviewTool() {
 				canvas.width = Math.ceil(viewport.width); canvas.height = Math.ceil(viewport.height);
 				await pdfPage.render({ canvasContext: canvas.getContext('2d')!, viewport }).promise;
 				if (!cancelled) updateFile(active.id, { status: 'ready' });
-				document.destroy();
-			} catch (error) { if (!cancelled) { updateFile(active.id, { status: 'error' }); message.error(`无法预览 ${active.file.name}`); } }
+			} catch (error) {
+				if (!cancelled) {
+					const detail = error instanceof Error ? error.message : '文件解析失败。';
+					updateFile(active.id, { status: 'error', error: detail });
+					message.error(`无法预览 ${active.file.name}：${detail}`);
+				}
+			} finally {
+				if (pdfDocument?.destroy) await Promise.resolve(pdfDocument.destroy()).catch(() => undefined);
+			}
 		})();
 		return () => { cancelled = true; };
 		// eslint-disable-next-line react-hooks/exhaustive-deps

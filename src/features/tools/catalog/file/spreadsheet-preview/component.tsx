@@ -94,10 +94,10 @@ export default function SpreadsheetPreviewTool() {
 						<label className="file-preview-workbench__search"><Search size={16} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索单元格" aria-label="搜索单元格" /></label>
 					</div>
 				</header>
-				{selectedSheet ? <>
+				{selectedSheet ? <div className="spreadsheet-preview__body">
 					<div className="spreadsheet-preview__tabs">{sheets.map((sheet, index) => <Button key={sheet.name} variant={sheetIndex === index ? 'primary' : 'secondary'} size="sm" onClick={() => { setSheetIndex(index); setScrollTop(0); }}>{sheet.name}</Button>)}</div>
 					<div className="spreadsheet-preview" onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}><table><thead><tr>{(filteredRows[0] ?? []).map((cell, index) => <th key={index}>{cell || `列 ${index + 1}`}</th>)}</tr></thead><tbody>{visibleStart ? <tr aria-hidden="true"><td colSpan={filteredRows[0]?.length ?? 1} style={{ height: visibleStart * rowHeight, padding: 0, border: 0 }} /></tr> : null}{visibleRows.map((row, rowIndex) => <tr key={visibleStart + rowIndex}>{row.map((cell, cellIndex) => <td key={cellIndex}><button type="button" title="复制单元格" onClick={() => void copyCell(cell)}>{cell}<Copy size={12} aria-hidden="true" /></button></td>)}</tr>)}{visibleEnd < filteredRows.length - 1 ? <tr aria-hidden="true"><td colSpan={filteredRows[0]?.length ?? 1} style={{ height: (filteredRows.length - 1 - visibleEnd) * rowHeight, padding: 0, border: 0 }} /></tr> : null}</tbody></table></div>
-				</> : <div className="file-preview-workbench__empty"><Search size={28} /><strong>选择或拖入表格</strong><span>支持 XLS、XLSX、XLSM、XLSB、ODS 与 CSV，本地解析，不执行宏。</span></div>}
+				</div> : <div className="file-preview-workbench__empty"><Search size={28} /><strong>选择或拖入表格</strong><span>支持 XLS、XLSX、XLSM、XLSB、ODS 与 CSV，本地解析，不执行宏。</span></div>}
 			</div>
 		</section>
 	);

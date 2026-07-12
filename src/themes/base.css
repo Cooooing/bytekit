@@ -921,6 +921,7 @@ html[data-navigation="loading"] .site-navigation-progress {
 .tool-sidebar {
 	position: sticky;
 	top: calc(3.75rem + var(--space-2));
+	align-self: start;
 	display: grid;
 	grid-template-rows: auto minmax(0, 1fr);
 	align-content: start;

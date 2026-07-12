@@ -95,6 +95,11 @@ export default defineConfig({
 		optimizeDeps: {
 			include: [
 				'@radix-ui/react-toast',
+				'astro/virtual-modules/transitions-events.js',
+				'astro/virtual-modules/transitions-router.js',
+				'astro/virtual-modules/transitions-swap-functions.js',
+				'astro/virtual-modules/transitions-types.js',
+				'astro/virtual-modules/transitions.js',
 				'lucide-react',
 				'minisearch',
 			],

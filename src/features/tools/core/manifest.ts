@@ -20,6 +20,7 @@ import { definition as qrcodeDef } from '../catalog/encoding/qrcode/definition';
 import { definition as regexDef } from '../catalog/text/regex/definition';
 import { definition as diffDef } from '../catalog/text/diff/definition';
 import { definition as markdownDef } from '../catalog/text/markdown/definition';
+import { definition as mathjaxDef } from '../catalog/text/mathjax/definition';
 import { definition as caseDef } from '../catalog/text/case/definition';
 import { definition as csvDef, category as formatCat } from '../catalog/format/csv/definition';
 import { definition as yamlDef } from '../catalog/format/yaml/definition';
@@ -74,6 +75,7 @@ export const toolEntries: ToolManifestEntry[] = [
 	{ definition: regexDef, loadComponent: () => import('../catalog/text/regex/component') },
 	{ definition: diffDef, loadComponent: () => import('../catalog/text/diff/component') },
 	{ definition: markdownDef, loadComponent: () => import('../catalog/text/markdown/component') },
+	{ definition: mathjaxDef, loadComponent: () => import('../catalog/text/mathjax/component') },
 	{ definition: caseDef, loadComponent: () => import('../catalog/text/case/component') },
 	{ definition: csvDef, loadComponent: () => import('../catalog/format/csv/component') },
 	{ definition: yamlDef, loadComponent: () => import('../catalog/format/yaml/component') },
