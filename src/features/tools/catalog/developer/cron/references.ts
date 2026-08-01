@@ -3,7 +3,7 @@ export const cronReference = [
 		title: 'Cron 格式',
 		items: [
 			{ syntax: '* * * * *', desc: 'Unix：分 时 日 月 周' },
-			{ syntax: '* * * * * *', desc: 'Quartz/Spring：秒 分 时 日 月 周' },
+			{ syntax: '* * * * * *', desc: 'Spring：秒 分 时 日 月 周' },
 			{ syntax: '* * * * * * *', desc: 'Quartz：秒 分 时 日 月 周 年' },
 			{ syntax: '*', desc: '所有值' },
 			{ syntax: '*/5', desc: '每隔 5 个单位' },
@@ -26,7 +26,8 @@ export const cronReference = [
 		items: [
 			{ syntax: '0 * * * *', desc: '每小时执行' },
 			{ syntax: '0 9 * * 1-5', desc: '工作日每天 9:00' },
-			{ syntax: '0 0 9 ? * MON-FRI', desc: '工作日每天 9:00:00' },
+			{ syntax: '0 0 9 ? * MON-FRI', desc: 'Spring 工作日每天 9:00:00' },
+			{ syntax: '0 0 9 ? * 2-6 *', desc: 'Quartz 工作日每天 9:00:00（星期 1 表示周日）' },
 			{ syntax: '0 0 9 LW * ?', desc: '每月最后一个工作日 9:00:00' },
 			{ syntax: '*/15 * * * *', desc: '每 15 分钟' },
 			{ syntax: '0 0 1 * *', desc: '每月 1 号 0:00' },

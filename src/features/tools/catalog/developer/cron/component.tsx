@@ -42,7 +42,7 @@ export default function CronParser() {
 					aria-label="Cron 表达式输入"
 				/>
 				<p style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>
-					支持 5/6/7 字段，自动识别 Unix、Quartz、Spring 风格。
+					支持 Unix 5 字段、Spring 6 字段、Quartz 7 字段。
 				</p>
 			</div>
 		</div>

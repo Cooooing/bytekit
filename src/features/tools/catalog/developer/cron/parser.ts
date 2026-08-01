@@ -25,6 +25,16 @@ const DAY_ALIASES: Record<string, number> = {
 	SAT: 6,
 };
 
+const QUARTZ_DAY_ALIASES: Record<string, number> = {
+	SUN: 1,
+	MON: 2,
+	TUE: 3,
+	WED: 4,
+	THU: 5,
+	FRI: 6,
+	SAT: 7,
+};
+
 function unique(values: number[]): number[] {
 	return [...new Set(values)].sort((a, b) => a - b);
 }
@@ -40,7 +50,17 @@ function normalizeDayOfWeek(value: number): number {
 	return value === 7 ? 0 : value;
 }
 
-function expandRange(range: string, min: number, max: number, label: string, aliases?: Record<string, number>): { ok: true; start: number; end: number } | { ok: false; error: string } {
+function quartzDayOfWeekToJs(value: number): number {
+	return value === 7 ? 6 : value - 1;
+}
+
+function normalizeFieldValues(values: number[], min: number, max: number, normalizeValue?: (value: number) => number): number[] {
+	if (normalizeValue) return unique(values.map(normalizeValue));
+	if (min === 0 && max === 7) return unique(values.map(normalizeDayOfWeek));
+	return unique(values);
+}
+
+function expandRange(range: string, min: number, max: number, label: string, aliases?: Record<string, number>, expandSingleToMax = false): { ok: true; start: number; end: number } | { ok: false; error: string } {
 	if (range === '*') return { ok: true, start: min, end: max };
 	if (range === '?') return { ok: false, error: `${label}字段的 ? 不能和步进语法组合使用。` };
 	if (range.includes('-')) {
@@ -56,10 +76,10 @@ function expandRange(range: string, min: number, max: number, label: string, ali
 	}
 	const value = valueFromToken(range, aliases);
 	if (value === null || value < min || value > max) return { ok: false, error: `${label}字段 "${range}" 超出范围 ${min}-${max}。` };
-	return { ok: true, start: value, end: value };
+	return { ok: true, start: value, end: expandSingleToMax ? max : value };
 }
 
-function parseField(field: string, min: number, max: number, label: string, aliases?: Record<string, number>, allowNoSpecific = false): { ok: true; field: ParsedField } | { ok: false; error: string } {
+function parseField(field: string, min: number, max: number, label: string, aliases?: Record<string, number>, allowNoSpecific = false, normalizeValue?: (value: number) => number): { ok: true; field: ParsedField } | { ok: false; error: string } {
 	const values: number[] = [];
 	let any = false;
 	let noSpecific = false;
@@ -80,12 +100,12 @@ function parseField(field: string, min: number, max: number, label: string, alia
 		const step = stepToken === undefined ? 1 : Number(stepToken);
 		if (!Number.isInteger(step) || step <= 0) return { ok: false, error: `${label}字段 "${token}" 的步进必须为正整数。` };
 
-		const rangeValues = expandRange(rangeToken, min, max, label, aliases);
+		const rangeValues = expandRange(rangeToken, min, max, label, aliases, stepToken !== undefined);
 		if (!rangeValues.ok) return rangeValues;
 		for (let value = rangeValues.start; value <= rangeValues.end; value += step) values.push(value);
 	}
 
-	const normalizedValues = unique(values.map((value) => min === 0 && max === 7 ? normalizeDayOfWeek(value) : value));
+	const normalizedValues = normalizeFieldValues(values, min, max, normalizeValue);
 	if (normalizedValues.length === 0) return { ok: false, error: `${label}字段 "${field}" 没有可用值。` };
 	return { ok: true, field: { raw: field, values: normalizedValues, any, noSpecific } };
 }
@@ -126,33 +146,37 @@ function parseDayOfMonth(field: string, allowNoSpecific: boolean): { ok: true; f
 	return { ok: true, field: { raw: field, values: unique(values), any, noSpecific, lastDay, lastWeekday, nearestWeekdays: unique(nearestWeekdays) } };
 }
 
-function parseDayOfWeek(field: string, allowNoSpecific: boolean): { ok: true; field: ParsedDayOfWeek } | { ok: false; error: string } {
+function parseDayOfWeek(field: string, allowNoSpecific: boolean, quartzNumbering: boolean): { ok: true; field: ParsedDayOfWeek } | { ok: false; error: string } {
 	const values: number[] = [];
 	const lastDays: number[] = [];
 	const nthDays: Array<{ day: number; nth: number }> = [];
 	let any = false;
 	let noSpecific = false;
+	const aliases = quartzNumbering ? QUARTZ_DAY_ALIASES : DAY_ALIASES;
+	const min = quartzNumbering ? 1 : 0;
+	const max = quartzNumbering ? 7 : 7;
+	const normalizeValue = quartzNumbering ? quartzDayOfWeekToJs : normalizeDayOfWeek;
 
 	for (const part of field.split(',')) {
 		const token = part.trim().toUpperCase();
 		const lastMatch = token.match(/^([A-Z]{3}|[0-7])L$/);
 		if (lastMatch) {
-			const day = valueFromToken(lastMatch[1], DAY_ALIASES);
-			if (day === null || day < 0 || day > 7) return { ok: false, error: `星期字段 "${part}" 无效。` };
-			lastDays.push(normalizeDayOfWeek(day));
+			const day = valueFromToken(lastMatch[1], aliases);
+			if (day === null || day < min || day > max) return { ok: false, error: `星期字段 "${part}" 无效。` };
+			lastDays.push(normalizeValue(day));
 			continue;
 		}
 		const nthMatch = token.match(/^([A-Z]{3}|[0-7])#([1-5])$/);
 		if (nthMatch) {
-			const day = valueFromToken(nthMatch[1], DAY_ALIASES);
+			const day = valueFromToken(nthMatch[1], aliases);
 			const nth = Number(nthMatch[2]);
-			if (day === null || day < 0 || day > 7) return { ok: false, error: `星期字段 "${part}" 无效。` };
-			nthDays.push({ day: normalizeDayOfWeek(day), nth });
+			if (day === null || day < min || day > max) return { ok: false, error: `星期字段 "${part}" 无效。` };
+			nthDays.push({ day: normalizeValue(day), nth });
 			continue;
 		}
-		const parsed = parseField(token, 0, 7, '星期', DAY_ALIASES, allowNoSpecific);
+		const parsed = parseField(token, min, max, '星期', aliases, allowNoSpecific, normalizeValue);
 		if (!parsed.ok) return parsed;
-		values.push(...parsed.field.values.map(normalizeDayOfWeek));
+		values.push(...parsed.field.values);
 		any = any || parsed.field.any;
 		noSpecific = noSpecific || parsed.field.noSpecific;
 	}
@@ -185,7 +209,7 @@ export function parseCronFields(expression: string): { ok: true; cron: ParsedCro
 		dialect = 'Unix 5 字段';
 		[minuteRaw, hourRaw, dayOfMonthRaw, monthRaw, dayOfWeekRaw] = parts;
 	} else if (parts.length === 6) {
-		dialect = 'Quartz/Spring 6 字段';
+		dialect = 'Spring 6 字段';
 		[secondsRaw, minuteRaw, hourRaw, dayOfMonthRaw, monthRaw, dayOfWeekRaw] = parts;
 	} else if (parts.length === 7) {
 		dialect = 'Quartz 7 字段';
@@ -200,8 +224,8 @@ export function parseCronFields(expression: string): { ok: true; cron: ParsedCro
 	const allowNoSpecific = dialect !== 'Unix 5 字段';
 	const daysOfMonth = parseDayOfMonth(dayOfMonthRaw, allowNoSpecific);
 	const months = parseField(monthRaw, 1, 12, '月', MONTH_ALIASES);
-	const daysOfWeek = parseDayOfWeek(dayOfWeekRaw, allowNoSpecific);
-	const years = parseField(yearRaw, 1970, nowYear + 10, '年');
+	const daysOfWeek = parseDayOfWeek(dayOfWeekRaw, allowNoSpecific, dialect === 'Quartz 7 字段');
+	const years = parseField(yearRaw, 1970, Math.max(nowYear + 10, 2099), '年');
 
 	if (!seconds.ok) return seconds;
 	if (!minutes.ok) return minutes;
