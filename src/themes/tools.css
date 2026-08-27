@@ -1625,6 +1625,402 @@
 	font-size: 1rem;
 }
 
+.websocket-tool {
+	display: grid;
+	gap: var(--space-3);
+	width: min(100%, var(--tool-content-max, 78rem));
+	margin-inline: auto;
+}
+
+.websocket-workbench,
+.websocket-send-panel,
+.websocket-log-list {
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--surface);
+	box-shadow: var(--shadow);
+}
+
+.websocket-workbench {
+	display: grid;
+	gap: var(--space-3);
+	padding: var(--space-3);
+}
+
+.websocket-client-bar {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--space-3);
+	padding-bottom: var(--space-2);
+	border-bottom: 1px solid var(--border);
+}
+
+.websocket-tabs,
+.websocket-bar-actions,
+.websocket-toolbar-controls {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--space-2);
+	min-width: 0;
+}
+
+.websocket-tabs {
+	overflow: auto;
+	scrollbar-width: none;
+}
+
+.websocket-tab {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	min-width: 9rem;
+	min-height: 2.5rem;
+	padding: var(--space-2) var(--space-3);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--surface-subtle);
+	color: var(--muted-strong);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.websocket-tab--active {
+	border-color: var(--primary);
+	background: var(--primary-soft);
+	color: var(--primary-strong);
+}
+
+.websocket-status-dot {
+	width: 0.55rem;
+	height: 0.55rem;
+	border-radius: var(--radius-pill);
+	background: var(--muted);
+}
+
+.websocket-status-dot--connecting,
+.websocket-status-dot--open {
+	background: var(--primary);
+}
+
+.websocket-status-dot--error {
+	background: var(--semantic-danger);
+}
+
+.websocket-status-dot--closed {
+	background: var(--semantic-warning);
+}
+
+.websocket-connect-row {
+	display: grid;
+	grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+.websocket-client-name,
+.websocket-url-input {
+	min-width: 0;
+	min-height: 2.625rem;
+	padding: 0.5rem 0.75rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--surface-subtle);
+	color: var(--text);
+	font-family: var(--font-mono);
+	font-size: 0.875rem;
+	outline: 0;
+}
+
+.websocket-client-name {
+	font-family: inherit;
+	font-weight: 700;
+}
+
+.websocket-client-name:focus,
+.websocket-url-input:focus {
+	border-color: var(--primary);
+	box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+.websocket-connect-actions {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--space-2);
+}
+
+.websocket-url-preview {
+	display: block;
+	min-width: 0;
+	padding: var(--space-2);
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--surface-subtle);
+	color: var(--muted-strong);
+	font-family: var(--font-mono);
+	font-size: 0.78rem;
+	line-height: 1.5;
+	overflow-wrap: anywhere;
+}
+
+.websocket-config-tabs {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: var(--space-1);
+	padding-bottom: var(--space-2);
+	border-bottom: 1px solid var(--border);
+}
+
+.websocket-config-tabs .ui-button {
+	margin-left: auto;
+}
+
+.websocket-config-tab {
+	min-height: 2.375rem;
+	padding: 0.5rem 0.75rem;
+	border: 0;
+	border-bottom: 2px solid transparent;
+	background: transparent;
+	color: var(--muted-strong);
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.websocket-config-tab--active {
+	border-bottom-color: var(--primary);
+	color: var(--primary-strong);
+}
+
+.websocket-tab-panel {
+	min-width: 0;
+}
+
+.websocket-error {
+	margin: 0;
+	color: var(--semantic-danger);
+	font-size: 0.8125rem;
+	line-height: 1.5;
+}
+
+.websocket-muted {
+	margin: 0;
+	color: var(--muted);
+	font-size: 0.78rem;
+	line-height: 1.5;
+}
+
+.websocket-param-list {
+	display: grid;
+	gap: var(--space-2);
+}
+
+.websocket-param-row {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--space-2);
+}
+
+.websocket-param-row input[type="text"],
+.websocket-param-row input:not([type]) {
+	min-width: 0;
+	min-height: 2.25rem;
+	padding: 0.35rem 0.5rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--surface-subtle);
+	color: var(--text);
+	font-family: var(--font-mono);
+	font-size: 0.8125rem;
+}
+
+.websocket-param-row input[type="checkbox"] {
+	width: 1rem;
+	height: 1rem;
+	accent-color: var(--primary);
+}
+
+.websocket-param-row button,
+.websocket-link-button {
+	border: 0;
+	background: transparent;
+	color: var(--primary-strong);
+	font-size: 0.8125rem;
+	font-weight: 700;
+	cursor: pointer;
+}
+
+.websocket-console {
+	display: grid;
+	gap: var(--space-3);
+	min-width: 0;
+}
+
+.websocket-send-panel {
+	display: grid;
+	gap: var(--space-2);
+	border: 0;
+	box-shadow: none;
+	padding: 0;
+}
+
+.websocket-send-toolbar {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--space-3);
+}
+
+.websocket-toolbar-controls select {
+	min-height: 2rem;
+	padding: 0.25rem 0.5rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--surface);
+	color: var(--text);
+}
+
+.websocket-clear-check {
+	min-height: 2rem;
+	padding-block: 0.25rem;
+}
+
+.websocket-message-grid {
+	display: grid;
+	grid-template-columns: minmax(20rem, 0.85fr) minmax(0, 1.65fr);
+	gap: var(--space-3);
+	min-width: 0;
+}
+
+.websocket-log-list {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	min-height: 34rem;
+	overflow: hidden;
+}
+
+.websocket-log-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-2);
+	padding: var(--space-3);
+	border-bottom: 1px solid var(--border);
+	background: var(--surface-subtle);
+}
+
+.websocket-log-head span {
+	color: var(--muted);
+	font-size: 0.8125rem;
+}
+
+.websocket-log-scroll {
+	display: grid;
+	align-content: start;
+	min-height: 0;
+	max-height: 44rem;
+	overflow: auto;
+	scrollbar-width: none;
+}
+
+.websocket-log-item {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--space-2);
+	width: 100%;
+	min-height: 2.5rem;
+	padding: var(--space-2) var(--space-3);
+	border: 0;
+	border-bottom: 1px solid var(--border);
+	background: transparent;
+	color: var(--text);
+	text-align: left;
+	cursor: pointer;
+}
+
+.websocket-log-item--active,
+.websocket-log-item:hover {
+	background: var(--primary-soft);
+}
+
+.websocket-log-summary {
+	min-width: 0;
+	overflow: hidden;
+	font-family: var(--font-mono);
+	font-size: 0.8125rem;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.websocket-log-item time {
+	color: var(--muted);
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+}
+
+.websocket-empty {
+	min-height: 24rem;
+	margin: var(--space-3);
+}
+
+.websocket-detail-panel {
+	display: grid;
+	grid-template-rows: auto minmax(0, 1fr);
+	min-width: 0;
+}
+
+.websocket-detail-toolbar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-2);
+	min-height: 2.75rem;
+	padding: 0 var(--space-1);
+}
+
+.websocket-detail-toolbar select {
+	min-height: 2rem;
+	padding: 0.25rem 0.5rem;
+	border: 1px solid var(--border);
+	border-radius: var(--radius-sm);
+	background: var(--surface);
+	color: var(--text);
+}
+
+@media (max-width: 72rem) {
+	.websocket-message-grid,
+	.websocket-client-bar,
+	.websocket-connect-row,
+	.websocket-send-toolbar {
+		grid-template-columns: 1fr;
+	}
+
+	.websocket-bar-actions,
+	.websocket-connect-actions,
+	.websocket-toolbar-controls {
+		justify-content: flex-start;
+	}
+
+	.websocket-config-tabs .ui-button {
+		margin-left: 0;
+	}
+}
+
+@media (max-width: 560px) {
+	.websocket-param-row {
+		grid-template-columns: auto minmax(0, 1fr);
+	}
+
+	.websocket-param-row input:nth-of-type(3),
+	.websocket-param-row button {
+		grid-column: 2;
+	}
+}
+
 .inline-check {
 	display: inline-flex;
 	align-items: center;

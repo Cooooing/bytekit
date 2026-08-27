@@ -26,7 +26,7 @@ export function preloadToolComponent(toolId: string) {
 
 const codeEditorToolIds = new Set([
 	'base64', 'css-minify', 'csv', 'html-entity', 'html-format', 'javascript-escape', 'json', 'jsonpath',
-	'json-to-proto', 'jwt', 'markdown', 'mathjax', 'proto-to-json', 'word-count', 'xml', 'yaml',
+	'json-to-proto', 'jwt', 'markdown', 'mathjax', 'proto-to-json', 'websocket', 'word-count', 'xml', 'yaml',
 ]);
 
 export function preloadToolResources(toolId: string) {
